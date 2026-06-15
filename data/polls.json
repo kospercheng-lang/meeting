@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "id": "a57ffa77-10d7-4291-aa54-81f9b1fe4cc7",
+    "title": "Q3 產品規劃會議",
+    "description": "討論下季產品路線圖與優先級",
+    "organizerName": "Kosper",
+    "organizerEmail": "kospercheng@gmail.com",
+    "location": "Google Meet",
+    "duration": 60,
+    "timeSlots": [
+      {
+        "id": "slot1",
+        "date": "2026-06-22",
+        "startTime": "10:00",
+        "endTime": "11:00"
+      },
+      {
+        "id": "slot2",
+        "date": "2026-06-23",
+        "startTime": "14:00",
+        "endTime": "15:00"
+      },
+      {
+        "id": "slot3",
+        "date": "2026-06-24",
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    ],
+    "participants": [
+      "kospercheng@gmail.com"
+    ],
+    "votes": [
+      {
+        "voterName": "Alice",
+        "voterEmail": "alice@example.com",
+        "selectedSlotIds": [
+          "slot1",
+          "slot2"
+        ],
+        "votedAt": "2026-06-15T23:00:00.065Z"
+      },
+      {
+        "voterName": "Bob",
+        "voterEmail": "bob@example.com",
+        "selectedSlotIds": [
+          "slot2",
+          "slot3"
+        ],
+        "votedAt": "2026-06-15T23:00:00.093Z"
+      },
+      {
+        "voterName": "Carol",
+        "voterEmail": "carol@example.com",
+        "selectedSlotIds": [
+          "slot2"
+        ],
+        "votedAt": "2026-06-15T23:00:00.111Z"
+      }
+    ],
+    "status": "scheduled",
+    "createdAt": "2026-06-15T22:59:53.193Z",
+    "updatedAt": "2026-06-15T23:00:00.828Z",
+    "winnerSlotId": "slot2"
+  }
+]
