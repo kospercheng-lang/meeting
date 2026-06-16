@@ -4,7 +4,7 @@ import { getAllPolls, savePoll } from "@/lib/storage";
 import { Poll } from "@/lib/types";
 
 export async function GET() {
-  const polls = getAllPolls();
+  const polls = await getAllPolls();
   return NextResponse.json(polls);
 }
 
@@ -33,6 +33,6 @@ export async function POST(req: NextRequest) {
     updatedAt: now,
   };
 
-  savePoll(poll);
+  await savePoll(poll);
   return NextResponse.json(poll, { status: 201 });
 }
