@@ -1,0 +1,9 @@
+任務ID,角色ID,問題ID,狀態,AI回答,稽核意見,對話歷史
+T001,R001,Q001,pending,,,
+T002,R001,Q003,pending,,,
+T003,R001,Q004,pending,,,
+T004,R002,Q001,pending,,,
+T005,R002,Q006,pending,,,
+T006,R003,Q007,pending,,,
+T007,R004,Q004,pending,,,
+T008,R005,Q002,pending,,,
