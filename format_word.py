@@ -20,7 +20,7 @@ from docx.oxml.ns import qn
 from docx.shared import Pt, Cm
 from docx.enum.text import WD_LINE_SPACING
 
-BODY_FONT_EAST_ASIA = "新細明體"
+BODY_FONT_EAST_ASIA = "標楷體"
 BODY_FONT_ASCII = "Times New Roman"
 BODY_SIZE = Pt(12)
 
