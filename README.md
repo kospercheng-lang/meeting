@@ -25,3 +25,16 @@ python3 format_word.py 原始檔.docx -o 輸出檔.docx
 預設輸出檔名為 `原檔名_排版後.docx`，不會覆蓋原始檔案。
 
 > 標題階層是依照原始 Word 檔中是否已套用「Heading 1 / Heading 2 / Heading 3」樣式來辨識；若原檔全是純文字段落，則整份文件會視為內文套用格式。
+
+## 網頁版 (app.py)
+
+上傳 .docx 檔案，按一下即可下載排版好的檔案，排版規則與 CLI 版相同。
+
+### 啟動
+
+```bash
+pip install -r requirements.txt
+python3 app.py
+```
+
+啟動後，用瀏覽器開啟 http://127.0.0.1:5000 即可上傳檔案並下載排版後的結果。上傳的檔案僅暫存於記憶體/暫存資料夾，處理完成後即刪除，不會保留在伺服器上。
