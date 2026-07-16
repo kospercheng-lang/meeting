@@ -1,0 +1,29 @@
+[
+  {
+    "id": "summer-breeze",
+    "title": "夏夜微風",
+    "artist": "KTV Demo Band",
+    "duration": 24.6,
+    "audioUrl": "/songs/summer-breeze.wav",
+    "lrcUrl": "/songs/summer-breeze.lrc",
+    "pitchUrl": "/songs/summer-breeze.pitch.json"
+  },
+  {
+    "id": "by-your-side",
+    "title": "陪你到底",
+    "artist": "KTV Demo Band",
+    "duration": 33.2,
+    "audioUrl": "/songs/by-your-side.wav",
+    "lrcUrl": "/songs/by-your-side.lrc",
+    "pitchUrl": "/songs/by-your-side.pitch.json"
+  },
+  {
+    "id": "youth-in-progress",
+    "title": "青春進行式",
+    "artist": "KTV Demo Band",
+    "duration": 24,
+    "audioUrl": "/songs/youth-in-progress.wav",
+    "lrcUrl": "/songs/youth-in-progress.lrc",
+    "pitchUrl": "/songs/youth-in-progress.pitch.json"
+  }
+]
