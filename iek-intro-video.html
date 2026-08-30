@@ -265,6 +265,24 @@
   .icon-pause{ display:flex; gap:3px; }
   .icon-pause i{ width:3px; height:11px; background:currentColor; display:block; }
   .icon-play{ width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:9px solid currentColor; margin-left:2px; }
+  .sound-btn{
+    flex:0 0 auto; width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:#fff; position:relative;
+  }
+  .sound-btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; }
+  .sound-btn:hover{ background:rgba(255,255,255,.14); }
+  .sound-btn:focus-visible{ outline:2px solid #33D6C4; outline-offset:2px; }
+  .sound-btn.on{ border-color:rgba(51,214,196,.55); color:#33D6C4; }
+  .sound-btn .hint{
+    position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    white-space:nowrap; font-family:"IBM Plex Mono",monospace; font-size:.62rem;
+    color:#0A0E17; background:#33D6C4; padding:4px 8px; border-radius:5px;
+    animation: hintPulse 1.8s ease-in-out infinite;
+  }
+  .sound-btn.on .hint{ display:none; }
+  @keyframes hintPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+  @media (prefers-reduced-motion: reduce){ .sound-btn .hint{ animation:none; } }
   .dots{ display:flex; gap:7px; flex:1; }
   .dots button{
     width:8px; height:8px; border-radius:50%; border:none; padding:0; cursor:pointer;
@@ -308,7 +326,7 @@
   <div class="intro">
     <span class="eyebrow">工研院 產業科技國際策略發展所（產科國際所）</span>
     <h1>IEK產業情報網</h1>
-    <p class="sub">產業情報平台介紹影片 · 建議開啟聲音播放時同步閱讀字幕</p>
+    <p class="sub">產業情報平台介紹影片 · 點擊播放器內的喇叭圖示開啟語音旁白</p>
   </div>
 
   <div class="stage-wrap">
@@ -401,6 +419,10 @@
         <div class="scrubber"><div class="scrubber-fill" id="scrubFill"></div></div>
         <div class="controls">
           <button class="play-btn" id="playBtn" aria-label="暫停播放"><span class="icon-pause"><i></i><i></i></span></button>
+          <button class="sound-btn" id="soundBtn" aria-label="開啟聲音旁白" aria-pressed="false">
+            <span class="hint">開啟聲音</span>
+            <svg id="soundIcon" viewBox="0 0 24 24" stroke-width="1.6"><path d="M4 10v4h4l5 4V6L8 10H4z"></path><line x1="16" y1="9" x2="21" y2="15"></line><line x1="21" y1="9" x2="16" y2="15"></line></svg>
+          </button>
           <div class="dots" id="dots" role="tablist" aria-label="段落選擇"></div>
           <span class="time" id="timeLabel">00:00 / 00:32</span>
         </div>
@@ -411,7 +433,7 @@
 
   <section class="panel">
     <h2>關於這支影片</h2>
-    <p>本片介紹「IEK產業情報網」——由工研院產業科技國際策略發展所（產科國際所，前身為 IEK 產業經濟與趨勢研究中心）維運的產業研究平台。內容整理自官方公開資訊，濃縮平台的定位、研究能量與服務特色，供快速了解之用。</p>
+    <p>本片介紹「IEK產業情報網」——由工研院產業科技國際策略發展所（產科國際所，前身為 IEK 產業經濟與趨勢研究中心）維運的產業研究平台。內容整理自官方公開資訊，濃縮平台的定位、研究能量與服務特色，供快速了解之用。播放器內建的旁白為瀏覽器文字轉語音朗讀字幕，並附場景轉場音效；聲音預設關閉，請點擊喇叭圖示開啟。</p>
     <dl class="facts">
       <div><dt>Operator</dt><dd>工研院 產業科技國際策略發展所</dd></div>
       <div><dt>Analysts</dt><dd>150 位以上專業產業分析師</dd></div>
@@ -435,10 +457,73 @@
   const sceneNum = document.getElementById('sceneNum');
   const timeLabel = document.getElementById('timeLabel');
   const playBtn = document.getElementById('playBtn');
+  const soundBtn = document.getElementById('soundBtn');
+  const soundIcon = document.getElementById('soundIcon');
   const dotsWrap = document.getElementById('dots');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let current = 0, elapsed = 0, playing = true, lastTs = null;
+  let current = 0, elapsed = 0, playing = true, lastTs = null, soundOn = false;
+
+  /* ---- transition blip via Web Audio API ---- */
+  let audioCtx = null;
+  function blip(){
+    if(!soundOn) return;
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(720, t0);
+      osc.frequency.exponentialRampToValueAtTime(1040, t0 + 0.14);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.09, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.24);
+    }catch(e){}
+  }
+
+  /* ---- caption narration via Web Speech API ---- */
+  let zhVoice = null;
+  function pickVoice(){
+    if(!('speechSynthesis' in window)) return;
+    const voices = speechSynthesis.getVoices();
+    zhVoice = voices.find(v => v.lang === 'zh-TW') ||
+              voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+  }
+  if('speechSynthesis' in window){
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function narrate(text){
+    if(!soundOn || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = zhVoice ? zhVoice.lang : 'zh-TW';
+    if(zhVoice) u.voice = zhVoice;
+    u.rate = 1;
+    u.pitch = 1;
+    speechSynthesis.speak(u);
+  }
+
+  function setSound(on){
+    soundOn = on;
+    soundBtn.classList.toggle('on', on);
+    soundBtn.setAttribute('aria-pressed', String(on));
+    soundBtn.setAttribute('aria-label', on ? '關閉聲音旁白' : '開啟聲音旁白');
+    soundIcon.innerHTML = on
+      ? '<path d="M4 10v4h4l5 4V6L8 10H4z"></path><path d="M15 9a4 4 0 010 6"></path><path d="M18 6.5a8 8 0 010 11"></path>'
+      : '<path d="M4 10v4h4l5 4V6L8 10H4z"></path><line x1="16" y1="9" x2="21" y2="15"></line><line x1="21" y1="9" x2="16" y2="15"></line>';
+    if(on){
+      if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      narrate(scenes[current].dataset.caption);
+    } else if('speechSynthesis' in window){
+      speechSynthesis.cancel();
+    }
+  }
+  soundBtn.addEventListener('click', ()=> setSound(!soundOn));
 
   scenes.forEach((_, i)=>{
     const b = document.createElement('button');
@@ -486,6 +571,8 @@
     caption.textContent = scenes[i].dataset.caption;
     sceneNum.textContent = String(i+1).padStart(2,'0');
     animateCounters(scenes[i]);
+    blip();
+    narrate(scenes[i].dataset.caption);
   }
 
   function setPlaying(p){
@@ -494,6 +581,10 @@
       ? '<span class="icon-pause"><i></i><i></i></span>'
       : '<span class="icon-play"></span>';
     playBtn.setAttribute('aria-label', playing ? '暫停播放' : '繼續播放');
+    if('speechSynthesis' in window && soundOn){
+      if(playing && speechSynthesis.paused) speechSynthesis.resume();
+      else if(!playing && speechSynthesis.speaking) speechSynthesis.pause();
+    }
   }
 
   playBtn.addEventListener('click', ()=> setPlaying(!playing));
