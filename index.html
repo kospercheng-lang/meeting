@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>無人化科技新創情報</title>
+  <meta name="description" content="以 AI 模型 SParta+ 掃描全球 76,898 家新創，解析無人化科技五大次領域的資本熱點與台灣供應鏈優勢。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top">SParta+ <span>產業情報探勘</span></a>
+      <nav class="nav" aria-label="章節">
+        <a href="#method">方法</a>
+        <a href="#overview">次領域總覽</a>
+        <a href="#capital">資本熱點</a>
+        <a href="#domains">次領域深探</a>
+        <a href="#taiwan">台灣供應鏈</a>
+        <a href="#insights">關鍵結論</a>
+      </nav>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="切換深色／淺色模式">◐</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow">全球新創 × 無人化科技 × 台灣供應鏈</p>
+        <h1>無人化科技<br>新創情報探勘報告</h1>
+        <p class="lead">
+          本報告以「產業情報探勘」為出發點，以 AI 模型 <strong>SParta+</strong> 對全球創投熱點進行掃描，
+          將全球 <strong id="heroTotal">76,898</strong> 家新創公司的非結構化文字描述進行深度解構。
+          本次分析聚焦「無人化科技」主題下的五個次領域，透過「全球新創—科技—資本—市場—台灣供應鏈」五層新創情報，
+          找出對標各次領域的台灣供應鏈。
+        </p>
+        <div class="questions">
+          <div class="question"><span>Q1</span>哪些國家、賽道、輪次與投資人正在形成資本熱點？</div>
+          <div class="question"><span>Q2</span>台灣在哪些環節具優勢？</div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <p class="notice" id="illustrativeNotice" hidden>
+          ⚠︎ 頁面中的家數、金額、成長率與投資人等數值為<strong>示意資料</strong>，用以呈現分析架構；正式數據請以 SParta+ 模型輸出替換 <code>assets/data.js</code>。
+        </p>
+      </div>
+    </section>
+
+    <!-- Method -->
+    <section id="method" class="section">
+      <div class="wrap">
+        <h2 class="section-title"><span>01</span>研究方法：五層新創情報</h2>
+        <p class="section-lead">SParta+ 先從 76,898 家新創的公司描述中篩出無人化科技相關企業，再沿著五個層次逐層展開，最終與台灣供應鏈對標。</p>
+        <div class="funnel" id="funnel" aria-label="分析漏斗"></div>
+        <ol class="layers" id="layers"></ol>
+      </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview" class="section alt">
+      <div class="wrap">
+        <h2 class="section-title"><span>02</span>五大次領域總覽</h2>
+        <p class="section-lead">比較各次領域的新創家數、累計募資金額與近一年成長率。</p>
+        <div class="grid-3">
+          <figure class="card chart-card">
+            <figcaption>新創家數<small>家</small></figcaption>
+            <div class="chart" id="chartCount"></div>
+          </figure>
+          <figure class="card chart-card">
+            <figcaption>累計募資金額<small>十億美元</small></figcaption>
+            <div class="chart" id="chartFunding"></div>
+          </figure>
+          <figure class="card chart-card">
+            <figcaption>近一年新增家數成長率<small>%</small></figcaption>
+            <div class="chart" id="chartGrowth"></div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Capital -->
+    <section id="capital" class="section">
+      <div class="wrap">
+        <h2 class="section-title"><span>03</span>資本熱點：國家 × 賽道 × 輪次 × 投資人</h2>
+        <p class="section-lead">回答「哪些國家、賽道、輪次與投資人正在形成資本熱點？」</p>
+
+        <figure class="card">
+          <figcaption>國家 × 次領域 新創家數熱力圖<small>顏色越深代表家數越多</small></figcaption>
+          <div class="heatmap-scroll"><div id="heatmap"></div></div>
+          <div class="seq-legend" id="heatLegend"></div>
+        </figure>
+
+        <figure class="card">
+          <figcaption>各次領域募資輪次結構<small>占該次領域家數比例</small></figcaption>
+          <div class="legend" id="roundLegend"></div>
+          <div id="rounds"></div>
+          <details class="table-view">
+            <summary>以表格檢視</summary>
+            <div id="roundsTable"></div>
+          </details>
+        </figure>
+
+        <figure class="card">
+          <figcaption>活躍投資人<small>依交易筆數排序</small></figcaption>
+          <div class="table-wrap" id="investors"></div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Domains -->
+    <section id="domains" class="section alt">
+      <div class="wrap">
+        <h2 class="section-title"><span>04</span>次領域深探</h2>
+        <p class="section-lead">逐一檢視五個次領域的技術焦點、國家分布、代表新創與對標台灣供應鏈。</p>
+        <div class="tabs" role="tablist" id="domainTabs"></div>
+        <div id="domainPanel" class="domain-panel" role="tabpanel"></div>
+      </div>
+    </section>
+
+    <!-- Taiwan -->
+    <section id="taiwan" class="section">
+      <div class="wrap">
+        <h2 class="section-title"><span>05</span>台灣供應鏈對標矩陣</h2>
+        <p class="section-lead">回答「台灣在哪些環節具優勢？」— 將五個次領域的關鍵環節對標台灣企業與研究機構能量。</p>
+        <div class="level-legend">
+          <span class="lv lv3"><i>▲</i>優勢</span>
+          <span class="lv lv2"><i>●</i>具基礎</span>
+          <span class="lv lv1"><i>▽</i>待補強</span>
+        </div>
+        <div class="tw-grid" id="twMatrix"></div>
+      </div>
+    </section>
+
+    <!-- Insights -->
+    <section id="insights" class="section alt">
+      <div class="wrap">
+        <h2 class="section-title"><span>06</span>關鍵結論與策略建議</h2>
+        <div class="answers" id="answers"></div>
+        <h3 class="sub-title">台灣切入策略</h3>
+        <div class="recs" id="recs"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>資料來源：SParta+ 全球新創資料庫解析（<span id="footPeriod"></span>）。公司名稱僅作為次領域代表性案例，不構成投資建議。</p>
+    </div>
+  </footer>
+
+  <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
