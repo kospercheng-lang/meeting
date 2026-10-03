@@ -251,3 +251,26 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .tooltip .tt-row i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* GTM bridge */
+.gtm-flow { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); counter-reset: f; }
+.gtm-flow li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; position: relative; }
+.gtm-flow li::before { counter-increment: f; content: counter(f); font-size: 12px; color: var(--muted); }
+.gtm-flow li b { font-size: 15px; }
+.gtm-flow li span { font-size: 12px; color: var(--ink-2); }
+.gtm-flow li.hot { border: 2px solid var(--accent); }
+.gtm-flow li.gate { background: var(--surface-2); }
+.gtm-panel { display: grid; gap: 20px; }
+.grade-c { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: #f8ebcc; color: #8a5a00; white-space: nowrap; }
+:root[data-theme="dark"] .grade-c { background: #33290f; color: #e8b84a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .grade-c { background: #33290f; color: #e8b84a; } }
+.copy-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
+.copy-btn { font: inherit; font-size: 14px; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.copy-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.copy-msg { font-size: 13px; color: var(--ink-2); }
+.copy-area { width: 100%; min-height: 120px; font-family: ui-monospace, monospace; font-size: 12px; margin-top: 10px; background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.two-col { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.two-col .card { margin: 0; }
+.plain-list { margin: 0; padding-left: 18px; }
+.plain-list li { margin: 6px 0; }
+.plain-list small { color: var(--muted); }

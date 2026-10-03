@@ -375,6 +375,70 @@
     }).join("");
   }
 
+
+  /* ---------- GTM bridge ---------- */
+  function renderGtm() {
+    if (!R.gtm) return;
+    var tabs = $("gtmTabs"), btns = [];
+    R.domains.forEach(function (d, i) {
+      var b = h("button", "tab", "<i style='background:" + domainColor[d.id] + "'></i>" + esc(d.short));
+      b.type = "button"; b.setAttribute("role", "tab");
+      b.addEventListener("click", function () { pick(i); });
+      btns.push(b); tabs.appendChild(b);
+    });
+    function pick(i) {
+      btns.forEach(function (b, j) { b.setAttribute("aria-selected", String(i === j)); });
+      draw(R.domains[i]);
+    }
+    function draw(d) {
+      var p = $("gtmPanel"); p.innerHTML = "";
+      var rows = R.gtm[d.id] || [];
+      var top = d.countries.slice().sort(function (a, b) { return b.n - a.n; })[0].c;
+      var t = "<table><thead><tr><th>候選情境</th><th>ICP</th><th>觸發情境</th><th>技術依據</th><th>證據</th><th>下一個最便宜驗證</th></tr></thead><tbody>";
+      rows.forEach(function (r) {
+        t += "<tr><td><b>" + esc(r.s) + "</b></td><td>" + esc(r.icp) + "</td><td>" + esc(r.trigger) + "</td><td>" + esc(r.tech) +
+          "</td><td><span class='grade-c'>C 級假設</span></td><td>" + esc(r.next) + "</td></tr>";
+      });
+      t += "</tbody></table>";
+      var c1 = h("div", "card");
+      c1.innerHTML = "<figcaption>段 1｜候選情境池草稿<small>" + esc(d.name) + "，共 " + rows.length + " 個</small></figcaption><div class='table-wrap'>" + t + "</div>";
+      var row = h("div", "copy-row");
+      var msg = h("span", "copy-msg", "複製後，在案件工作台的「市場機會單元」按「從 SParta+ 匯入」貼上。");
+      msg.setAttribute("aria-live", "polite");
+      var btn = h("button", "copy-btn", "複製為工作台匯入資料");
+      btn.type = "button";
+      var payload = JSON.stringify({ source: "SParta+", domain: d.name, cells: rows.map(function (r) {
+        return { product: r.s, region: top, icp: r.icp, jtbd: r.trigger, advantage: r.tech, grade: "C 專家假設", next: r.next };
+      }) });
+      btn.addEventListener("click", function () {
+        function fallback() {
+          var ta = c1.querySelector(".copy-area") || c1.appendChild(h("textarea", "copy-area"));
+          ta.value = payload; ta.setAttribute("aria-label", "匯入資料"); ta.focus(); ta.select();
+          msg.textContent = "無法自動複製，已選取下方文字，請按 Ctrl＋C（Mac 為 ⌘＋C）。";
+        }
+        try {
+          navigator.clipboard.writeText(payload).then(function () { msg.textContent = "已複製 " + rows.length + " 個候選情境。到工作台貼上即可。"; }, fallback);
+        } catch (e) { fallback(); }
+      });
+      row.appendChild(msg); row.appendChild(btn); c1.appendChild(row);
+      p.appendChild(c1);
+
+      var two = h("div", "two-col");
+      var c2 = h("div", "card");
+      c2.innerHTML = "<figcaption>段 2｜競爭集合種子<small>代表性新創</small></figcaption><ul class='plain-list'>" +
+        d.examples.map(function (e) { return "<li><b>" + esc(e.name) + "</b>（" + esc(e.country) + "）<br><small>" + esc(e.note) + "</small></li>"; }).join("") +
+        "</ul><p class='copy-msg'>這只是起點。段 2 會再補上 status quo、內部自建與人工等替代方案，並做六面向輪廓。</p>";
+      var c3 = h("div", "card");
+      var partners = d.taiwan.filter(function (x) { return x.level >= 2; }).sort(function (a, b) { return b.level - a.level; });
+      c3.innerHTML = "<figcaption>段 5｜台灣夥伴候選<small>優勢與具基礎環節</small></figcaption><ul class='plain-list'>" +
+        partners.map(function (x) { var L = LEVEL[x.level]; return "<li><span class='lv " + L.cls + "'><i>" + L.icon + "</i>" + L.text + "</span>　<b>" + esc(x.seg) + "</b><br><small>" + esc(x.firms) + "</small></li>"; }).join("") +
+        "</ul><p class='copy-msg'>名單為公開資訊推導，接觸前需確認合作意願與能力。</p>";
+      two.appendChild(c2); two.appendChild(c3);
+      p.appendChild(two);
+    }
+    pick(0);
+  }
+
   renderHero();
   renderMethod();
   renderOverview();
@@ -384,4 +448,5 @@
   renderTabs();
   renderTaiwan();
   renderInsights();
+  renderGtm();
 })();

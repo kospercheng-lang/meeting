@@ -386,7 +386,9 @@ dialog::backdrop { background: rgba(10,14,20,.5); }
     var cols = S.fields.filter(function (f) { return f[3]; });
     var card = h("div", { class: "card" }, [
       h("div", { class: "case-head" }, [h("div", null, [h("h3", { text: S.title }), h("p", { class: "sub", text: S.sub })]),
-        h("button", { class: "btn primary", type: "button", text: "＋ 新增一筆", onclick: function () { editRow(c, key, null); } })])
+        h("div", { class: "row-actions" }, [
+          key === "cells" ? h("button", { class: "btn", type: "button", text: "從 SParta+ 匯入", onclick: function () { importSparta(c); } }) : null,
+          h("button", { class: "btn primary", type: "button", text: "＋ 新增一筆", onclick: function () { editRow(c, key, null); } })])])
     ]);
     if (!rows.length) card.appendChild(h("p", { class: "status-line", text: "尚無資料。按「新增一筆」開始記錄。" }));
     else {
@@ -438,6 +440,37 @@ dialog::backdrop { background: rgba(10,14,20,.5); }
     });
   }
 
+  /* ---------- SParta+ import ---------- */
+  function importSparta(c) {
+    form.innerHTML = "";
+    var ta = h("textarea", { id: "sparta-json", placeholder: "在 SParta+ 報告第 07 節按「複製為工作台匯入資料」，再貼到這裡", style: "min-height:160px" });
+    var err = h("p", { class: "status-line", role: "status" });
+    form.appendChild(h("h3", { text: "從 SParta+ 匯入候選情境", style: "margin:0 0 6px" }));
+    form.appendChild(h("p", { class: "sub", text: "匯入的每一列都標為 C 級假設、來源 SParta+。下一步請交給技術方校準，再用外部證據驗證。" }));
+    form.appendChild(h("label", { for: "sparta-json" }, ["匯入資料", ta]));
+    form.appendChild(err);
+    form.appendChild(h("div", { class: "row-actions", style: "margin-top:12px" }, [
+      h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }),
+      h("button", { class: "btn primary", type: "submit", text: "匯入" })]));
+    onSubmit = null;
+    form.onsubmit = function (e) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      var data;
+      try { data = JSON.parse(ta.value); } catch (x) { data = null; }
+      if (!data || data.source !== "SParta+" || !Array.isArray(data.cells) || !data.cells.length) {
+        err.textContent = "看不懂這段資料。請從 SParta+ 報告重新按「複製為工作台匯入資料」，完整貼上。"; return;
+      }
+      var allowed = ["product", "region", "icp", "jtbd", "advantage", "grade", "next"];
+      var col = caseRef(c.id).collection("cells");
+      Promise.all(data.cells.slice(0, 20).map(function (r) {
+        var v = { source: "SParta+｜" + String(data.domain || "").slice(0, 80), grade: "C 專家假設" };
+        allowed.forEach(function (k) { if (r[k] != null && k !== "grade") v[k] = String(r[k]).slice(0, 500); });
+        return col.doc().set(v);
+      })).then(function () { form.onsubmit = null; dlg.close(); alertBar("已匯入 " + Math.min(20, data.cells.length) + " 個候選情境（C 級假設）。"); }, showErr);
+    };
+    dlg.showModal();
+  }
+
   /* ---------- Hours ---------- */
   function renderHours(p, c) {
     var rows = subData.hours || [], by = {};
@@ -463,7 +496,7 @@ dialog::backdrop { background: rgba(10,14,20,.5); }
   /* ---------- Dialogs ---------- */
   var dlg = $("#dlg"), form = $("#dlgForm"), onSubmit = null;
   function openDialog(title, fields, values, cb) {
-    form.innerHTML = ""; onSubmit = cb;
+    form.innerHTML = ""; form.onsubmit = null; onSubmit = cb;
     form.appendChild(h("h3", { text: title, style: "margin:0 0 12px" }));
     var g = h("div", { class: "form-grid" });
     fields.forEach(function (f) {
@@ -478,7 +511,7 @@ dialog::backdrop { background: rgba(10,14,20,.5); }
     dlg.showModal();
   }
   function confirmDialog(msg, cb) {
-    form.innerHTML = ""; onSubmit = function () { cb(); };
+    form.innerHTML = ""; form.onsubmit = null; onSubmit = function () { cb(); };
     form.appendChild(h("p", { text: msg }));
     form.appendChild(h("div", { class: "row-actions" }, [
       h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }),
@@ -487,6 +520,7 @@ dialog::backdrop { background: rgba(10,14,20,.5); }
   }
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (form.onsubmit) return;
     var v = {};
     Array.prototype.forEach.call(form.elements, function (el) { if (el.name) v[el.name] = el.value; });
     dlg.close();
