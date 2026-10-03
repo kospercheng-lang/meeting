@@ -1,0 +1,496 @@
+<title>Gate-to-Market 案件工作台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Layout: case list rail on the left, one case open on the right with tabs that follow the gate order (stage 0 → gate 1 → stage 2–3 → gate 2). */
+:root {
+  --bg: #f4f3ee; --surface: #fffffc; --surface-2: #ecebe4; --ink: #14233a; --ink-2: #4a5568; --muted: #7a7f88;
+  --line: #dad6ca; --accent: #b5651d; --accent-strong: #d9822b; --accent-soft: #f6e3cf; --nav: #14233a; --nav-ink: #f4f3ee;
+  --good: #1f7a3a; --good-soft: #dcefe1; --warn: #9a6400; --warn-soft: #f8ebcc; --bad: #b3261e; --bad-soft: #f7dcd9;
+  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --display: "Noto Serif TC", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141c; --surface: #18202b; --surface-2: #212a37; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+    --line: #2e3947; --accent: #e9a35a; --accent-strong: #d9822b; --accent-soft: #3a2a19; --nav: #0a0e14; --nav-ink: #eef0f3;
+    --good: #6fcf8a; --good-soft: #17301f; --warn: #e8b84a; --warn-soft: #33290f; --bad: #f08a80; --bad-soft: #3a1b18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141c; --surface: #18202b; --surface-2: #212a37; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+  --line: #2e3947; --accent: #e9a35a; --accent-strong: #d9822b; --accent-soft: #3a2a19; --nav: #0a0e14; --nav-ink: #eef0f3;
+  --good: #6fcf8a; --good-soft: #17301f; --warn: #e8b84a; --warn-soft: #33290f; --bad: #f08a80; --bad-soft: #3a1b18;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.6; }
+.app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+@media (max-width: 860px) { .app { grid-template-columns: 1fr; } }
+.rail { background: var(--nav); color: var(--nav-ink); padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.brand { font-family: var(--display); font-size: 20px; }
+.brand small { display: block; font-family: var(--font); font-size: 12px; opacity: .7; letter-spacing: .08em; }
+.case-list { display: flex; flex-direction: column; gap: 6px; }
+.case-item { text-align: left; border: 1px solid transparent; background: rgba(255,255,255,.04); color: var(--nav-ink); border-radius: 10px; padding: 10px 12px; cursor: pointer; font: inherit; }
+.case-item:hover { background: rgba(255,255,255,.09); }
+.case-item[aria-current="true"] { border-color: var(--accent-strong); background: rgba(217,130,43,.14); }
+.case-item b { display: block; font-size: 14px; }
+.case-item span { font-size: 12px; opacity: .75; }
+.rail .hint { font-size: 12px; opacity: .7; }
+main { padding: 24px 16px 48px; min-width: 0; }
+@media (min-width: 860px) { main { padding: 32px 40px 64px; } }
+.empty { max-width: 560px; margin: 64px auto; text-align: center; color: var(--ink-2); }
+.empty h2 { font-family: var(--display); color: var(--ink); }
+h1.case-title { font-family: var(--display); font-size: 28px; margin: 0; line-height: 1.3; text-wrap: balance; }
+.case-head { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
+.meta { color: var(--ink-2); font-size: 14px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 500; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.pill.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.pill.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+.tab { border: 0; background: none; font: inherit; color: var(--ink-2); padding: 10px 14px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent-strong); font-weight: 700; }
+.panel { display: flex; flex-direction: column; gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.card h3 { margin: 0 0 4px; font-size: 16px; }
+.card .sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-2); font-weight: 500; }
+input, select, textarea { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; }
+textarea { min-height: 72px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+.btn { font: inherit; border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 500; }
+.btn.primary { background: var(--accent-strong); border-color: var(--accent-strong); color: #14233a; }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 4px 10px; font-size: 13px; }
+.btn.danger { color: var(--bad); }
+.rail .btn { background: transparent; color: var(--nav-ink); border-color: rgba(255,255,255,.25); }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.gate-row { display: grid; grid-template-columns: 64px 1fr; gap: 6px 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+.gate-row:first-of-type { border-top: 0; }
+.gate-code { font-weight: 700; color: var(--accent); }
+.gate-q { font-weight: 500; }
+.gate-min { font-size: 13px; color: var(--muted); }
+.gate-inputs { grid-column: 2; display: grid; grid-template-columns: 160px 1fr; gap: 10px; }
+@media (max-width: 600px) { .gate-inputs { grid-template-columns: 1fr; } .gate-row { grid-template-columns: 1fr; } .gate-inputs { grid-column: 1; } }
+.verdict { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; background: var(--surface-2); border-radius: 10px; padding: 14px 16px; }
+.verdict p { margin: 0; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent-strong); border-radius: 0 4px 4px 0; }
+.bar.over i { background: var(--bad); }
+.status-line { font-size: 13px; color: var(--muted); }
+.form-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.form-grid .wide { grid-column: 1 / -1; }
+.example-tag { font-size: 12px; color: var(--accent); font-weight: 700; }
+dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); width: min(720px, calc(100vw - 32px)); padding: 20px; }
+dialog::backdrop { background: rgba(10,14,20,.5); }
+.offline { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.top-tools { display: flex; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">Gate-to-Market<small>案件工作台</small></div>
+    <button class="btn" id="newCase" type="button">＋ 新增案件</button>
+    <div class="case-list" id="caseList"><p class="hint">正在讀取案件…</p></div>
+    <p class="hint">資料存在這個工作台，有權限開啟的同仁都看得到、也都能編輯。</p>
+  </aside>
+  <main id="main">
+    <div class="empty" id="emptyState">
+      <h2>還沒有開啟案件</h2>
+      <p>從左邊選一個案件，或按「新增案件」。每個案件依方法論順序記錄：段 0 專案設定、案件閘門、市場機會單元、假設與證據、決策紀錄、決策關卡，以及每項工具的實際工時。</p>
+    </div>
+  </main>
+</div>
+
+<dialog id="dlg"><form id="dlgForm" method="dialog"></form></dialog>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === "text") n.textContent = attrs[k];
+      else if (k === "class") n.className = attrs[k];
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== false && attrs[k] != null) n.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c != null) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+
+  /* ---------- Methodology constants (ISTI GTM v0.98) ---------- */
+  var STAGES = ["段 0 目標確定", "段 1 需求與技術—情境探索", "段 2 深入洞察", "段 3 機會收斂", "決策關卡", "段 4 價值定義", "段 5 方案與通路", "段 6 商模與成交", "段 7 驗證與擴張"];
+  var G1 = [
+    ["G-1", "成長問題與決策急迫性", "有具體決策時點與內部責任人"],
+    ["G-2", "技術／產品成熟度", "概念之外已有原型、驗證或可交付內容"],
+    ["G-3", "差異化與護城河", "至少有一項具證據的技術、成本、流程或資料優勢"],
+    ["G-4", "企業投入意願", "指定窗口、資料與訪談承諾"],
+    ["G-5", "成效可定義", "至少有可觀察的 Validation KPI"],
+    ["G-6", "ISTI 加值", "加值角色可具體說明"],
+    ["G-7", "ISTI 資源承諾", "主管書面同意之季投入時數，且已完成一次實際動作；口頭承諾不計"]
+  ];
+  var G2 = [
+    ["D-1", "需求／痛點", "痛點真實、迫切、有行動與預算可能"],
+    ["D-2", "ICP／購買角色", "能辨識使用者、Economic Buyer、Champion 與流程"],
+    ["D-3", "產品相對優勢", "相對競品與 status quo 有具證據的勝出理由"],
+    ["D-4", "技術與交付", "MVP、整合、測試、法規、服務與責任可管理"],
+    ["D-5", "通路／可及性", "能列出具體目標客戶與可行進入路徑"],
+    ["D-6", "企業投入", "決策人、窗口、人力、資料與預算承諾清楚"],
+    ["D-7", "證據強度", "關鍵結論不只依賴 C 級假設"],
+    ["D-8", "可驗證性", "90 天內有可觀察的 Validation KPI"],
+    ["D-9", "ISTI 投入（G-7）", "分析師人時、資深同仁網絡與主管書面同意已到位"]
+  ];
+  var MET = ["", "符合", "部分", "未符合"];
+  /* Decision Package hour estimates per stage, from GTM_定價模型.xlsx (before the 15% buffer). */
+  var EST = { "段 0 目標確定": 24, "段 1 需求與技術—情境探索": 62, "段 2 深入洞察": 226, "段 3 機會收斂": 22, "決策關卡": 12, "治理與紀錄": 20 };
+
+  var SUBS = {
+    cells: { title: "市場機會單元", sub: "附錄 A｜每個候選情境一列，建議 3–5 個。", fields: [
+      ["product", "產品／MVP", "text", true], ["region", "國家／區域", "text", true], ["icp", "ICP／Persona", "text", true],
+      ["jtbd", "JTBD／觸發情境", "textarea"], ["competition", "競爭與替代", "textarea"], ["advantage", "產品相對優勢", "textarea"],
+      ["route", "價值鏈／進入模式", "text"], ["gaps", "法規／技術／專利缺口", "textarea"],
+      ["grade", "主要證據等級", "select", true, ["", "A 一手行為", "B 可靠公開", "C 專家假設"]],
+      ["attract", "市場吸引力（1–5）", "number", true], ["rtw", "Right-to-Win（1–5）", "number", true],
+      ["next", "下一個最便宜驗證", "text", true]] },
+    hyps: { title: "假設與證據登錄", sub: "附錄 B｜來源信心與決策證據分開標示，兩者不可混用。", fields: [
+      ["text", "假設／判斷", "textarea", true], ["importance", "重要性", "select", true, ["", "高", "中", "低"]],
+      ["conf", "來源信心", "select", true, ["", "✓ 已查證", "◐ 核對中", "○ 未驗證"]],
+      ["grade", "證據等級", "select", true, ["", "A 一手行為", "B 可靠公開", "C 專家假設"]],
+      ["status", "目前狀態", "select", true, ["", "待驗證", "部分支持", "支持", "否定"]],
+      ["counter", "反證／限制", "textarea"], ["next", "下一個驗證", "text", true], ["owner", "負責人", "text", true]] },
+    decisions: { title: "決策紀錄", sub: "附錄 C｜每個決策當下的證據與回退條件，事後不改寫。", fields: [
+      ["date", "日期", "date", true], ["question", "決策問題", "text", true], ["options", "選項", "text"],
+      ["evidence", "當時證據", "textarea"], ["unknowns", "限制／未知", "textarea"], ["who", "決策權人", "text", true],
+      ["decision", "決定", "text", true], ["revisit", "回退／重審條件", "text", true]] },
+    hours: { title: "工時紀錄", sub: "每項工具做完就記一筆。這是校正服務包定價的唯一依據（GTM v0.98 第 13.3 章待辦）。", fields: [
+      ["date", "日期", "date", true], ["stage", "段", "select", true, [""].concat(Object.keys(EST)).concat(["段 4 價值定義", "段 5 方案與通路", "段 6 商模與成交", "段 7 驗證與擴張"])],
+      ["tool", "工具／工作", "text", true], ["hours", "小時", "number", true], ["who", "分析師", "text", true]] }
+  };
+
+  /* ---------- State ---------- */
+  var db = null, cases = [], currentId = null, tab = "setup", subData = {}, unsubs = [];
+  try { var t = localStorage.getItem("gtm-tab"); if (t) tab = t; } catch (e) {}
+
+  function current() { return cases.find(function (c) { return c.id === currentId; }); }
+  function caseRef(id) { return db.doc("cases/" + id); }
+
+  /* ---------- Boot ---------- */
+  window.claude && window.claude.use && window.claude.use("db").then(function (d) {
+    db = d;
+    if (!db) { $("#caseList").innerHTML = ""; $("#caseList").appendChild(h("p", { class: "offline", text: "這個檢視無法連到工作台資料，請在 claude.ai 開啟此頁。" })); return; }
+    db.collection("cases").orderBy("createdAt", "desc").onSnapshot(function (snap) {
+      cases = snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; });
+      renderList();
+      if (currentId && !current()) { currentId = null; renderMain(); }
+      else if (currentId) { renderHeadOnly(); var pn = $("#panel"); if (pn && !pn.contains(document.activeElement)) renderPanel(); else refreshSuggest(); }
+    }, function (e) { showErr(e); });
+  });
+  if (!(window.claude && window.claude.use)) { $("#caseList").innerHTML = ""; $("#caseList").appendChild(h("p", { class: "offline", text: "這個檢視無法連到工作台資料，請在 claude.ai 開啟此頁。" })); }
+
+  function showErr(e) {
+    var msg = e && e.code === "quota_exceeded" ? "工作台已達資料上限，請刪除不需要的紀錄後再新增。" : "儲存失敗，請稍後再試一次。";
+    alertBar(msg);
+  }
+  function alertBar(msg) {
+    var main = $("#main"), b = h("p", { class: "offline", role: "status", text: msg });
+    main.insertBefore(b, main.firstChild);
+    setTimeout(function () { b.remove(); }, 6000);
+  }
+
+  /* ---------- Case list ---------- */
+  function caseStatus(c) {
+    var out = [];
+    if (c.gate2Result) out.push(["決策關卡：" + c.gate2Result, c.gate2Result === "Go" ? "good" : c.gate2Result === "No-Go" ? "bad" : "warn"]);
+    else if (c.gate1Result) out.push(["案件閘門：" + c.gate1Result, c.gate1Result === "Pass" ? "good" : c.gate1Result === "Defer" ? "bad" : "warn"]);
+    else out.push(["閘門未裁決", ""]);
+    return out;
+  }
+  function renderList() {
+    var box = $("#caseList"); box.innerHTML = "";
+    if (!cases.length) { box.appendChild(h("p", { class: "hint", text: "尚無案件。按上方「新增案件」建立第一個。" })); return; }
+    cases.forEach(function (c) {
+      box.appendChild(h("button", { class: "case-item", type: "button", "aria-current": String(c.id === currentId), onclick: function () { openCase(c.id); } }, [
+        h("b", { text: c.name || "未命名案件" }), h("span", { text: (c.company || "—") + "｜" + (c.stage || STAGES[0]) + (c.example ? "｜範例" : "") })
+      ]));
+    });
+  }
+
+  $("#newCase").addEventListener("click", function () {
+    if (!db) return;
+    openDialog("新增案件", [["name", "案件名稱", "text", true], ["company", "企業", "text", true], ["product", "優先產品／MVP", "text", true]], {}, function (v) {
+      v.createdAt = new Date().toISOString(); v.stage = STAGES[0]; v.gate1 = {}; v.gate2 = {};
+      var ref = db.collection("cases").doc();
+      ref.set(v).then(function () { openCase(ref.id); }, showErr);
+    });
+  });
+
+  function openCase(id) {
+    currentId = id;
+    unsubs.forEach(function (u) { u(); }); unsubs = []; subData = {};
+    Object.keys(SUBS).forEach(function (k) {
+      subData[k] = [];
+      unsubs.push(caseRef(id).collection(k).onSnapshot(function (snap) {
+        subData[k] = snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; });
+        if (tab === k) renderPanel();
+      }, showErr));
+    });
+    renderList(); renderMain();
+  }
+
+  /* ---------- Main ---------- */
+  var TABS = [["setup", "段 0 專案設定"], ["gate1", "案件閘門"], ["cells", "市場機會單元"], ["hyps", "假設與證據"], ["decisions", "決策紀錄"], ["gate2", "決策關卡"], ["hours", "工時"]];
+  function renderMain() {
+    var main = $("#main"); main.innerHTML = "";
+    var c = current();
+    if (!c) { main.appendChild($("#emptyState") || h("div", { class: "empty" }, [h("h2", { text: "還沒有開啟案件" })])); return; }
+    main.appendChild(h("div", { class: "case-head", id: "caseHead" }));
+    var tabs = h("div", { class: "tabs", role: "tablist" });
+    TABS.forEach(function (t) {
+      tabs.appendChild(h("button", { class: "tab", role: "tab", type: "button", "aria-selected": String(t[0] === tab), onclick: function () {
+        tab = t[0]; try { localStorage.setItem("gtm-tab", tab); } catch (e) {}
+        Array.prototype.forEach.call(tabs.children, function (b, i) { b.setAttribute("aria-selected", String(TABS[i][0] === tab)); });
+        renderPanel();
+      } }, [t[1]]));
+    });
+    main.appendChild(tabs);
+    main.appendChild(h("div", { class: "panel", id: "panel" }));
+    renderHeadOnly(); renderPanel();
+  }
+  function renderHeadOnly() {
+    var c = current(), head = $("#caseHead"); if (!c || !head) return;
+    head.innerHTML = "";
+    var left = h("div", null, [
+      c.example ? h("div", { class: "example-tag", text: "範例案件（示意資料，可刪除）" }) : null,
+      h("h1", { class: "case-title", text: c.name || "未命名案件" }),
+      h("div", { class: "meta", text: (c.company || "—") + "｜優先產品：" + (c.product || "—") })
+    ]);
+    var pills = h("div", { class: "pills" }, [h("span", { class: "pill", text: c.stage || STAGES[0] })].concat(caseStatus(c).map(function (p) { return h("span", { class: "pill " + p[1], text: p[0] }); })));
+    head.appendChild(left); head.appendChild(pills);
+  }
+  function renderPanel() {
+    var p = $("#panel"), c = current(); if (!p || !c) return;
+    p.innerHTML = "";
+    if (tab === "setup") renderSetup(p, c);
+    else if (tab === "gate1") renderGate(p, c, "gate1", G1, ["Pass", "Conditional Pass", "Defer"], "案件閘門｜段 1 結束", "評的是「案子」：這個合作案值不值得投入本所人時。殺案條件必須在進場前寫定。");
+    else if (tab === "gate2") renderGate(p, c, "gate2", G2, ["Go", "Pivot", "Hold", "No-Go"], "決策關卡｜段 3 結束", "評的是「投入」：研究成立後，值不值得投入正式 GTM。附錄 E 檢核表。");
+    else if (tab === "hours") renderHours(p, c);
+    else renderSub(p, c, tab);
+  }
+
+  function save(c, patch) { caseRef(c.id).update(patch).catch(showErr); }
+
+  /* ---------- 段 0 ---------- */
+  function renderSetup(p, c) {
+    var card = h("div", { class: "card" }, [h("h3", { text: "專案設定備忘錄" }), h("p", { class: "sub", text: "先把「這個案子最終要讓誰在何時做出什麼決定」問到具體，再選工具。離開欄位即自動儲存。" })]);
+    var g = h("div", { class: "form-grid" });
+    [["name", "案件名稱", "text"], ["company", "企業", "text"], ["product", "優先產品／MVP", "text"],
+     ["stage", "目前所在段", "select", STAGES],
+     ["decisionQ", "決策問題：誰在何時要做出什麼決定", "textarea", null, true],
+     ["boundary", "產品／技術邊界", "textarea", null, true],
+     ["rights", "Decision Rights：企業、ISTI、技術專家各自負責什麼", "textarea", null, true],
+     ["kill", "預先登錄的殺案條件（進場前寫定）", "textarea", null, true]].forEach(function (f) {
+      var el = field(f[2], f[3], c[f[0]] || (f[0] === "stage" ? STAGES[0] : ""));
+      el.id = "setup-" + f[0];
+      el.addEventListener("change", function () { var o = {}; o[f[0]] = el.value; save(c, o); });
+      g.appendChild(h("label", { class: f[4] ? "wide" : null }, [f[1], el]));
+    });
+    card.appendChild(g);
+    p.appendChild(card);
+    var d = h("div", { class: "row-actions" }, [h("button", { class: "btn danger small", type: "button", text: "刪除此案件", onclick: function () {
+      confirmDialog("刪除「" + (c.name || "此案件") + "」？案件設定與閘門會被刪除，此動作無法復原。", function () {
+        Object.keys(SUBS).forEach(function (k) { (subData[k] || []).forEach(function (r) { caseRef(c.id).collection(k).doc(r.id).delete(); }); });
+        caseRef(c.id).delete().then(function () { currentId = null; renderMain(); }, showErr);
+      });
+    } })]);
+    p.appendChild(d);
+  }
+
+  function field(type, opts, val) {
+    var el;
+    if (type === "select") { el = h("select"); opts.forEach(function (o) { el.appendChild(h("option", { value: o, text: o || "請選擇" })); }); el.value = val || ""; }
+    else if (type === "textarea") { el = h("textarea"); el.value = val || ""; }
+    else { el = h("input", { type: type === "number" ? "number" : type === "date" ? "date" : "text", step: type === "number" ? "any" : null }); el.value = val == null ? "" : val; }
+    return el;
+  }
+
+  /* ---------- Gates ---------- */
+  function suggestion(key, items, g) {
+    var vals = items.map(function (it) { return (g[it[0]] || {}).s || ""; });
+    if (vals.some(function (v) { return !v; })) return { text: "尚有構面未評估", cls: "" };
+    var bad = vals.filter(function (v) { return v === "未符合"; }).length, part = vals.filter(function (v) { return v === "部分"; }).length;
+    if (key === "gate1") {
+      if ((g["G-4"] || {}).s === "未符合" || (g["G-7"] || {}).s === "未符合" || bad >= 2) return { text: "建議 Defer", cls: "bad" };
+      if (bad || part) return { text: "建議 Conditional Pass", cls: "warn" };
+      return { text: "建議 Pass", cls: "good" };
+    }
+    if (bad >= 3) return { text: "建議 No-Go 或 Pivot", cls: "bad" };
+    if ((g["D-7"] || {}).s === "未符合") return { text: "證據不足，建議 Hold", cls: "warn" };
+    if (bad || part > 2) return { text: "建議 Pivot 或 Hold", cls: "warn" };
+    return { text: "建議 Go", cls: "good" };
+  }
+  function refreshSuggest() {
+    var el = $("#suggest"), c = current(); if (!el || !c || (tab !== "gate1" && tab !== "gate2")) return;
+    var s = tab === "gate1" ? suggestion("gate1", G1, c.gate1 || {}) : suggestion("gate2", G2, c.gate2 || {});
+    el.className = "pill " + s.cls; el.textContent = s.text;
+  }
+  function renderGate(p, c, key, items, results, title, sub) {
+    var g = Object.assign({}, c[key] || {});
+    var card = h("div", { class: "card" }, [h("h3", { text: title }), h("p", { class: "sub", text: sub })]);
+    items.forEach(function (it) {
+      var cur = g[it[0]] || {};
+      var sel = field("select", MET, cur.s); sel.id = key + "-" + it[0] + "-s";
+      var ev = h("input", { type: "text", placeholder: "證據：不可自我宣稱，寫出具體事實與來源", id: key + "-" + it[0] + "-e" }); ev.value = cur.e || "";
+      function commit() { var o = {}; o[key] = {}; o[key][it[0]] = { s: sel.value, e: ev.value }; save(c, o); }
+      sel.addEventListener("change", commit); ev.addEventListener("change", commit);
+      card.appendChild(h("div", { class: "gate-row" }, [
+        h("div", { class: "gate-code", text: it[0] }),
+        h("div", null, [h("div", { class: "gate-q", text: it[1] }), h("div", { class: "gate-min", text: "最低要求：" + it[2] })]),
+        h("div", { class: "gate-inputs" }, [sel, ev])
+      ]));
+    });
+    p.appendChild(card);
+    var s = suggestion(key, items, g);
+    var rk = key + "Result", dk = key + "Date", nk = key + "Note";
+    var resSel = field("select", [""].concat(results), c[rk]); resSel.id = key + "-result";
+    var note = h("input", { type: "text", placeholder: "裁決理由與回退條件", id: key + "-note" }); note.value = c[nk] || "";
+    resSel.addEventListener("change", function () { var o = {}; o[rk] = resSel.value; o[dk] = new Date().toISOString().slice(0, 10); save(c, o); });
+    note.addEventListener("change", function () { var o = {}; o[nk] = note.value; save(c, o); });
+    p.appendChild(h("div", { class: "card" }, [
+      h("h3", { text: "裁決" }),
+      h("p", { class: "sub", text: "工作台只給建議，閘門由人裁決（GTM v0.98 第 9.1 章）。" }),
+      h("div", { class: "verdict" }, [
+        h("p", null, [h("span", { class: "pill " + s.cls, id: "suggest", text: s.text })]),
+        h("label", { style: "min-width:200px" }, ["正式裁決", resSel]),
+        h("label", { style: "flex:1;min-width:220px" }, ["理由", note])
+      ]),
+      c[dk] ? h("p", { class: "status-line", text: "裁決日期：" + c[dk] }) : null
+    ]));
+  }
+
+  /* ---------- Subcollections ---------- */
+  function renderSub(p, c, key) {
+    var S = SUBS[key], rows = subData[key] || [];
+    var cols = S.fields.filter(function (f) { return f[3]; });
+    var card = h("div", { class: "card" }, [
+      h("div", { class: "case-head" }, [h("div", null, [h("h3", { text: S.title }), h("p", { class: "sub", text: S.sub })]),
+        h("button", { class: "btn primary", type: "button", text: "＋ 新增一筆", onclick: function () { editRow(c, key, null); } })])
+    ]);
+    if (!rows.length) card.appendChild(h("p", { class: "status-line", text: "尚無資料。按「新增一筆」開始記錄。" }));
+    else {
+      var tbl = h("table"), tr = h("tr");
+      cols.forEach(function (f) { tr.appendChild(h("th", { class: f[2] === "number" ? "num" : null, text: f[1] })); });
+      tr.appendChild(h("th", { text: "" }));
+      tbl.appendChild(h("thead", null, [tr]));
+      var tb = h("tbody");
+      sortRows(key, rows).forEach(function (r) {
+        var row = h("tr");
+        cols.forEach(function (f) { row.appendChild(h("td", { class: f[2] === "number" ? "num" : null }, [cell(f, r[f[0]])])); });
+        row.appendChild(h("td", null, [h("div", { class: "row-actions" }, [
+          h("button", { class: "btn small ghost", type: "button", text: "編輯", onclick: function () { editRow(c, key, r); } }),
+          h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () {
+            confirmDialog("刪除這一筆紀錄？", function () { caseRef(c.id).collection(key).doc(r.id).delete().catch(showErr); });
+          } })])]));
+        tb.appendChild(row);
+      });
+      tbl.appendChild(tb);
+      card.appendChild(h("div", { class: "table-wrap" }, [tbl]));
+    }
+    p.appendChild(card);
+    if (key === "hyps" && rows.length) {
+      var weak = rows.filter(function (r) { return (r.importance === "高") && /^C/.test(r.grade || "") && r.status !== "支持"; }).length;
+      p.appendChild(h("p", { class: "status-line", text: "高重要性且仍為 C 級的假設：" + weak + " 項。決策關卡 D-7 要求關鍵結論不只依賴 C 級假設。" }));
+    }
+  }
+  function sortRows(key, rows) {
+    var r = rows.slice();
+    if (key === "decisions" || key === "hours") r.sort(function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); });
+    if (key === "cells") r.sort(function (a, b) { return ((+b.attract || 0) + (+b.rtw || 0)) - ((+a.attract || 0) + (+a.rtw || 0)); });
+    return r;
+  }
+  function cell(f, v) {
+    if (v == null || v === "") return document.createTextNode("—");
+    if (f[0] === "status" || f[0] === "conf" || f[0] === "grade") {
+      var cls = /支持$|^✓|^A/.test(v) && v !== "部分支持" ? "good" : /否定|^○|^C/.test(v) ? "bad" : "warn";
+      if (v === "待驗證") cls = "";
+      return h("span", { class: "pill " + cls, text: v });
+    }
+    return document.createTextNode(String(v));
+  }
+  function editRow(c, key, r) {
+    var S = SUBS[key];
+    openDialog((r ? "編輯" : "新增") + "｜" + S.title, S.fields.map(function (f) { return [f[0], f[1], f[2], false, f[4]]; }), r || (key === "decisions" || key === "hours" ? { date: new Date().toISOString().slice(0, 10) } : {}), function (v) {
+      S.fields.forEach(function (f) { if (f[2] === "number" && v[f[0]] !== "") v[f[0]] = Number(v[f[0]]); });
+      var col = caseRef(c.id).collection(key);
+      (r ? col.doc(r.id).set(v) : col.doc().set(v)).catch(showErr);
+    });
+  }
+
+  /* ---------- Hours ---------- */
+  function renderHours(p, c) {
+    var rows = subData.hours || [], by = {};
+    rows.forEach(function (r) { by[r.stage] = (by[r.stage] || 0) + (+r.hours || 0); });
+    var card = h("div", { class: "card" }, [h("h3", { text: "實際工時 vs 定價模型預估" }), h("p", { class: "sub", text: "預估值來自定價模型的 Decision Package 工時（未含 15% 緩衝）。首案結束後用實際值重算價格。" })]);
+    var tbl = h("table"), tb = h("tbody");
+    tbl.appendChild(h("thead", null, [h("tr", null, [h("th", { text: "段" }), h("th", { class: "num", text: "預估（小時）" }), h("th", { class: "num", text: "實際（小時）" }), h("th", { text: "進度" })])]));
+    var te = 0, ta = 0;
+    Object.keys(EST).forEach(function (k) {
+      var e = EST[k], a = by[k] || 0; te += e; ta += a;
+      var pct = Math.min(100, Math.round(a / e * 100));
+      tb.appendChild(h("tr", null, [h("td", { text: k }), h("td", { class: "num", text: String(e) }), h("td", { class: "num", text: a ? a.toFixed(1) : "—" }),
+        h("td", { style: "min-width:140px" }, [h("div", { class: "bar" + (a > e ? " over" : ""), title: a > e ? "超出預估" : "" }, [h("i", { style: "width:" + pct + "%" })]),
+          a > e ? h("span", { class: "status-line", text: "超出 " + (a - e).toFixed(1) + " 小時" }) : null])]));
+    });
+    tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: "合計" })]), h("td", { class: "num" }, [h("b", { text: String(te) })]), h("td", { class: "num" }, [h("b", { text: ta ? ta.toFixed(1) : "—" })]), h("td")]));
+    tbl.appendChild(tb);
+    card.appendChild(h("div", { class: "table-wrap" }, [tbl]));
+    p.appendChild(card);
+    renderSub(p, c, "hours");
+  }
+
+  /* ---------- Dialogs ---------- */
+  var dlg = $("#dlg"), form = $("#dlgForm"), onSubmit = null;
+  function openDialog(title, fields, values, cb) {
+    form.innerHTML = ""; onSubmit = cb;
+    form.appendChild(h("h3", { text: title, style: "margin:0 0 12px" }));
+    var g = h("div", { class: "form-grid" });
+    fields.forEach(function (f) {
+      var el = field(f[2], f[4], values[f[0]]); el.name = f[0]; el.id = "dlg-" + f[0];
+      if (f[3]) el.required = true;
+      g.appendChild(h("label", { class: f[2] === "textarea" ? "wide" : null }, [f[1], el]));
+    });
+    form.appendChild(g);
+    form.appendChild(h("div", { class: "row-actions", style: "margin-top:16px" }, [
+      h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }),
+      h("button", { class: "btn primary", type: "submit", text: "儲存" })]));
+    dlg.showModal();
+  }
+  function confirmDialog(msg, cb) {
+    form.innerHTML = ""; onSubmit = function () { cb(); };
+    form.appendChild(h("p", { text: msg }));
+    form.appendChild(h("div", { class: "row-actions" }, [
+      h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }),
+      h("button", { class: "btn primary", type: "submit", text: "確定刪除" })]));
+    dlg.showModal();
+  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = {};
+    Array.prototype.forEach.call(form.elements, function (el) { if (el.name) v[el.name] = el.value; });
+    dlg.close();
+    if (onSubmit) onSubmit(v);
+  });
+})();
+</script>

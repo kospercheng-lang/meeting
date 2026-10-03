@@ -1,0 +1,220 @@
+<title>Gate-to-Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column; the method is drawn as a track with two gates, the page's one bold element. */
+:root {
+  --bg: #f4f3ee; --surface: #fffffc; --band: #ecebe4; --ink: #14233a; --ink-2: #4a5568; --muted: #737985;
+  --line: #d6d2c5; --accent: #b5651d; --gate: #d9822b; --hero: #14233a; --hero-ink: #f4f3ee; --hero-ink-2: #bfc8d6;
+  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --display: "Noto Serif TC", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141c; --surface: #18202b; --band: #141b25; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+    --line: #2e3947; --accent: #e9a35a; --gate: #d9822b; --hero: #0a0e14; --hero-ink: #eef0f3; --hero-ink-2: #aeb7c4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141c; --surface: #18202b; --band: #141b25; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+  --line: #2e3947; --accent: #e9a35a; --gate: #d9822b; --hero: #0a0e14; --hero-ink: #eef0f3; --hero-ink-2: #aeb7c4;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.75; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; }
+@media (min-width: 760px) { .wrap { padding-inline: 40px; } }
+h1, h2, h3 { text-wrap: balance; }
+h2 { font-family: var(--display); font-size: clamp(24px, 3.6vw, 32px); line-height: 1.35; margin: 0 0 12px; }
+.eyebrow { font-size: 13px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0 0 8px; }
+.lead { color: var(--ink-2); max-width: 62ch; margin: 0 0 28px; }
+section { padding-block: 64px; }
+section.band { background: var(--band); }
+
+.hero { background: var(--hero); color: var(--hero-ink); padding-block: 72px 64px; }
+.hero .eyebrow { color: #e9a35a; }
+.hero h1 { font-family: var(--display); font-size: clamp(34px, 6vw, 56px); line-height: 1.2; margin: 0 0 20px; }
+.hero p.lead { color: var(--hero-ink-2); font-size: 18px; }
+.hero .status { display: inline-block; font-size: 13px; border: 1px solid rgba(233,163,90,.5); color: #e9a35a; border-radius: 999px; padding: 2px 12px; margin-bottom: 18px; }
+.cta { display: inline-flex; align-items: center; gap: 8px; background: var(--gate); color: #14233a; font-weight: 700; text-decoration: none; padding: 12px 22px; border-radius: 10px; }
+.cta:focus-visible, a:focus-visible { outline: 2px solid #e9a35a; outline-offset: 3px; }
+
+.mistakes { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.mistake { border-top: 3px solid var(--gate); padding-top: 14px; }
+.mistake h3 { margin: 0 0 6px; font-size: 18px; }
+.mistake p { margin: 0; color: var(--ink-2); }
+
+/* The track */
+.track-scroll { overflow-x: auto; padding-bottom: 8px; }
+.track { display: grid; grid-template-columns: repeat(2, 1fr) 72px repeat(2, 1fr) 72px; gap: 10px; align-items: stretch; min-width: 720px; }
+.track.second { grid-template-columns: repeat(4, 1fr); margin-top: 10px; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.stage small { display: block; color: var(--accent); font-weight: 700; font-size: 12px; }
+.stage b { display: block; font-size: 15px; }
+.stage span { display: block; font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+.gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+.gate i { width: 26px; height: 26px; background: var(--gate); transform: rotate(45deg); border-radius: 3px; }
+.gate b { font-size: 13px; }
+.phase-label { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 16px 0 8px; }
+.note { margin-top: 20px; padding: 14px 18px; background: var(--surface); border-left: 4px solid var(--gate); border-radius: 0 8px 8px 0; }
+
+.two { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; min-width: 0; }
+.panel h3 { margin: 0 0 10px; font-size: 18px; }
+.panel ul { margin: 0; padding-left: 20px; color: var(--ink-2); }
+.panel.go { border-color: var(--gate); }
+.legend { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
+.legend dt { font-weight: 700; font-variant-numeric: tabular-nums; }
+.legend dd { margin: 0; color: var(--ink-2); }
+
+.packages { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.pkg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.pkg.start { background: var(--hero); color: var(--hero-ink); border-color: var(--hero); }
+.pkg.start p { color: var(--hero-ink-2); }
+.pkg .tag { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .08em; }
+.pkg.start .tag { color: #e9a35a; }
+.pkg h3 { margin: 0; font-size: 20px; }
+.pkg p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.pkg .fee { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); font-weight: 500; }
+.pkg.start .fee { border-color: rgba(255,255,255,.2); color: var(--hero-ink); }
+
+.pilot { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.pilot div { border-top: 3px solid var(--gate); padding-top: 12px; }
+.pilot b { display: block; font-family: var(--display); font-size: 34px; line-height: 1.2; }
+.pilot span { color: var(--ink-2); font-size: 15px; }
+
+.join { background: var(--hero); color: var(--hero-ink); }
+.join h2 { color: var(--hero-ink); }
+.join ul { color: var(--hero-ink-2); padding-left: 20px; }
+.contact { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 20px; }
+.contact code { font-family: var(--font); background: rgba(255,255,255,.08); padding: 6px 12px; border-radius: 8px; user-select: all; }
+footer { padding-block: 28px 40px; color: var(--muted); font-size: 13px; }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">工研院產業科技國際策略發展所 ISTI</p>
+    <span class="status">首案共創招募中｜方法論 v0.98 驗證版</span>
+    <h1>在投入市場預算之前，<br>用證據決定先打哪裡。</h1>
+    <p class="lead">Gate-to-Market 給技術已驗證、市場方向還沒收斂的企業。我們從你的技術出發，比較 3 到 5 個候選市場機會，在兩道閘門前誠實回答：值不值得做、先做哪一個，或是不做。</p>
+    <a class="cta" href="#join">了解首案共創條件</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">問題</p>
+    <h2>技術型企業最常在這三處選錯市場</h2>
+    <p class="lead">這些錯誤不是因為資料不夠，而是因為決策順序錯了。</p>
+    <div class="mistakes">
+      <div class="mistake"><h3>從市場規模出發</h3><p>市場大只代表可能有需求，不證明有適合你的客戶，也不證明你能贏。</p></div>
+      <div class="mistake"><h3>先選國家，再研究客戶</h3><p>買方、競爭與產品競爭力，必須在選市場之前一起分析。</p></div>
+      <div class="mistake"><h3>把技術先進當成市場成立</h3><p>技術可行、應用可行、商業可行，需要三種不同的證據。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">方法</p>
+    <h2>八段流程，中間有兩道可以喊停的閘門</h2>
+    <p class="lead">六到八段的顧問流程很常見。差別在於能不能在中途停下來：兩道閘門都保留 No-Go，殺案條件在進場前寫定。</p>
+    <div class="track-scroll">
+      <p class="phase-label">第一階段　值不值得做</p>
+      <div class="track">
+        <div class="stage"><small>段 0</small><b>目標確定</b><span>誰在何時要做什麼決定</span></div>
+        <div class="stage"><small>段 1</small><b>技術—情境探索</b><span>從技術基準推出候選情境</span></div>
+        <div class="gate"><i aria-hidden="true"></i><b>案件閘門</b></div>
+        <div class="stage"><small>段 2</small><b>深入洞察</b><span>市場、買方、競爭同步分析</span></div>
+        <div class="stage"><small>段 3</small><b>機會收斂</b><span>吸引力加權與 Beachhead 排序</span></div>
+        <div class="gate"><i aria-hidden="true"></i><b>決策關卡</b></div>
+      </div>
+      <p class="phase-label">第二階段　怎麼做</p>
+      <div class="track second">
+        <div class="stage"><small>段 4</small><b>價值定義</b><span>定位、價值主張、訊息</span></div>
+        <div class="stage"><small>段 5</small><b>方案與通路</b><span>Whole Product、夥伴、PoC</span></div>
+        <div class="stage"><small>段 6</small><b>商模與成交</b><span>定價、MEDDIC、90 天 Sprint</span></div>
+        <div class="stage"><small>段 7</small><b>驗證與擴張</b><span>KPI、Win/Loss、擴張或停損</span></div>
+      </div>
+    </div>
+    <p class="note">技術邊界由技術方確認；市場假設由分析師提出；市場成立由證據決定。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">證據治理</p>
+    <h2>每個承重數字都標出它有多可信</h2>
+    <p class="lead">「某市場有 2,000 家企業」可以是已查證的資料；「其中 20% 願意購買」若沒有行為證據，仍只是假設。我們把兩件事分開標。</p>
+    <div class="two">
+      <div class="panel"><h3>來源信心：數字本身可不可信</h3>
+        <dl class="legend"><dt>✓</dt><dd>已查證</dd><dt>◐</dt><dd>核對中</dd><dt>○</dt><dd>未驗證</dd></dl></div>
+      <div class="panel"><h3>決策證據：夠不夠支撐 Go</h3>
+        <dl class="legend"><dt>A</dt><dd>一手行為：報價、PoC、採購</dd><dt>B</dt><dd>可靠公開資料</dd><dt>C</dt><dd>專家或 AI 假設</dd></dl></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">交付物</p>
+    <h2>結論就算是 No-Go，你也拿得到能用的東西</h2>
+    <div class="two">
+      <div class="panel"><h3>不論結論，都交付</h3><ul>
+        <li>決策備忘錄：理由、證據等級、重啟條件</li>
+        <li>經技術方校準的技術基準</li>
+        <li>3–5 個候選市場機會的比較</li>
+        <li>假設、證據與決策紀錄</li></ul></div>
+      <div class="panel go"><h3>結論為 Go 時，另交付</h3><ul>
+        <li>第一與第二 Beachhead</li>
+        <li>國內、國際或雙軌的進入順序</li>
+        <li>待補缺口與回退條件</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">服務包</p>
+    <h2>先買決策，再買執行</h2>
+    <p class="lead">從 Decision Package 開始。只有在決策關卡做出 Go 之後，才進入執行與陪跑。</p>
+    <div class="packages">
+      <div class="pkg start"><span class="tag">從這裡開始</span><h3>Decision Package</h3><p>段 0–3 與決策關卡。降低產品、市場與 Beachhead 選擇風險。</p><p class="fee">固定費｜首案共創價另議</p></div>
+      <div class="pkg"><span class="tag">GO 之後</span><h3>Activation Package</h3><p>段 4–6 與初期段 7。把已驗證的方向轉成可執行的 GTM 與 PoC。</p><p class="fee">固定費＋里程碑費</p></div>
+      <div class="pkg"><span class="tag">長期陪跑</span><h3>Growth Partnership</h3><p>段 7、Win/Loss 與擴張。共同追蹤轉換、成交與擴張。</p><p class="fee">每月固定費＋成效分潤（成果可衡量、可歸因時才啟用）</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">首案共創</p>
+    <h2>首案只做決策衝刺，範圍刻意收小</h2>
+    <p class="lead">方法論目前是驗證版。首案的成敗看「有沒有幫你做出更好的決策」，不以拿到海外訂單為唯一標準。</p>
+    <div class="pilot">
+      <div><b>1 個</b><span>優先產品或 MVP</span></div>
+      <div><b>3–5 個</b><span>候選市場機會單元</span></div>
+      <div><b>5–10 次</b><span>有效外部對話，含真正的決策者</span></div>
+      <div><b>每週</b><span>更新假設、證據與決策紀錄</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap">
+    <p class="eyebrow" style="color:#e9a35a">加入</p>
+    <h2>我們正在找符合這三個條件的企業</h2>
+    <ul>
+      <li>願意提供既有 PoC、客戶與產品資料</li>
+      <li>有一個要優先推動的產品或 MVP</li>
+      <li>能指定窗口，並有能拍板的決策人</li>
+    </ul>
+    <div class="contact"><span>聯絡窗口</span><code>[聯絡人姓名]</code><code>[Email]</code><code>[電話]</code></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">品牌名稱 Gate-to-Market 為暫定。內容依據《ISTI GTM 策略顧問方法論 v0.98》，該版本為首案驗證中的工作版本。</div>
+</footer>
