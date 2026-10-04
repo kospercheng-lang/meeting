@@ -290,6 +290,11 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     hours: [["date", "日期", "date", 1], ["stage", "段", "select", 1, [""].concat(HOUR_STAGES)], ["tool", "工具／工作", "text", 1], ["hours", "小時", "number", 1], ["who", "分析師", "text", 1]],
     interviews: [["org", "機構", "text", 1], ["role", "受訪者角色", "text", 1], ["type", "類型", "select", 1, ["現有客戶", "潛在客戶", "通路夥伴"]], ["status", "聯繫狀態", "select", 1, ["已同意受訪", "已聯繫，等待回覆", "尚未聯繫"]]]
   };
+  SUB.competitors = [["category", "通訊類別", "select", 1, ["", "RS-485", "Ethernet", "Wireless", "PLC", "AC1", "條件式替代", "窄任務替代", "其他"]], ["product", "具名候選／型號", "text", 1],
+    ["config", "同任務配置", "textarea", 1], ["build", "初始施工／配置", "textarea", 1], ["maintain", "持續維護／診斷", "textarea", 1], ["strength", "主要優點", "textarea"],
+    ["limit", "剩餘限制／客戶代價", "textarea"], ["counter", "本案最強反例／何時不該硬比", "textarea", 1], ["buildScore", "施工負擔 1–5（5 最重，條件式假設）", "number"], ["maintScore", "維護負擔 1–5（5 最重，條件式假設）", "number"]];
+  SUB.flips = [["condition", "現場條件", "text", 1], ["effect", "選擇如何翻轉", "text", 1], ["evidence", "要取得的證據", "text", 1]];
+  var TASK_FIELDS = [["scene", "場域"], ["scale", "規模"], ["existing", "既有條件"], ["dataSource", "資料來源"], ["pain", "管理痛點"], ["purchase", "本次採購範圍"]];
   var SUBCOLS = Object.keys(SUB);
 
   /* ================= Signal Atlas intelligence (illustrative) ================= */
@@ -298,13 +303,16 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     lead: "冷鏈是 AC1 首案正在試作的主題。AC1 是沿配電布設的末端有線通訊物理層，主戰場在冷鏈設施內的設備聯網；運輸、包裝等次領域列為市場全貌。家數與資金為示意。",
     domains: [
       { id: "cc-facility", name: "冷鏈設施聯網與監控", short: "設施聯網", startups: 233, fundingB: 1.9, growth: 27, ac1: true,
-        summary: "冷庫、冷藏展示櫃與冷凍設備需要把溫度、門開、除霜與壓縮機狀態連回控制器。現行多用 RS-485 手拉手、無線或電力線載波；冷庫金屬隔熱板會遮蔽無線，變頻器與馬達會干擾載波。",
+        summary: "既有冷庫、冷藏展示櫃與冷凍設備需要把運轉、故障、除霜等狀態接回平台。同一任務可用 RS-485、Ethernet、Wi-Fi、PLC 或 AC1 完成；差異在施工、配置、診斷與維護負擔，不在誰的規格最好。",
         techs: ["冷櫃與冷庫控制器聯網", "門開與高溫告警", "除霜與壓縮機狀態", "有線末端通訊（RS-485／PLC／AC1）", "冷庫能源管理"],
         countries: [["美國", 71], ["德國", 26], ["中國", 24], ["義大利", 15], ["丹麥", 11], ["日本", 13]],
-        examples: [["Danfoss", "丹麥", "冷凍控制器與監控系統（既有大廠）"], ["Copeland", "美國", "壓縮機與冷凍控制（既有大廠）"], ["Carel", "義大利", "冷凍與空調控制器（既有大廠）"], ["Axiom Cloud", "美國", "冷庫 AI 節能（新創）"]],
-        taiwan: [["末端有線通訊介面", "AC1（主流電子）", 3], ["壓縮機與馬達", "東元", 3], ["變頻與電源", "台達電", 3], ["控制器與 MCU", "新唐、盛群", 3], ["冷凍空調系統整合", "冷凍空調工程業者", 2]],
+        examples: [["Advantech ADAM-4051／ADAM-6050／WISE-4250-S252", "台灣", "RS-485／Ethernet／Wi-Fi I/O 模組，同任務具名候選"], ["Nessum／Toho TH-PLC", "—", "電力線通訊（HD-PLC），有多跳與通道改善機制"], ["CAREL／Dixell", "義大利", "既有冷凍控制生態；有 installed base 時是強 baseline"], ["Testo／WIKA", "德國", "溫度與環境監測；客戶只要溫度紀錄時的窄任務替代"]],
+        cases: [["WIKA｜美國冷庫", "全年營運、無法長時間停區施工；以約 170 個無線節點增加環境監測", "多點＋施工干擾是實際選案條件", "AC1 比無線更好"],
+          ["COMET｜Eyemouth", "混用探頭、中繼與發射器，校正與換電池形成維護負擔；改採 PoE", "即使已有資料，維護負擔也可能觸發替換", "AC1 可達相同節省"],
+          ["Opto 22｜Mercamadrid", "老 PLC／SCADA 架構面臨備品與相容問題，切換窗口很短", "既有系統更新受營運窗口約束", "全面控制更新＝AC1 的直接競爭範圍"]],
+        taiwan: [["末端有線通訊介面", "AC1（主流電子）", 3], ["壓縮機與馬達", "東元", 3], ["變頻與電源", "台達電", 3], ["控制器與 MCU", "新唐、盛群", 3], ["冷凍空調系統整合", "冷凍空調工程業者", 2], ["同任務 I/O 模組（亦為競爭方案）", "研華", 3]],
         scenarios: [["量販超市冷藏展示櫃聯網", "量販與超市（如既有照明案場家樂福）", "食安稽核要求溫度紀錄、冷櫃耗電高", "沿配電分支布設、不需終端電阻；家樂福北投店 226 節點自 2025/11 起未觀測到通訊錯誤（照明）", "盤點家樂福北投店冷櫃配電迴路與現行監控方式", "台灣"],
-          ["冷庫內感測與設備聯網", "冷鏈倉儲與物流中心", "金屬隔熱板遮蔽無線、RS-485 須手拉手重拉線", "有線、不受金屬遮蔽；350 米、120 節點、3,500 小時含變頻器干擾驗證", "訪談 2 家冷庫營運主管，確認現行配線與告警痛點", "台灣"],
+          ["既有冷庫分散冷風機狀態補建聯網", "設備仍可用、只缺集中狀態資料的既有冷庫業主", "中央看得到庫溫，異常後仍需到場逐台查看設備狀態", "沿配電路徑新增獨立 D 線；目標是可接受施工＋較低持續處理負擔", "同一配置圖比較五方案的工程與維護差異；訪談 2–3 位業主／冷凍 SI", "台灣"],
           ["冷凍設備內嵌通訊介面（OEM）", "冷凍空調與冷櫃設備廠", "設備聯網需求、現場配線與整合成本", "核心為分立元件，萬片約 NT$41／點；可共用設備既有 PCB、電源與 MCU", "與 1 家設備廠討論嵌入式 PoC 與責任邊界", "台灣"]] },
       { id: "cc-monitor", name: "運輸中溫度追蹤", short: "運輸追蹤", startups: 412, fundingB: 3.1, growth: 29,
         summary: "貨物離開設施後的逐箱溫度與位置紀錄；低功耗 IoT 標籤與一次性記錄器是主要賽道。AC1 是有線介面，不直接適用於移動中的貨物。",
@@ -602,7 +610,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       var tr = h("tr");
       cols.forEach(function (f) {
         var v = r[f[0]];
-        tr.appendChild(h("td", { class: f[2] === "number" ? "num" : null }, [/grade|conf|status/.test(f[0]) ? gradePill(v) : (v == null || v === "" ? "—" : String(v))]));
+        tr.appendChild(h("td", { class: f[2] === "number" ? "num" : null }, [/^(grade|conf|status)$/.test(f[0]) ? gradePill(v) : (v == null || v === "" ? "—" : String(v))]));
       });
       (opts.extra || []).forEach(function (x) { tr.appendChild(h("td", null, [x[1](r)])); });
       if (opts.editable) tr.appendChild(h("td", null, [h("div", { class: "actions" }, [
@@ -610,7 +618,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () { confirmBox("刪除這一筆？", function () { Store.remove(col, r.id).catch(fail); }, "刪除"); } })])]));
       tb.appendChild(tr);
     });
-    return h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [head]), tb])]);
+    return h("div", { class: "table-wrap" }, [h("table", { style: opts.minWidth ? "min-width:" + opts.minWidth + "px" : null }, [h("thead", null, [head]), tb])]);
   }
   function editSub(caseId, key, r) {
     var defaults = /decisions|updates|hours/.test(key) ? { date: today() } : {};
@@ -658,6 +666,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       { tab: "setup", t: "完成段 0 專案設定備忘錄", d: "決策問題、範圍、權責、殺案條件", done: SETUP_FIELDS.every(function (f) { return c[f[0]]; }) },
       { tab: "scenarios", t: "建立技術基準（至少 3 項）", d: "已建立 " + base.length + " 項", done: base.length >= 3 },
       { tab: "scenarios", t: "建立候選情境池（3–5 個）", d: "已建立 " + cells.length + " 個，可從產業情報帶入", done: cells.length >= 3 },
+      { tab: "compete", t: "五階段競爭分析（固定任務＋至少 5 個具名方案）", d: (c.task && c.task.scene ? "已固定任務" : "尚未固定任務") + "｜具名方案 " + sub(c.id, "competitors").length + " 個", done: !!(c.task && c.task.scene) && sub(c.id, "competitors").length >= 5 },
       { tab: "gates", t: "案件閘門裁決", d: c.gate1Result ? c.gate1Result : "段 1 結束前", done: !!c.gate1Result },
       { tab: "updates", t: "每週更新週報", d: last ? "最近一次 " + last : "尚未發布", done: !stale },
       st >= 3 ? { tab: "gates", t: "決策關卡裁決", d: c.gate2Result || "段 3 結束時", done: !!c.gate2Result } : null
@@ -678,16 +687,22 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     }).then(function () { return id; });
   }
   function seedExample() {
-    var d = domainById("cc-facility"), SRC = "主流電子技術問答 2026.10.01";
-    return createCase({ example: true, name: "AC1 冷鏈應用情境 決策衝刺", company: "主流電子（AC1）", product: "AC1 末端有線通訊介面", status: "進行中", stage: 1, domain: "cc-facility",
-      decisionQ: "[待填] 主流電子須在 [日期] 前決定：AC1 第一個冷鏈應用型 MVP 要投入冷櫃、冷庫或設備內嵌哪一個情境。",
-      boundary: "範圍內：AC1 介面、候選冷鏈情境的市場驗證。範圍外：設備功率控制與保護邏輯（由原設備控制系統負責）、上層 BMS／EMS 平台、認證代辦。",
-      rights: "主流電子：產品、預算與最終決定｜ISTI：情境研究與證據整合｜技術方：AC1 技術邊界確認｜設備業者：設備接口與保固",
-      kill: "[待填] 例：簽約 30 日內未取得 3 位冷鏈業者訪談承諾則縮小範圍；60 日內仍未達成即終止。",
-      gate1: { "G-2": { s: "符合", e: "家樂福北投店 226 節點運轉中；整合型燈具已通過 BSMI（" + SRC + "）" }, "G-3": { s: "部分", e: "相對 RS-485／PLC／無線有配線與抗擾差異；冷鏈設備尚無實場數據" } },
-      selfCheck: {}, materials: { spec: "provided", poc: "provided" }, materialNotes: { spec: SRC, poc: "家樂福北投公館店委託驗證成果報告；全程執行總報告 20260802" } }, scenarioCells(d)).then(function (id) {
-      var col = "cases/" + id + "/", B = [
-        ["定位", "協議中立的末端通訊物理層：在 L/N 之外加一條 D 線，沿配電分支布設；承載 Modbus RTU、CAN、DALI 等既有協議，不是 PLC、不是新協議、不是 BMS／EMS"],
+    var SRC = "主流電子技術問答 2026.10.01", DECK = "AC1 冷庫 GTM 研究簡報 2026.10.04";
+    var cells = [
+      { product: "既有冷庫分散冷風機狀態補建聯網", region: "台灣", icp: "設備仍可用、只缺集中狀態資料；點位分散、已有交流供電；沒有方便沿用的 LAN／RS-485；可安排局部施工增加 D 線；業主／SI 願共同比較完整工程與維護成本", jtbd: "中央看得到庫溫，異常後仍需到場逐台查看設備狀態", advantage: "沿配電路徑新增獨立 D 線；目標是可接受施工＋較低持續處理負擔", competition: "RS-485／Ethernet／Wi-Fi／PLC 具名方案；CAREL／Dixell 既有生態為條件式 baseline；Testo／WIKA 為窄任務替代", gaps: "冷庫 BOM、環境、節點、故障恢復、售後仍待技術團隊確認", grade: "C 專家假設", attract: "", rtw: "", next: "同一配置圖比較五方案工程與維護差異；訪談 2–3 位業主／冷凍 SI", source: DECK },
+      { product: "溫室（下一個情境，沿用同一方法）", region: "台灣", icp: "[待固定任務]", jtbd: "[待固定任務]", advantage: "", grade: "C 專家假設", attract: "", rtw: "", next: "先鎖定一個具體設備／資料任務，再走通訊競爭→具名品牌→五階段分析→定位與 Gate", source: DECK }
+    ];
+    return createCase({ example: true, name: "AC1 冷庫情境 GTM 驗證", company: "主流電子（AC1）", product: "AC1 末端有線通訊介面", status: "進行中", stage: 1, domain: "cc-facility",
+      decisionQ: "冷庫值不值得繼續做 GTM：是否同意把「既有冷庫分散冷風機狀態補建聯網」作為下一階段 GTM 驗證情境？（" + DECK + "）",
+      boundary: "AC1 只負責「資料接入」的一段：比較相同資料如何回傳所造成的施工、配置、診斷與維護差異。訊號來源、平台與處置流程不算在 AC1；若訊號不存在，所有方案都需另處理感測，不能只算在 AC1。設備功率控制與保護由原控制系統負責。",
+      rights: "主流電子：產品、預算與最終決定｜ISTI：情境研究、競爭分析與證據整合｜技術團隊：AC1 技術邊界與冷庫 BOM｜工程商／SI：同場配置與工時",
+      kill: "若工程差異、維護差異、購買訊號三項證據能支持「D 線的新增施工，換來足以影響採購的總負擔下降」→ Go；否則 Hold 或 Stop。「Go」只表示值得花下一筆研究資源，不等於產品可交付或已達 PMF。",
+      task: { scene: "同一樓層、同一作業區；既有冷庫，暫不納入跨樓層", scale: "8 間冷庫、32 台冷風機（研究假設）；32 台 × 3 狀態＝96 DI，第一輪以每庫 12 DI 作為可比較配置", existing: "已有交流供電；設備端沒有方便直接利用的資料網路", dataSource: "每台假設已有運轉／故障／除霜接點；本輪不比較新增感測", pain: "中央看到庫溫，但異常後仍需到場逐台查看設備狀態", purchase: "只新增資料採集與接入，送到相同指定平台；保留原控制與保護" },
+      scopeNote: "PLC 的「省資料線」與 AC1 的「多一條 D 線」必須在同一張工程圖上比較，而不是只比規格表。",
+      gate1: { "G-2": { s: "符合", e: "家樂福北投店 226 節點運轉中；整合型燈具已通過 BSMI（" + SRC + "）" }, "G-3": { s: "部分", e: "架構差異明確；但冷庫同場工程與維護差異尚未證明（" + DECK + "）" } },
+      selfCheck: {}, materials: { spec: "provided", poc: "provided" }, materialNotes: { spec: SRC, poc: "家樂福北投公館店委託驗證成果報告；全程執行總報告 20260802" } }, cells).then(function (id) {
+      var col = "cases/" + id + "/", w = [];
+      [["定位", "協議中立的末端通訊物理層：在 L/N 之外加一條 D 線，沿配電分支布設；承載 Modbus RTU、CAN、DALI 等既有協議，不是 PLC、不是新協議、不是 BMS／EMS"],
         ["傳輸速率與距離", "額定 9,600 bps／300 米；300 米、30 mA 實測 38,400 bps；指定電纜實測 500 米；核心可達 250 kbps"],
         ["節點與拓樸", "設計 512 點、已實測 250 點；匯流排、星形、樹狀、混合皆可，不需終端電阻"],
         ["電氣條件", "分路瞬間頭尾壓降 ≤12 V；依 D 線等效電容配置通訊電流（中央電流源 30 mA）；設備端 90–240 Vac"],
@@ -695,17 +710,29 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         ["告警延遲（協議試算）", "Modbus 輪詢 30 點約 1 秒；CAN 優先權最高告警約 28 ms；不含感測與處理時間"],
         ["成本", "節點核心模組萬片約 NT$41、千片約 NT$130、百片約 NT$461；不含 MCU、隔離、感測與外殼"],
         ["驗證與認證", "家樂福北投店 2025/11 起未觀測到通訊錯誤；整合型燈具通過 BSMI；MCU 橋接器 CNS 15936 傳導放射前測合格"],
-        ["尚待確認", "醫療隔離電源（IMD）相容僅電路原理判定；冷鏈設備（壓縮機、冷櫃）尚無實場數據；IC 化暫緩"]
-      ];
-      var H = [
-        ["冷庫業者因金屬遮蔽與現場改線成本，願意從無線或 RS-485 改用 AC1", "高", "○ 未驗證", "C 專家假設", "訪談 2 家冷庫營運主管"],
-        ["約 1 秒的 Modbus 告警延遲可被冷鏈門開、高溫告警接受", "中", "◐ 核對中", "C 專家假設", "向冷櫃與冷庫業者確認告警時限規範"],
-        ["冷凍設備廠願意內嵌 AC1，並接受以通訊接口劃分責任", "高", "○ 未驗證", "C 專家假設", "與 1 家設備廠談 PoC 與保固約定"],
-        ["家樂福照明案場可延伸到同店冷櫃", "高", "○ 未驗證", "C 專家假設", "盤點北投店冷櫃配電與現行監控"]
-      ];
-      var w = B.map(function (b) { return Store.put(col + "baseline", uid(), { item: b[0], value: b[1] + "（" + SRC + "）" }); });
-      H.forEach(function (x) { w.push(Store.put(col + "hyps", uid(), { text: x[0], importance: x[1], conf: x[2], grade: x[3], status: "待驗證", next: x[4], owner: "[分析師]" })); });
-      w.push(Store.put(col + "updates", uid(), { date: "2026-10-01", title: "收到 AC1 技術問答回覆", body: "主流電子回覆 10 題技術問題：設備責任邊界、D 線電流路徑與醫療隔離電源、長距離多分支效能、告警延遲、案場配線、EFT／Surge／ESD、供電切換、硬體與成本。技術基準 V1 已依此建立，請技術方逐項確認。", read: false }));
+        ["尚待確認", "冷庫 BOM、I/O／介面模組、環境、故障恢復與售後；醫療隔離電源（IMD）相容僅電路原理判定；IC 化暫緩"]
+      ].forEach(function (b2) { w.push(Store.put(col + "baseline", uid(), { item: b2[0], value: b2[1] + "（" + SRC + "）" })); });
+      [["RS-485", "Advantech ADAM-4051＋Modbus gateway", "每庫 1 台 ADAM-4051（16DI）→ 新增 RS-485 bus → gateway → 指定平台", "新增 bus、終端、分支與 gateway", "bus／節點／接線查找", "成熟、簡單、多點 bus", "仍要新增專用線；拓撲／終端／接線需管理", "既有橋架好走、線路短時可能最直接；既有控制器已提供同等資料時不該硬比"],
+        ["Ethernet", "Advantech ADAM-6050＋industrial switch", "每庫 1 台 ADAM-6050（12DI/6DO）→ Cat 線／既有 LAN → switch → 指定平台", "Cat 線、switch、供電、網路設定", "IP／switch 工具成熟", "標準 IP 工具、整合容易", "沒有 LAN 時要新增線、switch、供電", "附近已有 LAN 時 AC1 理由大幅下降"],
+        ["Wireless", "Advantech WISE-4250-S252", "每庫 1 台 WISE-4250（12DI/12DO）→ 2.4/5GHz Wi-Fi → AP／LAN → 指定平台", "節點供電、AP、RF/IT 設定", "涵蓋、斷線、AP、資安", "少資料線、部署彈性", "RF 涵蓋、供電、IT/資安、斷線處理", "涵蓋良好且 IT 願承接時施工最少；RF 未現勘前不先判優劣"],
+        ["PLC", "Nessum／Toho TH-PLC", "I/O＋PLC adapter/coupler → 既有 L/N 電力線 → PLC master/gateway → 指定平台", "coupling、通道確認、必要中繼／設定", "雜訊／阻抗／負載變化診斷", "可利用既有 L/N，免新增資料幹線；有多跳與通道改善機制", "通道受電力線特性影響；需改善機制與診斷", "原電力線通道穩定時，免新增資料線很強；要區分 power-line 與 non-powerline 產品"],
+        ["AC1", "AC1 module＋D line＋gateway", "AC1 I/O／介面模組（待定）→ 既有配電路徑＋新增 D 線 → AC1 gateway → 指定平台", "D 線、模組、gateway、保護與安裝", "D 線／模組／gateway 診斷", "獨立 D 線；不把資料高頻疊加於 L/N；架構差異明確", "仍有新增 D 線、模組、保護、安裝與服務負擔", "D 線施工若不比替代方案省事，定位不成立"],
+        ["條件式替代", "CAREL／Dixell 既有生態", "原本就有相容控制器／網路時直接擴充", "依既有生態", "依既有生態", "installed base 可直接擴充", "沒有 installed base 時不適用", "沒有 installed base 時不強迫納入"],
+        ["窄任務替代", "Testo／WIKA 類監測", "只做溫度／環境監測", "依監測方案", "依監測方案", "客戶其實只要溫度／環境監測時很強", "不取得設備狀態", "不能拿窄任務價格硬比設備狀態接入"]
+      ].forEach(function (r) { w.push(Store.put(col + "competitors", uid(), { category: r[0], product: r[1], config: r[2], build: r[3], maintain: r[4], strength: r[5], limit: r[6], counter: r[7], buildScore: "", maintScore: "" })); });
+      [["既有 LAN 很近", "Ethernet ↑、AC1 ↓", "現勘：各庫與既有 LAN 的距離"], ["橋架好走、RS-485 很短", "RS-485 ↑、AC1 未必有差", "現勘：橋架路徑與線長"], ["幾乎不能新增線", "Wi-Fi／PLC ↑、AC1 ↓", "業主：可否局部施工增加 D 線"],
+        ["Wi-Fi 涵蓋差且 IT 不承接", "Wi-Fi ↓、有線方案 ↑", "RF 現勘＋IT 承接意願"], ["PLC 通道穩定、免額外處理", "PLC ↑、AC1 ↓", "PLC 同場通道測試"], ["PLC 需反覆通道處理／中繼", "PLC ↓、AC1 值得驗證", "PLC 中繼與重設紀錄"],
+        ["D 線施工簡單且診斷責任清楚", "AC1 ↑、進入優先 ICP", "工程商同場工時估算＋責任劃分"], ["D 線／轉接增加大量工程", "AC1 ↓、Stop／排除", "同一配置圖的線路與元件清單"]
+      ].forEach(function (f) { w.push(Store.put(col + "flips", uid(), { condition: f[0], effect: f[1], evidence: f[2] })); });
+      [["H1 工程差異存在", "高", "○ 未驗證", "C 專家假設", "同一配置圖列五方案線路、元件、工時", "工程商＋AC1"],
+        ["H2 AC1 可取得指定資料", "高", "◐ 核對中", "C 專家假設", "指定控制器／接點＋模組測試", "AC1 技術"],
+        ["H3 維護差異重要", "高", "○ 未驗證", "C 專家假設", "列故障定位流程、工具、出勤", "SI＋業主"],
+        ["H4 客戶願把差異納入採購", "高", "○ 未驗證", "C 專家假設", "2–3 位業主／SI 訪談或需求書（目前無直接證據）", "市場／業務"],
+        ["H5 定位圖方向成立", "中", "○ 未驗證", "C 專家假設", "以同場配置與訪談更新位置", "GTM 團隊"]
+      ].forEach(function (x) { w.push(Store.put(col + "hyps", uid(), { text: x[0], importance: x[1], conf: x[2], grade: x[3], status: "待驗證", next: x[4], owner: x[5] })); });
+      w.push(Store.put(col + "decisions", uid(), { date: "2026-10-04", question: "冷庫情境是否繼續驗證（Go／Hold／Stop）", decision: "[待會議決定] 建議：冷庫可以繼續，但下一階段只驗證工程差異、維護差異、購買訊號三件事", evidence: "五階段競爭分析草稿；WIKA／COMET／Opto 22 國際案例（僅支持問題存在）", who: "[決策權人]", revisit: "三項證據不支持「總負擔下降」→ Hold 或 Stop" }));
+      w.push(Store.put(col + "updates", uid(), { date: "2026-10-04", title: "冷庫情境五階段競爭分析草稿", body: "固定情境為「既有冷庫分散冷風機狀態補建聯網」（8 間冷庫、32 台冷風機、96 DI）。已列出 RS-485、Ethernet、Wi-Fi、PLC、AC1 的具名方案與 8 個翻轉條件。本次會議請決定冷庫是否繼續驗證；同一方法下一個情境為溫室。", read: false }));
+      w.push(Store.put(col + "updates", uid(), { date: "2026-10-01", title: "收到 AC1 技術問答回覆", body: "主流電子回覆 10 題技術問題：設備責任邊界、D 線電流路徑與醫療隔離電源、長距離多分支效能、告警延遲、案場配線、EFT／Surge／ESD、供電切換、硬體與成本。技術基準 V1 已依此建立。", read: false }));
       return Promise.all(w).then(function () { return id; });
     });
   }
@@ -770,8 +797,14 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     }
     v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。" })]), act]),
       h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["候選情境", "ICP", "觸發情境", "技術依據", "證據", "下一個最便宜驗證"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
+    if (d.cases) {
+      var ctb = h("tbody");
+      d.cases.forEach(function (x) { ctb.appendChild(h("tr", null, [h("td", null, [h("b", { text: x[0] })]), h("td", { text: x[1] }), h("td", null, [h("span", { class: "lv3", text: "支持：" }), x[2]]), h("td", null, [h("span", { class: "lv1", text: "不支持：" }), x[3]])])); });
+      v.appendChild(h("div", { class: "card" }, [h("h2", { text: "國際案例：證據支持什麼、不支持什麼" }), h("p", { class: "sub", text: "供應商案例只能證明問題存在，不能轉用成 AC1 績效。" }),
+        h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["案例", "事實", "可以支持", "不能推導"].map(function (x) { return h("th", { text: x }); }))]), ctb])])]));
+    }
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
+      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: d.ac1 ? "依 AC1 冷庫研究（2026.10.04）的具名競爭集合；先按通訊類別分，再落到可報價型號" : "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
         h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
       h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
         h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
@@ -903,7 +936,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   };
 
   /* ---------- case ---------- */
-  var CASE_TABS = [["overview", "總覽"], ["setup", "段 0 設定"], ["commit", "客戶承諾"], ["scenarios", "技術—情境"], ["evidence", "假設與證據"], ["gates", "閘門"], ["decisions", "決策紀錄"], ["updates", "週報"], ["hours", "工時", "analyst"]];
+  var CASE_TABS = [["overview", "總覽"], ["setup", "段 0 設定"], ["commit", "客戶承諾"], ["scenarios", "技術—情境"], ["compete", "競爭分析"], ["evidence", "假設與證據"], ["gates", "閘門"], ["decisions", "決策紀錄"], ["updates", "週報"], ["hours", "工時", "analyst"]];
   VIEWS["case"] = function (v, p) {
     var cs = need("cases");
     if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
@@ -917,7 +950,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var todos = analyst ? analystTodos(c) : clientTodos(c);
     var unread = sub(c.id, "updates").filter(function (u) { return !u.read; }).length;
     v.appendChild(h("div", { class: "case-hero" }, [
-      pageHead(analyst ? "分析師工作台" : "客戶專區", c.name || c.company, (c.company || "") + "｜優先產品：" + (c.product || "—") + (c.example ? "｜範本案件（技術資料取自主流電子技術問答，[待填] 處需補）" : ""),
+      pageHead(analyst ? "分析師工作台" : "客戶專區", c.name || c.company, (c.company || "") + "｜優先產品：" + (c.product || "—") + (c.example ? "｜範本案件（資料取自主流電子技術問答 10/1 與冷庫研究簡報 10/4）" : ""),
         h("div", { class: "actions" }, [h("span", { class: "pill " + (c.status === "暫緩" ? "warn" : c.status === "申請中" ? "accent" : "good"), text: c.status || "申請中" }), h("span", { class: "pill", text: STAGES[c.stage || 0] })])),
       track(c)]));
     var tabs = h("div", { class: "tabs", role: "tablist" });
@@ -1087,6 +1120,48 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       wrap.appendChild(h("p", { class: "callout", style: "margin-top:12px", text: "校準完成：" + keep.length + " 個情境進入段 2 市場驗證（" + (keep.map(function (x) { return x.product; }).join("、") || "無") + "）。" }));
     }
     b.appendChild(wrap);
+  };
+
+  function positionMap(rows) {
+    var pts = rows.filter(function (r) { return +r.buildScore && +r.maintScore; });
+    if (!pts.length) return h("p", { class: "note", text: "在各方案填入「施工負擔」與「維護負擔」（1–5）後，這裡會畫出定位圖。位置是條件式假設，不是同場實測排名。" });
+    var W = 560, H = 380, L = 64, R = 24, T = 24, B = 56, NS = "http://www.w3.org/2000/svg";
+    var X = function (v) { return L + (v - 1) / 4 * (W - L - R); }, Y = function (v) { return T + (v - 1) / 4 * (H - T - B); };
+    function sv(tag, a, txt) { var n = document.createElementNS(NS, tag); for (var k in a) n.setAttribute(k, a[k]); if (txt != null) n.textContent = txt; return n; }
+    var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "定位圖：橫軸新增施工負擔，縱軸持續維護負擔", style: "width:100%;max-width:640px;height:auto;display:block" });
+    svg.appendChild(sv("rect", { x: X(1), y: Y(1), width: X(3) - X(1), height: Y(2.6) - Y(1), rx: 8, fill: "var(--gate-soft)", stroke: "var(--gate)", "stroke-dasharray": "4 4" }));
+    svg.appendChild(sv("text", { x: X(1) + 8, y: Y(1) + 18, fill: "var(--accent)", "font-size": 12, "font-weight": 700 }, "AC1 目標區：可接受施工＋較低維護"));
+    [1, 2, 3, 4, 5].forEach(function (v) {
+      svg.appendChild(sv("line", { x1: X(v), x2: X(v), y1: T, y2: H - B, stroke: "var(--line)" }));
+      svg.appendChild(sv("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "var(--line)" }));
+      svg.appendChild(sv("text", { x: X(v), y: H - B + 16, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }, String(v)));
+      svg.appendChild(sv("text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11 }, String(v)));
+    });
+    svg.appendChild(sv("text", { x: (L + W - R) / 2, y: H - 12, "text-anchor": "middle", fill: "var(--ink-2)", "font-size": 12 }, "新增施工／改造負擔（左＝輕、右＝重）"));
+    var yl = sv("text", { x: 16, y: (T + H - B) / 2, "text-anchor": "middle", fill: "var(--ink-2)", "font-size": 12, transform: "rotate(-90 16 " + ((T + H - B) / 2) + ")" }, "持續維護負擔（上＝輕、下＝重）");
+    svg.appendChild(yl);
+    pts.forEach(function (r) {
+      var isAC1 = r.category === "AC1", cx = X(+r.buildScore), cy = Y(+r.maintScore);
+      svg.appendChild(sv("circle", { cx: cx, cy: cy, r: isAC1 ? 8 : 6, fill: isAC1 ? "var(--gate)" : "var(--bar)", stroke: "var(--surface)", "stroke-width": 2 }));
+      svg.appendChild(sv("text", { x: cx + 10, y: cy + 4, fill: "var(--ink)", "font-size": 12, "font-weight": isAC1 ? 700 : 400 }, r.category + "｜" + (r.product || "").slice(0, 18)));
+    });
+    return h("div", { class: "table-wrap" }, [svg]);
+  }
+  TABS.compete = function (b, c, analyst) {
+    var t = c.task || {};
+    var dl = h("dl", { class: "memo" });
+    TASK_FIELDS.forEach(function (f) { dl.appendChild(h("dt", { text: f[1] })); dl.appendChild(h("dd", { text: t[f[0]] || "—" })); });
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "步驟 0｜固定客戶任務" }), h("p", { class: "sub", text: "所有方案回答同一個採購任務；不把品牌、通訊技術、平台功能混成同一層比較。" })]),
+      analyst ? h("button", { class: "btn", type: "button", text: "編輯任務", onclick: function () { openForm("固定客戶任務", TASK_FIELDS.map(function (f) { return [f[0], f[1], "textarea", f[0] === "scene"]; }), t, function (v) { patchCase(c, { task: v }); }); } }) : null]), dl,
+      c.scopeNote ? h("p", { class: "callout", style: "margin-top:12px", text: c.scopeNote }) : null]));
+    var comps = sub(c.id, "competitors").slice().sort(function (a, b2) { return (a.category === "AC1") - (b2.category === "AC1"); });
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "步驟 1–3｜具名競爭集合與同任務比較" }), h("p", { class: "sub", text: "先按通訊類別分，再落到可報價的具名型號；每個方案寫出本案最強反例。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 新增方案", onclick: function () { editSub(c.id, "competitors", null); } }) : null]),
+      subTable(c.id, "competitors", { editable: analyst, minWidth: 1100, empty: "尚無具名方案。", sort: function (a, b2) { return (a.category === "AC1") - (b2.category === "AC1"); } })]));
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "步驟 4｜翻轉條件" }), h("p", { class: "sub", text: "不先做品牌總排名；先找出會翻轉選擇的現場條件，它們就是下一階段訪談與工程配置要取得的證據。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 新增條件", onclick: function () { editSub(c.id, "flips", null); } }) : null]),
+      subTable(c.id, "flips", { editable: analyst, empty: "尚無翻轉條件。" })]));
+    b.appendChild(h("div", { class: "card" }, [h("h2", { text: "步驟 5｜定位圖" }), h("p", { class: "sub", text: "AC1 不是追求最少布線，而是爭取「可接受施工＋較低持續處理負擔」。" }), positionMap(comps)]));
   };
 
   TABS.evidence = function (b, c, analyst) {
