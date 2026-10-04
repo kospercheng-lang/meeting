@@ -295,17 +295,26 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   /* ================= Signal Atlas intelligence (illustrative) ================= */
   var COLD = {
     id: "coldchain", name: "冷鏈科技", tag: "AC1 首案主題", theme: 1291,
-    lead: "冷鏈是 AC1 首案正在試作的主題。以下次領域、家數與候選情境為示意，請以 Signal Atlas 冷鏈掃描與 AC1 的技術資料替換。",
+    lead: "冷鏈是 AC1 首案正在試作的主題。AC1 是沿配電布設的末端有線通訊物理層，主戰場在冷鏈設施內的設備聯網；運輸、包裝等次領域列為市場全貌。家數與資金為示意。",
     domains: [
-      { id: "cc-monitor", name: "溫度監測與追蹤", short: "溫度監測", startups: 412, fundingB: 3.1, growth: 29,
-        summary: "醫藥與生鮮稽核要求推動逐箱、即時的溫度紀錄；低功耗 IoT 標籤與一次性記錄器是主要賽道。",
+      { id: "cc-facility", name: "冷鏈設施聯網與監控", short: "設施聯網", startups: 233, fundingB: 1.9, growth: 27, ac1: true,
+        summary: "冷庫、冷藏展示櫃與冷凍設備需要把溫度、門開、除霜與壓縮機狀態連回控制器。現行多用 RS-485 手拉手、無線或電力線載波；冷庫金屬隔熱板會遮蔽無線，變頻器與馬達會干擾載波。",
+        techs: ["冷櫃與冷庫控制器聯網", "門開與高溫告警", "除霜與壓縮機狀態", "有線末端通訊（RS-485／PLC／AC1）", "冷庫能源管理"],
+        countries: [["美國", 71], ["德國", 26], ["中國", 24], ["義大利", 15], ["丹麥", 11], ["日本", 13]],
+        examples: [["Danfoss", "丹麥", "冷凍控制器與監控系統（既有大廠）"], ["Copeland", "美國", "壓縮機與冷凍控制（既有大廠）"], ["Carel", "義大利", "冷凍與空調控制器（既有大廠）"], ["Axiom Cloud", "美國", "冷庫 AI 節能（新創）"]],
+        taiwan: [["末端有線通訊介面", "AC1（主流電子）", 3], ["壓縮機與馬達", "東元", 3], ["變頻與電源", "台達電", 3], ["控制器與 MCU", "新唐、盛群", 3], ["冷凍空調系統整合", "冷凍空調工程業者", 2]],
+        scenarios: [["量販超市冷藏展示櫃聯網", "量販與超市（如既有照明案場家樂福）", "食安稽核要求溫度紀錄、冷櫃耗電高", "沿配電分支布設、不需終端電阻；家樂福北投店 226 節點自 2025/11 起未觀測到通訊錯誤（照明）", "盤點家樂福北投店冷櫃配電迴路與現行監控方式", "台灣"],
+          ["冷庫內感測與設備聯網", "冷鏈倉儲與物流中心", "金屬隔熱板遮蔽無線、RS-485 須手拉手重拉線", "有線、不受金屬遮蔽；350 米、120 節點、3,500 小時含變頻器干擾驗證", "訪談 2 家冷庫營運主管，確認現行配線與告警痛點", "台灣"],
+          ["冷凍設備內嵌通訊介面（OEM）", "冷凍空調與冷櫃設備廠", "設備聯網需求、現場配線與整合成本", "核心為分立元件，萬片約 NT$41／點；可共用設備既有 PCB、電源與 MCU", "與 1 家設備廠討論嵌入式 PoC 與責任邊界", "台灣"]] },
+      { id: "cc-monitor", name: "運輸中溫度追蹤", short: "運輸追蹤", startups: 412, fundingB: 3.1, growth: 29,
+        summary: "貨物離開設施後的逐箱溫度與位置紀錄；低功耗 IoT 標籤與一次性記錄器是主要賽道。AC1 是有線介面，不直接適用於移動中的貨物。",
         techs: ["低功耗廣域網路標籤", "一次性溫度記錄器", "無電池環境 IoT", "RFID 溫度感測", "即時位置與溫度追蹤"],
         countries: [["美國", 138], ["中國", 41], ["以色列", 31], ["德國", 29], ["印度", 27], ["英國", 24]],
         examples: [["Tive", "美國", "即時貨物位置與溫度追蹤器"], ["Roambee", "美國", "貨物可視化感測與平台"], ["Wiliot", "以色列", "無電池環境 IoT 標籤"], ["Paxafe", "美國", "貨物風險與溫度監測"]],
-        taiwan: [["感測與 MCU", "新唐、盛群", 3], ["低功耗通訊模組", "啟碁、正文", 3], ["IoT 平台與系統整合", "研華、中華電信", 2], ["RFID 標籤", "標籤與包材業者", 2], ["一次性記錄器量產", "電子代工業者（待確認）", 2]],
-        scenarios: [["疫苗運輸逐箱溫度紀錄", "疫苗與醫藥物流業者", "稽核要求逐箱可追溯", "[AC1 技術特性：待技術方確認]", "訪談 3 家醫藥物流品保主管"],
-          ["生鮮電商最後一哩溫度保證", "生鮮電商與宅配業者", "客訴與退貨成本上升", "[AC1 技術特性：待技術方確認]", "對 2 家業者做標籤單價報價測試"],
-          ["醫院藥庫連續溫度監測", "醫院藥劑部", "評鑑與藥品報廢風險", "[AC1 技術特性：待技術方確認]", "訪談 2 家醫院藥劑部主任"]] },
+        taiwan: [["低功耗通訊模組", "啟碁、正文", 3], ["感測與 MCU", "新唐、盛群", 3], ["IoT 平台與系統整合", "研華、中華電信", 2], ["RFID 標籤", "標籤與包材業者", 2]],
+        scenarios: [["疫苗運輸逐箱溫度紀錄", "疫苗與醫藥物流業者", "稽核要求逐箱可追溯", "低功耗廣域網路標籤、一次性記錄器", "訪談 3 家醫藥物流品保主管"],
+          ["生鮮電商最後一哩溫度保證", "生鮮電商與宅配業者", "客訴與退貨成本上升", "一次性溫度記錄器、可視化平台", "對 2 家業者做標籤單價報價測試"],
+          ["冷鏈車隊溫度與位置追蹤", "冷鏈運輸業者", "貨主要求全程紀錄", "車載溫度感測與追蹤器", "訪談 2 家冷鏈車隊調度主管"]] },
       { id: "cc-pack", name: "冷鏈包裝與保溫容器", short: "冷鏈包裝", startups: 186, fundingB: 1.2, growth: 24,
         summary: "可重複使用保溫箱與相變材料取代一次性保麗龍；醫療檢體運輸帶動主動溫控箱需求。",
         techs: ["相變材料", "真空隔熱板", "可重複使用保溫箱", "主動溫控運輸箱", "保溫箱循環租賃"],
@@ -339,7 +348,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         countries: [["美國", 58], ["英國", 19], ["德國", 16], ["瑞士", 11], ["印度", 10], ["新加坡", 8]],
         examples: [["Controlant", "冰島", "醫藥冷鏈即時監控"], ["Artyc", "美國", "醫療檢體溫控運輸"], ["Cryoport", "美國", "細胞治療冷鏈（上市公司）"], ["Biocair", "英國", "生技與臨床試驗物流"]],
         taiwan: [["醫藥物流", "醫藥物流業者（如裕利）", 2], ["冷鏈監測模組", "同「溫度監測」供應鏈", 2], ["超低溫設備", "研究機構與中小企業", 1]],
-        scenarios: [["疫苗配送最後一哩逐箱監測", "衛生單位與醫藥物流", "疫苗報廢與稽核", "[AC1 技術特性：待技術方確認]", "訪談疾管或衛生局冷鏈負責人"],
+        scenarios: [["醫院藥庫與藥品冷藏設備聯網", "醫院藥劑部與工務", "評鑑與藥品報廢風險", "AC1 有線聯網；醫療隔離電源（IMD）相容目前僅電路原理判定，須實測", "訪談 2 家醫院藥劑部與工務，並確認隔離電源區域範圍", "台灣"],
           ["細胞治療檢體超低溫運輸", "生技公司與醫學中心", "治療時效與檢體完整性", "超低溫容器與監測", "訪談 2 家醫學中心"],
           ["藥廠出貨溫度偏差調查服務", "國內藥廠品保部門", "GDP 稽核要求", "溫度紀錄與分析", "訪談 2 家藥廠品保主管"]] }
     ]
@@ -400,7 +409,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   THEMES.forEach(function (t) { t.domains.forEach(function (d) { d.theme = t; ALL.push(d); }); });
   function domainById(id) { return ALL.find(function (d) { return d.id === id; }) || ALL[0]; }
   function scenarioCells(d) {
-    return d.scenarios.map(function (s) { return { product: s[0], region: d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "Signal Atlas｜" + d.short, attract: "", rtw: "" }; });
+    return d.scenarios.map(function (s) { return { product: s[0], region: s[5] || d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "Signal Atlas｜" + d.short, attract: "", rtw: "" }; });
   }
 
   /* ================= store: shared db when available, else this browser ================= */
@@ -669,22 +678,35 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     }).then(function () { return id; });
   }
   function seedExample() {
-    var d = domainById("cc-monitor");
-    return createCase({ example: true, name: "【範例】冷鏈溫度監測模組 市場決策衝刺（AC1 示意）", company: "範例冷鏈科技公司（示意）", product: "[AC1 產品名稱]", status: "進行中", stage: 1, domain: "cc-monitor",
-      decisionQ: "（示意）公司負責人須在本季董事會前決定：第一個應用型 MVP 要投入哪一個冷鏈情境。", boundary: "（示意）範圍內：溫度監測產品、資料平台、候選情境的市場驗證。範圍外：冷鏈車隊設備整合、認證代辦、長期代銷。",
-      rights: "（示意）企業：產品、預算與最終決定｜ISTI：研究與證據整合｜技術專家：技術邊界確認", kill: "（示意）簽約 30 日內未完成窗口指定與 3 位訪談承諾則縮小範圍；60 日內仍未達成即終止。",
-      gate1: { "G-1": { s: "符合", e: "（示意）董事會決策時點已排定" }, "G-2": { s: "符合", e: "（示意）已有 2 場 PoC" }, "G-3": { s: "部分", e: "（示意）功耗優勢待第三方驗證" }, "G-4": { s: "部分", e: "（示意）窗口已指定，訪談名單未到" }, "G-5": { s: "符合", e: "（示意）KPI 草案已確認" }, "G-6": { s: "符合", e: "（示意）可鏈結 ITRI 測試單位" }, "G-7": { s: "符合", e: "（示意）主管已書面同意季投入時數" } },
-      gate1Result: "Conditional Pass", gate1Note: "（示意）兩週內補齊客戶訪談名單與 PoC 報告。", gate1Date: today(),
-      selfCheck: { "G-1": 0, "G-2": 0, "G-3": 1, "G-4": 1, "G-5": 0, "G-6": 0 }, materials: { spec: "provided" } }, scenarioCells(d)).then(function (id) {
-      var col = "cases/" + id + "/";
-      return Promise.all([
-        Store.put(col + "baseline", uid(), { item: "量測範圍與精度", value: "[AC1 技術資料：待技術方確認]" }),
-        Store.put(col + "baseline", uid(), { item: "電池壽命與上傳頻率", value: "[AC1 技術資料：待技術方確認]" }),
-        Store.put(col + "baseline", uid(), { item: "既有證據", value: "（示意）2 場冷藏倉儲 PoC" }),
-        Store.put(col + "hyps", uid(), { text: "（示意）醫藥物流業者願意為逐箱溫度紀錄多付費", importance: "高", conf: "○ 未驗證", grade: "C 專家假設", status: "待驗證", next: "對 3 家業者做報價測試", owner: "[分析師]" }),
-        Store.put(col + "updates", uid(), { date: today(), title: "第 1 週週報（示意）", body: "完成技術基準 V1 與 3 個候選情境，請貴公司技術方完成校準。", read: false }),
-        Store.put(col + "hours", uid(), { date: today(), stage: "段 0 目標確定", tool: "專案設定訪談", hours: 6, who: "[分析師]" })
-      ]).then(function () { return id; });
+    var d = domainById("cc-facility"), SRC = "主流電子技術問答 2026.10.01";
+    return createCase({ example: true, name: "AC1 冷鏈應用情境 決策衝刺", company: "主流電子（AC1）", product: "AC1 末端有線通訊介面", status: "進行中", stage: 1, domain: "cc-facility",
+      decisionQ: "[待填] 主流電子須在 [日期] 前決定：AC1 第一個冷鏈應用型 MVP 要投入冷櫃、冷庫或設備內嵌哪一個情境。",
+      boundary: "範圍內：AC1 介面、候選冷鏈情境的市場驗證。範圍外：設備功率控制與保護邏輯（由原設備控制系統負責）、上層 BMS／EMS 平台、認證代辦。",
+      rights: "主流電子：產品、預算與最終決定｜ISTI：情境研究與證據整合｜技術方：AC1 技術邊界確認｜設備業者：設備接口與保固",
+      kill: "[待填] 例：簽約 30 日內未取得 3 位冷鏈業者訪談承諾則縮小範圍；60 日內仍未達成即終止。",
+      gate1: { "G-2": { s: "符合", e: "家樂福北投店 226 節點運轉中；整合型燈具已通過 BSMI（" + SRC + "）" }, "G-3": { s: "部分", e: "相對 RS-485／PLC／無線有配線與抗擾差異；冷鏈設備尚無實場數據" } },
+      selfCheck: {}, materials: { spec: "provided", poc: "provided" }, materialNotes: { spec: SRC, poc: "家樂福北投公館店委託驗證成果報告；全程執行總報告 20260802" } }, scenarioCells(d)).then(function (id) {
+      var col = "cases/" + id + "/", B = [
+        ["定位", "協議中立的末端通訊物理層：在 L/N 之外加一條 D 線，沿配電分支布設；承載 Modbus RTU、CAN、DALI 等既有協議，不是 PLC、不是新協議、不是 BMS／EMS"],
+        ["傳輸速率與距離", "額定 9,600 bps／300 米；300 米、30 mA 實測 38,400 bps；指定電纜實測 500 米；核心可達 250 kbps"],
+        ["節點與拓樸", "設計 512 點、已實測 250 點；匯流排、星形、樹狀、混合皆可，不需終端電阻"],
+        ["電氣條件", "分路瞬間頭尾壓降 ≤12 V；依 D 線等效電容配置通訊電流（中央電流源 30 mA）；設備端 90–240 Vac"],
+        ["抗擾與可靠度", "核心 Surge 4 kV；350 米、120 節點、含變頻器與馬達干擾 3,500 小時無異常"],
+        ["告警延遲（協議試算）", "Modbus 輪詢 30 點約 1 秒；CAN 優先權最高告警約 28 ms；不含感測與處理時間"],
+        ["成本", "節點核心模組萬片約 NT$41、千片約 NT$130、百片約 NT$461；不含 MCU、隔離、感測與外殼"],
+        ["驗證與認證", "家樂福北投店 2025/11 起未觀測到通訊錯誤；整合型燈具通過 BSMI；MCU 橋接器 CNS 15936 傳導放射前測合格"],
+        ["尚待確認", "醫療隔離電源（IMD）相容僅電路原理判定；冷鏈設備（壓縮機、冷櫃）尚無實場數據；IC 化暫緩"]
+      ];
+      var H = [
+        ["冷庫業者因金屬遮蔽與現場改線成本，願意從無線或 RS-485 改用 AC1", "高", "○ 未驗證", "C 專家假設", "訪談 2 家冷庫營運主管"],
+        ["約 1 秒的 Modbus 告警延遲可被冷鏈門開、高溫告警接受", "中", "◐ 核對中", "C 專家假設", "向冷櫃與冷庫業者確認告警時限規範"],
+        ["冷凍設備廠願意內嵌 AC1，並接受以通訊接口劃分責任", "高", "○ 未驗證", "C 專家假設", "與 1 家設備廠談 PoC 與保固約定"],
+        ["家樂福照明案場可延伸到同店冷櫃", "高", "○ 未驗證", "C 專家假設", "盤點北投店冷櫃配電與現行監控"]
+      ];
+      var w = B.map(function (b) { return Store.put(col + "baseline", uid(), { item: b[0], value: b[1] + "（" + SRC + "）" }); });
+      H.forEach(function (x) { w.push(Store.put(col + "hyps", uid(), { text: x[0], importance: x[1], conf: x[2], grade: x[3], status: "待驗證", next: x[4], owner: "[分析師]" })); });
+      w.push(Store.put(col + "updates", uid(), { date: "2026-10-01", title: "收到 AC1 技術問答回覆", body: "主流電子回覆 10 題技術問題：設備責任邊界、D 線電流路徑與醫療隔離電源、長距離多分支效能、告警延遲、案場配線、EFT／Surge／ESD、供電切換、硬體與成本。技術基準 V1 已依此建立，請技術方逐項確認。", read: false }));
+      return Promise.all(w).then(function () { return id; });
     });
   }
 
@@ -731,7 +753,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var max = d.countries[0][1], bars = h("div", { class: "bars" });
     d.countries.forEach(function (c) { bars.appendChild(h("span", { text: c[0] })); bars.appendChild(h("div", { class: "b" }, [h("i", { style: "width:" + Math.round(c[1] / max * 100) + "%" })])); bars.appendChild(h("span", { class: "v", text: String(c[1]) })); });
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: d.name }), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
+      h("div", { class: "card" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h2", { text: d.name }), d.ac1 ? h("span", { class: "pill accent", text: "AC1 主戰場" }) : null]), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
       h("div", { class: "card" }, [h("h2", { text: "主要國家新創家數" }), h("p", { class: "sub", text: "前六大，示意" }), bars])]));
     var tb = h("tbody");
     d.scenarios.forEach(function (s) { tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: s[0] })]), h("td", { text: s[1] }), h("td", { text: s[2] }), h("td", { text: s[3] }), h("td", null, [h("span", { class: "pill bad", text: "C 級假設" })]), h("td", { text: s[4] })])); });
@@ -848,14 +870,14 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var cs = need("cases");
     if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
     v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "還沒有選定你的案件" }),
-      h("p", { text: cs.length ? "請在右上角選擇以哪家企業身分檢視，或先送出一份申請。" : "目前沒有任何案件。先送出申請，或切換到分析師載入範例案件。" }),
+      h("p", { text: cs.length ? "請在右上角選擇以哪家企業身分檢視，或先送出一份申請。" : "目前沒有任何案件。先送出申請，或切換到分析師載入 AC1 案件範本。" }),
       h("div", { class: "actions", style: "justify-content:center" }, [h("button", { class: "btn primary", type: "button", text: "申請評估", onclick: function () { go("apply"); } })])]));
   };
 
   VIEWS.cases = function (v) {
     var cs = need("cases");
     var right = h("div", { class: "actions" }, [
-      h("button", { class: "btn", type: "button", text: "載入範例案件", onclick: function () { seedExample().then(function (id) { toast("已建立範例案件"); go("case", { id: id }); }, fail); } }),
+      h("button", { class: "btn", type: "button", text: "載入 AC1 案件範本", onclick: function () { seedExample().then(function (id) { toast("已建立 AC1 案件"); go("case", { id: id }); }, fail); } }),
       h("button", { class: "btn primary", type: "button", text: "＋ 新增案件", onclick: function () {
         openForm("新增案件", [["company", "企業名稱", "text", 1], ["product", "優先產品／MVP", "text", 1]], {}, function (x) {
           createCase({ name: x.company + "｜" + x.product, company: x.company, product: x.product, status: "進行中" }).then(function (id) { go("case", { id: id }); }, fail);
@@ -865,14 +887,14 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
     var counts = {}; cs.forEach(function (c) { counts[c.status || "申請中"] = (counts[c.status || "申請中"] || 0) + 1; });
     v.appendChild(h("div", { class: "kpis" }, STATUS.map(function (s) { return h("div", { class: "kpi" }, [h("b", { text: String(counts[s] || 0) }), h("span", { text: s })]); })));
-    if (!cs.length) { v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "還沒有案件" }), h("p", { text: "客戶在「申請評估」送出後會出現在這裡。也可以按「載入範例案件」看完整流程。" })])); return; }
+    if (!cs.length) { v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "還沒有案件" }), h("p", { text: "客戶在「申請評估」送出後會出現在這裡。也可以按「載入 AC1 案件範本」，用 AC1 冷鏈的實際技術資料走一次流程。" })])); return; }
     var rows = cs.slice().sort(function (a, b) { return String(b.createdAt || "").localeCompare(String(a.createdAt || "")); });
     var tb = h("tbody");
     rows.forEach(function (c) {
       var g1 = c.gate1Result ? h("span", { class: "pill " + (c.gate1Result === "Pass" ? "good" : c.gate1Result === "Defer" ? "bad" : "warn"), text: c.gate1Result }) : h("span", { class: "muted", text: "—" });
       var g2 = c.gate2Result ? h("span", { class: "pill " + (c.gate2Result === "Go" ? "good" : c.gate2Result === "No-Go" ? "bad" : "warn"), text: c.gate2Result }) : h("span", { class: "muted", text: "—" });
       var tr = h("tr", { class: "clickable", tabindex: "0", onclick: function () { go("case", { id: c.id }); }, onkeydown: function (e) { if (e.key === "Enter") go("case", { id: c.id }); } }, [
-        h("td", null, [h("b", { text: c.company || "—" }), h("div", { class: "muted", text: (c.product || "") + (c.example ? "｜範例" : "") })]),
+        h("td", null, [h("b", { text: c.company || "—" }), h("div", { class: "muted", text: (c.product || "") + (c.example ? "｜範本" : "") })]),
         h("td", null, [h("span", { class: "pill " + (c.status === "申請中" ? "accent" : c.status === "暫緩" ? "warn" : c.status === "結案" ? "" : "good"), text: c.status || "申請中" })]),
         h("td", { text: STAGES[c.stage || 0] }), h("td", null, [g1]), h("td", null, [g2]), h("td", { class: "muted", text: String(c.createdAt || "").slice(0, 10) })]);
       tb.appendChild(tr);
@@ -895,7 +917,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var todos = analyst ? analystTodos(c) : clientTodos(c);
     var unread = sub(c.id, "updates").filter(function (u) { return !u.read; }).length;
     v.appendChild(h("div", { class: "case-hero" }, [
-      pageHead(analyst ? "分析師工作台" : "客戶專區", c.name || c.company, (c.company || "") + "｜優先產品：" + (c.product || "—") + (c.example ? "｜範例案件（示意）" : ""),
+      pageHead(analyst ? "分析師工作台" : "客戶專區", c.name || c.company, (c.company || "") + "｜優先產品：" + (c.product || "—") + (c.example ? "｜範本案件（技術資料取自主流電子技術問答，[待填] 處需補）" : ""),
         h("div", { class: "actions" }, [h("span", { class: "pill " + (c.status === "暫緩" ? "warn" : c.status === "申請中" ? "accent" : "good"), text: c.status || "申請中" }), h("span", { class: "pill", text: STAGES[c.stage || 0] })])),
       track(c)]));
     var tabs = h("div", { class: "tabs", role: "tablist" });
