@@ -287,7 +287,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
 
   var SUB = {
     cells: [["product", "候選情境／產品", "text", 1], ["region", "國家／區域", "text", 1], ["icp", "ICP／Persona", "text", 1], ["jtbd", "JTBD／觸發情境", "textarea"],
-      ["advantage", "技術依據／相對優勢", "textarea"], ["competition", "競爭與替代", "textarea"], ["gaps", "法規／技術／專利缺口", "textarea"],
+      ["advantage", "技術依據／相對優勢", "textarea"], ["competition", "競爭與替代", "textarea"], ["suppliers", "供應鏈與夥伴", "textarea"], ["gaps", "法規／技術／專利缺口", "textarea"],
       ["grade", "證據等級", "select", 1, GRADES], ["attract", "市場吸引力 1–5", "number", 1], ["rtw", "Right-to-Win 1–5", "number", 1], ["next", "下一個最便宜驗證", "text", 1]],
     baseline: [["item", "項目", "text", 1], ["value", "我們的理解", "textarea", 1]],
     hyps: [["text", "假設／判斷", "textarea", 1], ["importance", "重要性", "select", 1, ["", "高", "中", "低"]], ["conf", "來源信心", "select", 1, ["", "✓ 已查證", "◐ 核對中", "○ 未驗證"]],
@@ -419,12 +419,82 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
           ["植物工廠光照與能源最佳化", "植物工廠業者", "電費占營運成本高", "LED 調光＋能源管理", "取得 1 家植物工廠的耗電資料", "台灣"]] }
     ]
   };
+  /* Per-scenario competition and supply chain. Competitors include status quo and substitutes.
+     Public-information inference, illustrative; to be confirmed by Signal Atlas output and interviews. */
+  var SC = {
+    "量販超市冷藏展示櫃聯網": { comp: [["Danfoss／Carel 冷櫃控制器", "既有大廠", "控制器原生聯網；有 installed base 時最強"], ["冷櫃原廠監控系統", "設備商", "隨冷櫃採購綁定"], ["無線溫度監測（如 Testo）", "窄任務替代", "只要溫度紀錄時就夠"]],
+      sup: [["冷櫃與冷凍設備", "國內冷凍空調設備業者", 2], ["控制器與 MCU", "新唐、盛群", 3], ["冷凍空調工程", "冷凍空調工程業者", 2]] },
+    "既有冷庫分散冷風機狀態補建聯網": { comp: [["Advantech ADAM／WISE I/O 模組", "RS-485／Ethernet／Wi-Fi", "同任務具名候選"], ["Nessum／HD-PLC 方案", "電力線通訊", "免新增資料線"], ["CAREL／Dixell 既有生態", "條件式替代", "有 installed base 時直接擴充"]],
+      sup: [["I/O 模組與閘道", "研華", 3], ["冷凍空調工程", "冷凍空調工程業者", 2], ["通訊模組", "工業通訊模組業者", 2]] },
+    "冷凍設備內嵌通訊介面（OEM）": { comp: [["設備廠自研通訊板", "內部自建", "自行開發 RS-485／Modbus"], ["HMS Anybus 等嵌入式模組", "嵌入式模組", "多協議通訊模組"], ["Wi-Fi／BLE 無線模組", "無線替代", "免配線，但需處理涵蓋"]],
+      sup: [["通訊晶片與 MCU", "新唐、瑞昱", 3], ["PCB 與組裝", "電子代工業者", 3], ["設備整機", "冷凍空調設備業者", 2]] },
+    "疫苗運輸逐箱溫度紀錄": { comp: [["Controlant", "即時監控平台", "醫藥冷鏈即時監控"], ["Sensitech（Carrier）", "既有大廠", "溫度記錄器與服務"], ["一次性 USB 記錄器", "低價替代", "事後讀取，沒有即時性"]],
+      sup: [["低功耗通訊模組", "啟碁、正文", 3], ["感測與 MCU", "新唐、盛群", 3], ["醫藥物流", "醫藥物流業者", 2]] },
+    "生鮮電商最後一哩溫度保證": { comp: [["Tive", "即時追蹤器", "位置與溫度即時追蹤"], ["變色溫度貼紙", "低價替代", "只顯示是否超溫"], ["物流商車載監控", "現況", "車廂層級而非逐箱"]],
+      sup: [["標籤與包材", "標籤與包材業者", 2], ["感測元件", "新唐、盛群", 3], ["宅配物流", "統一速達、新竹物流", 2]] },
+    "冷鏈車隊溫度與位置追蹤": { comp: [["車隊管理系統業者", "現況", "車載 GPS 與溫度"], ["Roambee", "貨物可視化", "感測器＋平台"], ["Tive", "即時追蹤器", "逐貨追蹤"]],
+      sup: [["車載資通訊", "車載資通訊業者", 2], ["電信", "中華電信", 2], ["冷鏈車隊", "嘉里大榮、新竹物流", 2]] },
+    "生鮮電商保溫箱循環租賃": { comp: [["一次性保麗龍箱", "現況", "便宜但不環保"], ["RePack 等循環包裝", "循環包裝", "郵寄包裝回收"], ["Tower Cold Chain", "可重複使用溫控貨櫃", "偏醫藥大型貨"]],
+      sup: [["隔熱與高分子材料", "南亞塑膠", 3], ["紙包材與循環包裝", "永豐餘", 2], ["逆物流", "宅配物流業者", 2]] },
+    "細胞治療檢體超低溫運輸箱": { comp: [["Cryoport", "細胞治療冷鏈", "液氮乾式運輸"], ["Artyc", "主動溫控箱", "醫療檢體"], ["乾冰運輸", "現況", "法規與時效限制"]],
+      sup: [["真空隔熱材料", "研究機構與中小企業", 1], ["相變材料", "研究機構", 1], ["醫藥物流", "醫藥物流業者", 2]] },
+    "外送餐飲保溫袋": { comp: [["一般保溫袋", "現況", "便宜"], ["平台統一採購保溫箱", "平台自建", "外送平台統一規格"], ["Ember 主動溫控容器", "硬體方案", "單價高"]],
+      sup: [["紡織與隔熱材料", "機能紡織業者", 3], ["相變材料", "中小企業", 1], ["包材代工", "包材代工業者", 2]] },
+    "超商冷櫃節能改裝": { comp: [["冷櫃原廠汰換", "現況替代", "整台換新"], ["變頻改裝套件", "改裝方案", "既有冷櫃加裝變頻"], ["ESCO 節能服務", "服務模式", "節能分潤"]],
+      sup: [["變頻與電源", "台達電", 3], ["壓縮機", "東元", 3], ["冷凍空調工程", "冷凍空調工程業者", 2]] },
+    "東南亞產地太陽能預冷站": { comp: [["ColdHubs", "太陽能冷庫", "非洲已量產"], ["Ecozen", "太陽能冷藏", "印度"], ["柴油發電冷庫", "現況", "燃料成本高"]],
+      sup: [["太陽能與儲能", "太陽能與儲能業者", 2], ["壓縮機與變頻", "東元、台達電", 3], ["海外通路", "海外台商與系統整合商", 1]] },
+    "冷庫 AI 能源管理": { comp: [["Axiom Cloud", "冷庫 AI 節能", "美國"], ["控制器大廠能源模組", "既有大廠", "控制器加值功能"], ["ESCO 節能服務", "服務模式", "節能分潤"]],
+      sup: [["能源管理平台", "台達電、研華", 2], ["感測與電表", "電力設備業者", 2], ["冷凍空調工程", "冷凍空調工程業者", 2]] },
+    "中小生鮮業者溫控報表 SaaS": { comp: [["紙本或 Excel 紀錄", "現況", "零成本、難稽核"], ["記錄器附贈軟體", "設備附帶", "功能陽春"], ["Controlant、Tive 等國際平台", "國際平台", "價格偏高"]],
+      sup: [["軟體開發", "資訊服務業者", 2], ["感測硬體", "新唐、盛群", 3], ["雲端", "中華電信", 2]] },
+    "跨境冷鏈出口日本履歷": { comp: [["日本通路指定系統", "通路指定", "須符合通路規格"], ["project44、FourKites", "國際可視化平台", "以大型貨主為主"], ["報關與物流商自有系統", "現況", "資訊不連續"]],
+      sup: [["冷鏈物流", "嘉里大榮", 2], ["出口商", "農水產出口商", 2], ["系統整合", "資訊服務業者", 2]] },
+    "外送平台溫度保證": { comp: [["平台客訴處理", "現況", "事後補償"], ["變色溫度貼紙", "低價替代", "只顯示是否超溫"], ["主動溫控容器", "硬體方案", "單價高"]],
+      sup: [["感測標籤", "標籤與包材業者", 2], ["平台整合", "資訊服務業者", 2], ["外送平台", "外送平台業者", 1]] },
+    "醫院藥庫與藥品冷藏設備聯網": { comp: [["藥用冰箱原廠監控", "設備商", "隨設備綁定"], ["無線溫度監測系統", "既有做法", "需處理涵蓋與換電池"], ["醫院 BMS 整合", "系統整合", "工務既有系統"]],
+      sup: [["醫療冷藏設備", "醫療設備業者", 2], ["醫療資訊整合", "醫療資訊業者", 2], ["感測與通訊", "新唐、啟碁", 3]] },
+    "細胞治療檢體超低溫運輸": { comp: [["Cryoport", "細胞治療冷鏈", "上市公司"], ["Biocair", "生技物流", "臨床試驗物流"], ["醫院自行運送", "現況", "人力與風險高"]],
+      sup: [["醫藥物流", "醫藥物流業者", 2], ["超低溫設備", "研究機構與中小企業", 1], ["醫學中心與檢驗所", "醫學中心", 2]] },
+    "藥廠出貨溫度偏差調查服務": { comp: [["藥廠品保內部處理", "現況", "人力密集"], ["Controlant 等監控平台", "平台內建", "偏差自動記錄"], ["GDP 稽核顧問", "顧問服務", "稽核前協助"]],
+      sup: [["溫度記錄硬體", "記錄器業者", 2], ["分析軟體", "資訊服務業者", 2], ["藥廠", "國內藥廠", 2]] },
+    "冷庫冷風機與壓縮機異常預警": { comp: [["控制器大廠警報功能", "既有大廠", "閾值警報，沒有預測"], ["Augury", "機器健康 AI", "以振動感測為主"], ["定期保養合約", "現況", "人工巡檢"]],
+      sup: [["設備資料接入", "工業通訊模組業者", 2], ["邊緣運算", "研華", 3], ["冷凍維保", "冷凍空調工程業者", 2]] },
+    "商場空調箱與冰水主機健康監測": { comp: [["空調原廠遠端監控", "設備商", "限原廠設備"], ["BMS 警報", "現況", "閾值警報"], ["Tractian", "預測維護", "感測器＋平台"]],
+      sup: [["空調設備", "空調設備業者", 2], ["樓宇自動化", "台達電", 3], ["機電維護", "機電維護商", 2]] },
+    "工廠空壓機與泵浦預測維護": { comp: [["Augury", "機器健康 AI", "振動與 AI 診斷"], ["Samotics", "電流特徵分析", "免裝振動感測"], ["設備原廠服務合約", "現況", "原廠定期保養"]],
+      sup: [["感測與邊緣運算", "研華、凌華", 3], ["馬達與驅動", "東元、台達電", 3], ["工廠維保", "維保服務商", 2]] },
+    "量販店照明、冷櫃、空調整合節能": { comp: [["BMS 原廠方案", "既有大廠", "整合需工程"], ["75F", "AI 建築自動化", "雲端調控"], ["ESCO 節能服務", "服務模式", "節能分潤"]],
+      sup: [["樓宇自動化", "台達電", 3], ["照明控制", "照明與控制業者", 2], ["智慧電表", "電力設備業者", 2]] },
+    "冷庫除霜與壓縮機排程最佳化": { comp: [["Axiom Cloud", "冷庫 AI 節能", "雲端最佳化"], ["控制器內建排程", "既有大廠", "固定排程"], ["人工調整", "現況", "經驗法則"]],
+      sup: [["能源管理平台", "台達電、研華", 2], ["冷凍空調工程", "冷凍空調工程業者", 2], ["感測與電表", "電力設備業者", 2]] },
+    "中小辦公大樓空調 AI 調控": { comp: [["BrainBox AI", "HVAC 自主 AI", "雲端自主調控"], ["BMS 原廠", "既有大廠", "規則式控制"], ["物管人工調整", "現況", "依經驗"]],
+      sup: [["樓宇自動化", "台達電", 3], ["物業管理", "物業管理公司", 2], ["空調工程", "空調工程業者", 2]] },
+    "冷庫與溫室現場 AI 閘道": { comp: [["研華、Moxa 工業閘道", "工業閘道", "通用平台"], ["雲端直連", "雲端", "依賴網路品質"], ["SI 自組工控機", "系統整合", "客製"]],
+      sup: [["工業電腦", "研華、凌華、樺漢", 3], ["AI 晶片", "聯發科、耐能", 2], ["系統整合", "冷鏈與農業系統整合商", 2]] },
+    "工控機台邊緣 AI 套件": { comp: [["NVIDIA Jetson 平台", "邊緣平台", "生態系最完整"], ["Hailo 加速卡", "AI 加速器", "低功耗"], ["設備廠自研", "內部自建", "客製"]],
+      sup: [["工業電腦", "研華、凌華", 3], ["SoC", "聯發科", 3], ["工具機", "工具機業者", 3]] },
+    "連鎖零售邊緣影像分析盒": { comp: [["Spot AI", "影像 AI", "雲端＋邊緣"], ["監控大廠 AI 攝影機", "既有大廠", "攝影機內建分析"], ["雲端影像分析", "雲端", "依賴頻寬"]],
+      sup: [["網路攝影機", "晶睿", 3], ["邊緣運算", "研華", 2], ["AI 晶片", "耐能", 2]] },
+    "配電盤與變電箱熱影像巡檢": { comp: [["手持熱像儀人工巡檢", "現況", "定期人工"], ["固定式熱像監測", "既有方案", "單點監測"], ["Gecko Robotics 等機器人巡檢", "機器人", "大型設施"]],
+      sup: [["熱像與光學", "光學鏡頭業者", 2], ["機電維護", "機電維護商", 2], ["邊緣運算", "研華", 2]] },
+    "冷庫結霜與堆疊安全影像監測": { comp: [["一般監控攝影機", "現況", "只錄影、不分析"], ["低溫專用攝影機", "特規設備", "單價高"], ["人工巡查", "現況", "依班表"]],
+      sup: [["網路攝影機", "晶睿", 3], ["低溫元件", "中小企業", 1], ["冷鏈倉儲", "冷鏈倉儲業者", 2]] },
+    "產線外觀瑕疵檢測": { comp: [["Landing AI", "工業視覺 AI", "少樣本學習"], ["傳統 AOI 設備", "既有方案", "規則式檢測"], ["人工目檢", "現況", "成本與漏檢"]],
+      sup: [["光學鏡頭", "大立光、亞光", 3], ["AOI 設備", "AOI 設備業者", 3], ["工業相機", "工業相機業者", 2]] },
+    "溫室設備狀態補建聯網": { comp: [["Priva、Ridder 環控系統", "既有大廠", "整套環控"], ["I/O 模組＋RS-485／Wi-Fi", "通用接入", "依現場配線"], ["人工巡查", "現況", "依班表"]],
+      sup: [["溫室工程", "溫室工程業者", 2], ["I/O 與閘道", "研華", 3], ["通訊模組", "工業通訊模組業者", 2]] },
+    "溫室環控 AI 決策": { comp: [["Source.ag", "溫室 AI", "產量預測與決策"], ["Priva 環控", "既有大廠", "規則式環控"], ["農場主經驗", "現況", "依經驗"]],
+      sup: [["農業感測", "中小企業與研究機構", 2], ["農業試驗與改良", "農業研究機構", 2], ["溫室工程", "溫室工程業者", 2]] },
+    "植物工廠光照與能源最佳化": { comp: [["LED 照明原廠方案", "設備商", "隨燈具採購"], ["ESCO 節能服務", "服務模式", "節能分潤"], ["iUNU", "溫室視覺 AI", "作物影像"]],
+      sup: [["LED", "億光等 LED 業者", 3], ["電源與控制", "台達電", 3], ["植物工廠", "植物工廠業者", 2]] }
+  };
   var THEMES = [COLD, EDGE], TOTAL = 76898;
   var ALL = [];
   THEMES.forEach(function (t) { t.domains.sort(function (x, y) { return y.startups - x.startups; }); t.domains.forEach(function (d) { d.theme = t; ALL.push(d); }); });
   function domainById(id) { return ALL.find(function (d) { return d.id === id; }) || ALL[0]; }
   function scenarioCells(d) {
-    return d.scenarios.map(function (s) { return { product: s[0], region: s[5] || d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "Signal Atlas｜" + d.short, attract: "", rtw: "" }; });
+    return d.scenarios.map(function (s) { var x = SC[s[0]] || { comp: [], sup: [] }; return { product: s[0], region: s[5] || d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], competition: x.comp.map(function (c) { return c[0] + "（" + c[1] + "）"; }).join("；"), suppliers: x.sup.map(function (c) { return c[0] + "：" + c[1]; }).join("；"), grade: "C 專家假設", next: s[4], source: "Signal Atlas｜" + d.short, attract: "", rtw: "" }; });
   }
 
   /* ================= store: shared db when available, else this browser ================= */
@@ -790,21 +860,35 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     v.appendChild(h("div", { class: "grid" }, [
       h("div", { class: "card" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h2", { text: d.name })]), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
       h("div", { class: "card" }, [h("h2", { text: "主要國家新創家數" }), h("p", { class: "sub", text: "前六大，示意" }), bars])]));
-    var tb = h("tbody");
-    d.scenarios.forEach(function (s) { tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: s[0] })]), h("td", { text: s[1] }), h("td", { text: s[2] }), h("td", { text: s[3] }), h("td", null, [h("span", { class: "pill bad", text: "C 級假設" })]), h("td", { text: s[4] })])); });
+    var LV = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] };
+    var cells = scenarioCells(d), sel = null, cs = [];
+    function bring(list) {
+      if (!sel.value) { sel.focus(); toast("請先選擇案件"); return; }
+      Promise.all(list.map(function (x) { return Store.put("cases/" + sel.value + "/cells", uid(), x); })).then(function () { toast("已帶入 " + list.length + " 個候選情境（C 級），含各自的競爭與供應鏈"); go("case", { id: sel.value, tab: "scenarios" }); }, fail);
+    }
     var act;
     if (S.role === "analyst") {
-      var cs = (need("cases") || []).filter(function (c) { return c.status !== "結案"; });
-      var sel = h("select", { id: "intel-case", "aria-label": "帶入哪個案件" }, [h("option", { value: "", text: cs.length ? "選擇案件" : "目前沒有案件" })].concat(cs.map(function (c) { return h("option", { value: c.id, text: c.name || c.company }); })));
-      act = h("div", { class: "actions" }, [sel, h("button", { class: "btn primary", type: "button", text: "帶入案件的候選情境池", onclick: function () {
-        if (!sel.value) { sel.focus(); toast("請先選擇案件"); return; }
-        Promise.all(scenarioCells(d).map(function (s) { return Store.put("cases/" + sel.value + "/cells", uid(), s); })).then(function () { toast("已帶入 " + d.scenarios.length + " 個候選情境（C 級）"); go("case", { id: sel.value, tab: "scenarios" }); }, fail);
-      } })]);
+      cs = (need("cases") || []).filter(function (c) { return c.status !== "結案"; });
+      sel = h("select", { id: "intel-case", "aria-label": "帶入哪個案件" }, [h("option", { value: "", text: cs.length ? "選擇案件" : "目前沒有案件" })].concat(cs.map(function (c) { return h("option", { value: c.id, text: c.name || c.company }); })));
+      act = h("div", { class: "actions" }, [sel, h("button", { class: "btn primary", type: "button", text: "全部帶入案件", onclick: function () { bring(cells); } })]);
     } else {
       act = h("div", { class: "actions" }, [h("button", { class: "btn primary", type: "button", text: "用這個領域申請評估", onclick: function () { go("apply", { domain: d.id }); } })]);
     }
-    v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。" })]), act]),
-      h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["候選情境", "ICP", "觸發情境", "技術依據", "證據", "下一個最便宜驗證"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
+    var grid = h("div", { class: "grid3" });
+    d.scenarios.forEach(function (sc, i) {
+      var x = SC[sc[0]] || { comp: [], sup: [] };
+      grid.appendChild(h("div", { class: "scn" }, [
+        h("div", { class: "card-head", style: "margin:0" }, [h("h3", { text: sc[0] }), h("span", { class: "pill bad", text: "C 級假設" })]),
+        h("p", { text: "ICP：" + sc[1] }), h("p", { text: "觸發：" + sc[2] }), h("p", { text: "技術依據：" + sc[3] }),
+        h("div", { class: "muted", style: "font-weight:700;margin-top:4px", text: "競爭與替代方案" }),
+        h("ul", { style: "margin:0;padding-left:18px;font-size:13px" }, x.comp.map(function (c) { return h("li", null, [h("b", { text: c[0] }), "（" + c[1] + "）", c[2] ? h("span", { class: "muted", text: "：" + c[2] }) : null]); })),
+        h("div", { class: "muted", style: "font-weight:700;margin-top:4px", text: "供應鏈與夥伴（台灣）" }),
+        h("ul", { style: "margin:0;padding-left:0;list-style:none;font-size:13px" }, x.sup.map(function (t) { var L = LV[t[2]]; return h("li", null, [h("span", { class: L[1], style: "font-weight:700;margin-right:6px", text: L[0] }), h("b", { text: t[0] }), "：" + t[1]]); })),
+        h("p", { style: "margin-top:4px", text: "下一個最便宜驗證：" + sc[4] }),
+        S.role === "analyst" ? h("div", { class: "actions" }, [h("button", { class: "btn small", type: "button", text: "帶入這個情境", onclick: function () { bring([cells[i]]); } })]) : null
+      ]));
+    });
+    v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "每個情境的競爭對手與供應鏈都不同，分開列出。情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。名單為公開資訊推導，待確認。" })]), act]), grid]));
     if (d.cases) {
       var ctb = h("tbody");
       d.cases.forEach(function (x) { ctb.appendChild(h("tr", null, [h("td", null, [h("b", { text: x[0] })]), h("td", { text: x[1] }), h("td", null, [h("span", { class: "lv3", text: "支持：" }), x[2]]), h("td", null, [h("span", { class: "lv1", text: "不支持：" }), x[3]])])); });
@@ -812,10 +896,10 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["案例", "事實", "可以支持", "不能推導"].map(function (x) { return h("th", { text: x }); }))]), ctb])])]));
     }
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
+      h("div", { class: "card" }, [h("h2", { text: "領域概況｜代表性企業" }), h("p", { class: "sub", text: "整個次領域的代表性企業，不等於任一情境的競爭集合（公開資訊，待 Signal Atlas 正式產出確認）" }),
         h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
-      h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
-        h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
+      h("div", { class: "card" }, [h("h2", { text: "領域概況｜台灣供應鏈" }), h("p", { class: "sub", text: "整個次領域的台灣能量；各情境的夥伴見上方卡片" }),
+        h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = LV[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
   };
 
   VIEWS.apply = function (v, p) {
@@ -1105,7 +1189,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     sorted.forEach(function (r) {
       var cv = (r.calib || {}).v, badge = cv === "yes" ? ["good", "技術可行"] : cv === "cond" ? ["warn", "有條件可行"] : cv === "no" ? ["bad", "技術不可行"] : ["", "待技術方校準"];
       var box = h("div", { class: "scn" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h3", { text: r.product }), h("span", { class: "pill " + badge[0], text: badge[1] })]),
-        h("p", { text: [r.icp, r.region].filter(Boolean).join("｜") }), r.jtbd ? h("p", { text: "觸發：" + r.jtbd }) : null, r.advantage ? h("p", { text: "技術依據：" + r.advantage }) : null,
+        h("p", { text: [r.icp, r.region].filter(Boolean).join("｜") }), r.jtbd ? h("p", { text: "觸發：" + r.jtbd }) : null, r.advantage ? h("p", { text: "技術依據：" + r.advantage }) : null, r.competition ? h("p", { text: "競爭與替代：" + r.competition }) : null, r.suppliers ? h("p", { text: "供應鏈與夥伴：" + r.suppliers }) : null,
         h("div", { class: "chips" }, [gradePill(r.grade), r.source ? h("span", { class: "tag", text: r.source }) : null, (r.attract || r.rtw) ? h("span", { class: "tag", text: "吸引力 " + (r.attract || "—") + "｜RTW " + (r.rtw || "—") }) : null])]);
       if (analyst) {
         if ((r.calib || {}).n) box.appendChild(h("p", { class: "callout", text: "技術方：" + r.calib.n }));
