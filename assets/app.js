@@ -79,7 +79,7 @@
     $("footPeriod").textContent = R.meta.period;
     var totalFunding = R.domains.reduce(function (s, d) { return s + d.fundingB; }, 0);
     var kpis = [
-      { v: fmt(R.meta.totalStartups), l: "SParta+ 掃描新創家數" },
+      { v: fmt(R.meta.totalStartups), l: "Signal Atlas 掃描新創家數" },
       { v: fmt(R.meta.themeStartups), l: "無人化科技相關新創" },
       { v: "5", l: "聚焦次領域" },
       { v: "US$" + totalFunding.toFixed(1) + "B", l: "次領域累計募資" },
@@ -95,7 +95,7 @@
   function renderMethod() {
     var steps = [
       { n: R.meta.totalStartups, l: "全球新創公司（非結構化文字描述）" },
-      { n: R.meta.themeStartups, l: "SParta+ 判定為無人化科技相關" },
+      { n: R.meta.themeStartups, l: "Signal Atlas 判定為無人化科技相關" },
       { n: null, l: "歸入 5 個次領域，展開五層情報並對標台灣供應鏈" }
     ];
     var f = $("funnel");
@@ -403,11 +403,11 @@
       var c1 = h("div", "card");
       c1.innerHTML = "<figcaption>段 1｜候選情境池草稿<small>" + esc(d.name) + "，共 " + rows.length + " 個</small></figcaption><div class='table-wrap'>" + t + "</div>";
       var row = h("div", "copy-row");
-      var msg = h("span", "copy-msg", "複製後，在案件工作台的「市場機會單元」按「從 SParta+ 匯入」貼上。");
+      var msg = h("span", "copy-msg", "複製後，在案件工作台的「市場機會單元」按「從 Signal Atlas 匯入」貼上。");
       msg.setAttribute("aria-live", "polite");
       var btn = h("button", "copy-btn", "複製為工作台匯入資料");
       btn.type = "button";
-      var payload = JSON.stringify({ source: "SParta+", domain: d.name, cells: rows.map(function (r) {
+      var payload = JSON.stringify({ source: "Signal Atlas", domain: d.name, cells: rows.map(function (r) {
         return { product: r.s, region: top, icp: r.icp, jtbd: r.trigger, advantage: r.tech, grade: "C 專家假設", next: r.next };
       }) });
       btn.addEventListener("click", function () {

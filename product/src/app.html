@@ -292,10 +292,10 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   };
   var SUBCOLS = Object.keys(SUB);
 
-  /* ================= SParta+ intelligence (illustrative) ================= */
+  /* ================= Signal Atlas intelligence (illustrative) ================= */
   var COLD = {
     id: "coldchain", name: "冷鏈科技", tag: "AC1 首案主題", theme: 1291,
-    lead: "冷鏈是 AC1 首案正在試作的主題。以下次領域、家數與候選情境為示意，請以 SParta+ 冷鏈掃描與 AC1 的技術資料替換。",
+    lead: "冷鏈是 AC1 首案正在試作的主題。以下次領域、家數與候選情境為示意，請以 Signal Atlas 冷鏈掃描與 AC1 的技術資料替換。",
     domains: [
       { id: "cc-monitor", name: "溫度監測與追蹤", short: "溫度監測", startups: 412, fundingB: 3.1, growth: 29,
         summary: "醫藥與生鮮稽核要求推動逐箱、即時的溫度紀錄；低功耗 IoT 標籤與一次性記錄器是主要賽道。",
@@ -310,7 +310,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         summary: "可重複使用保溫箱與相變材料取代一次性保麗龍；醫療檢體運輸帶動主動溫控箱需求。",
         techs: ["相變材料", "真空隔熱板", "可重複使用保溫箱", "主動溫控運輸箱", "保溫箱循環租賃"],
         countries: [["美國", 61], ["英國", 22], ["德國", 18], ["中國", 17], ["荷蘭", 12], ["日本", 10]],
-        examples: [["Ember Technologies", "美國", "主動溫控運輸箱"], ["Artyc", "美國", "醫療檢體溫控運輸箱"], ["Tower Cold Chain", "英國", "可重複使用溫控貨櫃"], ["Coldchain Solutions（示意）", "—", "請以 SParta+ 產出替換"]],
+        examples: [["Ember Technologies", "美國", "主動溫控運輸箱"], ["Artyc", "美國", "醫療檢體溫控運輸箱"], ["Tower Cold Chain", "英國", "可重複使用溫控貨櫃"], ["Coldchain Solutions（示意）", "—", "請以 Signal Atlas 產出替換"]],
         taiwan: [["隔熱與高分子材料", "南亞塑膠、化工材料業者", 3], ["紙包材與循環包裝", "永豐餘", 2], ["相變材料", "研究機構與中小企業", 1]],
         scenarios: [["生鮮電商保溫箱循環租賃", "生鮮電商與宅配業者", "減塑法規與包材成本", "可重複使用保溫箱", "試算 1 家業者的回收率與單次成本"],
           ["細胞治療檢體超低溫運輸箱", "生技公司與檢驗所", "超低溫、長時間運輸需求", "相變材料、真空隔熱", "訪談 2 家檢驗所物流負責人"],
@@ -346,7 +346,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   };
   var UAV = {
     id: "unmanned", name: "無人化科技", tag: "", theme: 2406,
-    lead: "SParta+ 解構無人化科技新創的描述，歸入五個次領域。數值為示意。",
+    lead: "Signal Atlas 解構無人化科技新創的描述，歸入五個次領域。數值為示意。",
     domains: [
       { id: "uav", name: "多旋翼與固定翼無人機技術", short: "無人機", startups: 1124, fundingB: 14.8, growth: 38,
         summary: "數量最多、資本最集中。國防採購帶動可量產、低成本、具自主飛控的無人機需求。",
@@ -400,7 +400,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   THEMES.forEach(function (t) { t.domains.forEach(function (d) { d.theme = t; ALL.push(d); }); });
   function domainById(id) { return ALL.find(function (d) { return d.id === id; }) || ALL[0]; }
   function scenarioCells(d) {
-    return d.scenarios.map(function (s) { return { product: s[0], region: d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "SParta+｜" + d.short, attract: "", rtw: "" }; });
+    return d.scenarios.map(function (s) { return { product: s[0], region: d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "Signal Atlas｜" + d.short, attract: "", rtw: "" }; });
   }
 
   /* ================= store: shared db when available, else this browser ================= */
@@ -708,7 +708,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       h("p", { class: "sub", text: "◆ 是閘門。決策關卡做出 Go 之前，不定稿定價、通路與推廣計畫。" }), track({ stage: -1 })]));
     v.appendChild(h("div", { class: "grid" }, [
       h("div", { class: "card" }, [h("h2", { text: "整套服務如何串起來" }), h("ol", { style: "margin:8px 0 0;padding-left:20px;color:var(--ink-2)" }, [
-        "產業情報：SParta+ 掃描 76,898 家新創，依主題（如冷鏈、無人化科技）產出候選情境（C 級假設）",
+        "產業情報：Signal Atlas 訊號圖譜掃描 76,898 家新創，依主題（如冷鏈、無人化科技）產出候選情境（C 級假設）",
         "申請前自評：6 題判斷是否適合現在開始",
         "客戶專區：確認專案設定、提供資料與訪談對象、技術方校準情境",
         "分析師工作台：證據登錄、閘門裁決、週報與工時",
@@ -719,7 +719,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
 
   VIEWS.intel = function (v, p) {
     var d = domainById(p.domain || LS.get("gtm-intel", ALL[0].id)), th = d.theme;
-    v.appendChild(pageHead("SPARTA+ 產業情報", th.name + "：" + th.domains.length + " 個次領域的資本熱點與候選情境", "SParta+ 解構全球 " + TOTAL.toLocaleString("zh-TW") + " 家新創的描述，此主題篩出約 " + th.theme.toLocaleString("zh-TW") + " 家（示意）。" + th.lead + "候選情境一律是 C 級假設。"));
+    v.appendChild(pageHead("SIGNAL ATLAS 訊號圖譜", th.name + "：" + th.domains.length + " 個次領域的資本熱點與候選情境", "Signal Atlas 訊號圖譜解構全球 " + TOTAL.toLocaleString("zh-TW") + " 家新創的描述，此主題篩出約 " + th.theme.toLocaleString("zh-TW") + " 家（示意）。" + th.lead + "候選情境一律是 C 級假設。"));
     var tchips = h("div", { class: "chips", role: "group", "aria-label": "選擇主題" }, [h("span", { class: "muted", text: "主題" })]);
     THEMES.forEach(function (t) { tchips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(t === th), onclick: function () { LS.set("gtm-intel", t.domains[0].id); go("intel", { domain: t.domains[0].id }); } }, [t.name, t.tag ? h("span", { class: "pill accent", text: t.tag }) : null])); });
     tchips.appendChild(h("span", { class: "muted", text: "｜其他主題可依同樣格式加入" }));
@@ -749,7 +749,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。" })]), act]),
       h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["候選情境", "ICP", "觸發情境", "技術依據", "證據", "下一個最便宜驗證"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性企業（公開資訊，待 SParta+ 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
+      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
         h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
       h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
         h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));

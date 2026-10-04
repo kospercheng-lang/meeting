@@ -3,14 +3,14 @@
  * ------------------------------------------------------------------
  * 網站所有圖表、表格與文字卡片都由此檔驅動。
  * 目前數值為「示意資料」(placeholder)，用以呈現版面與分析架構；
- * 請以 SParta+ 模型正式輸出結果替換對應欄位後即可更新全站。
+ * 請以 Signal Atlas 模型正式輸出結果替換對應欄位後即可更新全站。
  * 若完成替換，請將 meta.illustrative 改為 false 以移除頁面上的示意標示。
  */
 window.REPORT = {
   meta: {
     illustrative: true,
     title: "無人化科技 新創情報探勘報告",
-    model: "SParta+",
+    model: "Signal Atlas",
     totalStartups: 76898,
     themeStartups: 2406,
     period: "2021 – 2026 Q2",
@@ -19,7 +19,7 @@ window.REPORT = {
 
   /* 五層新創情報架構 */
   layers: [
-    { key: "startup", name: "全球新創", en: "Startups", desc: "以 SParta+ 解構新創公司非結構化描述，判定是否屬於無人化科技及其次領域。", q: "誰在做？" },
+    { key: "startup", name: "全球新創", en: "Startups", desc: "以 Signal Atlas 解構新創公司非結構化描述，判定是否屬於無人化科技及其次領域。", q: "誰在做？" },
     { key: "tech", name: "科技", en: "Technology", desc: "萃取關鍵技術詞與產品型態，建立技術標籤與技術成熟度輪廓。", q: "做什麼？" },
     { key: "capital", name: "資本", en: "Capital", desc: "串接募資輪次、金額與投資人，辨識資本流向與熱點賽道。", q: "誰在投？" },
     { key: "market", name: "市場", en: "Market", desc: "以國家／區域與應用場景（國防、商用、科研）描繪市場需求。", q: "賣給誰？" },
@@ -210,7 +210,7 @@ window.REPORT = {
     }
   ],
 
-  /* 接上 Gate-to-Market：每個次領域由 SParta+ 情報推導的候選情境（示意，全部為 C 級專家／AI 假設，
+  /* 接上 Gate-to-Market：每個次領域由 Signal Atlas 情報推導的候選情境（示意，全部為 C 級專家／AI 假設，
      須經技術方校準與段 2 外部證據驗證，才能成為承重結論）。 */
   gtm: {
     uav: [
