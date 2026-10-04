@@ -1,4 +1,4 @@
-"""Build the Gate-to-Market app.
+"""Build the Landfall app.
 
 src/app.html is written for the claude.ai artifact viewer (no <html>/<head>/<body>
 skeleton). This script also emits a standalone index.html for any static host.

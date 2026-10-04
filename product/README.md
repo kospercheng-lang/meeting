@@ -1,4 +1,6 @@
-# Gate-to-Market（完整產品）
+# Landfall 登岸（完整產品）
+
+> 產業情報層：Signal Atlas 訊號圖譜。品牌故事：用 Signal Atlas 畫出市場地圖，找到登岸點（Beachhead），通過兩道閘門再進市場。
 
 把 ISTI GTM 方法論 v0.98、Signal Atlas 產業情報、客戶專區、分析師工作台與定價試算整合成一個網頁應用。三種角色共用同一份案件資料。
 

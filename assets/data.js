@@ -210,7 +210,7 @@ window.REPORT = {
     }
   ],
 
-  /* 接上 Gate-to-Market：每個次領域由 Signal Atlas 情報推導的候選情境（示意，全部為 C 級專家／AI 假設，
+  /* 接上 Landfall 登岸：每個次領域由 Signal Atlas 情報推導的候選情境（示意，全部為 C 級專家／AI 假設，
      須經技術方校準與段 2 外部證據驗證，才能成為承重結論）。 */
   gtm: {
     uav: [
