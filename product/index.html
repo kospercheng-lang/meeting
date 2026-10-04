@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Gate-to-Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one app, three roles. Sticky top bar (brand, role-aware nav, role switch); one reading column below. The case track with its two gate diamonds is the recurring signature. */
+:root {
+  --bg: #f4f3ee; --surface: #fffffc; --surface-2: #ecebe4; --ink: #14233a; --ink-2: #4a5568; --muted: #737985;
+  --line: #d9d5c9; --accent: #b5651d; --gate: #d9822b; --gate-soft: #f6e3cf; --navy: #14233a; --navy-ink: #f4f3ee; --navy-ink-2: #bfc8d6;
+  --good: #1f7a3a; --good-soft: #dcefe1; --warn: #8a5a00; --warn-soft: #f8ebcc; --bad: #b3261e; --bad-soft: #f7dcd9;
+  --bar: #2a78d6;
+  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --display: "Noto Serif TC", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141c; --surface: #18202b; --surface-2: #212a37; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+    --line: #2e3947; --accent: #e9a35a; --gate: #d9822b; --gate-soft: #3a2a19; --navy: #0a0e14; --navy-ink: #eef0f3; --navy-ink-2: #aeb7c4;
+    --good: #6fcf8a; --good-soft: #17301f; --warn: #e8b84a; --warn-soft: #33290f; --bad: #f08a80; --bad-soft: #3a1b18;
+    --bar: #3987e5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141c; --surface: #18202b; --surface-2: #212a37; --ink: #eef0f3; --ink-2: #b9c0cb; --muted: #8b93a0;
+  --line: #2e3947; --accent: #e9a35a; --gate: #d9822b; --gate-soft: #3a2a19; --navy: #0a0e14; --navy-ink: #eef0f3; --navy-ink-2: #aeb7c4;
+  --good: #6fcf8a; --good-soft: #17301f; --warn: #e8b84a; --warn-soft: #33290f; --bad: #f08a80; --bad-soft: #3a1b18;
+  --bar: #3987e5;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.7; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+@media (min-width: 760px) { .wrap { padding-inline: 32px; } }
+h1, h2, h3 { text-wrap: balance; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--gate); outline-offset: 2px; }
+
+/* top bar */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--navy); color: var(--navy-ink); }
+.topbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-block: 10px; }
+.brand { background: none; border: 0; color: var(--navy-ink); cursor: pointer; padding: 0; text-align: left; }
+.brand b { font-family: var(--display); font-size: 19px; display: block; line-height: 1.2; }
+.brand small { font-size: 11px; letter-spacing: .12em; color: #e9a35a; }
+.nav { display: flex; gap: 2px; overflow-x: auto; flex: 1 1 auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav button { background: none; border: 0; color: var(--navy-ink-2); padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 14px; }
+.nav button:hover { color: var(--navy-ink); background: rgba(255,255,255,.06); }
+.nav button[aria-current="page"] { color: var(--navy-ink); background: rgba(217,130,43,.22); }
+.role { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--navy-ink-2); flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; overflow: hidden; }
+.seg button { background: none; border: 0; color: var(--navy-ink-2); padding: 4px 10px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--gate); color: #14233a; font-weight: 700; }
+.role select { font: inherit; font-size: 13px; background: rgba(255,255,255,.08); color: var(--navy-ink); border: 1px solid rgba(255,255,255,.2); border-radius: 6px; padding: 3px 6px; max-width: 220px; }
+.role select option { color: #14233a; }
+.modebar { font-size: 12px; padding-block: 6px; background: var(--warn-soft); color: var(--warn); }
+.modebar.shared { background: var(--surface-2); color: var(--ink-2); }
+
+main { padding-block: 28px 72px; }
+.view { display: flex; flex-direction: column; gap: 20px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.page-head h1 { font-family: var(--display); font-size: clamp(24px, 3.6vw, 32px); line-height: 1.3; margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0 0 4px; }
+.lead { color: var(--ink-2); max-width: 66ch; margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; min-width: 0; }
+.card > h2, .card > .card-head h2 { font-size: 17px; margin: 0; }
+.card .sub { color: var(--muted); font-size: 13px; margin: 2px 0 12px; }
+.card-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid3 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.btn { border-radius: 8px; padding: 7px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 500; font-size: 14px; white-space: nowrap; }
+.btn.primary { background: var(--gate); border-color: var(--gate); color: #14233a; }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 3px 10px; font-size: 13px; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 1px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.accent { background: var(--gate-soft); color: var(--accent); }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.callout { background: var(--gate-soft); border-radius: 10px; padding: 12px 14px; font-size: 14px; margin: 0; }
+.empty { text-align: center; color: var(--ink-2); padding: 32px 16px; }
+.empty h2 { font-family: var(--display); color: var(--ink); font-size: 22px; margin: 0 0 8px; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-2); font-weight: 500; }
+input[type=text], input[type=email], input[type=date], input[type=number], select, textarea { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+textarea { min-height: 64px; resize: vertical; }
+.form { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.form .wide { grid-column: 1 / -1; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover td { background: var(--surface-2); }
+.muted { color: var(--muted); font-size: 13px; }
+
+/* hero */
+.hero { background: var(--navy); color: var(--navy-ink); border-radius: 16px; padding: 36px 28px; }
+.hero h1 { font-family: var(--display); font-size: clamp(28px, 5vw, 46px); line-height: 1.25; margin: 6px 0 14px; }
+.hero p { color: var(--navy-ink-2); max-width: 60ch; margin: 0 0 20px; font-size: 16px; }
+.hero .eyebrow { color: #e9a35a; }
+.mistake { border-top: 3px solid var(--gate); padding-top: 12px; }
+.mistake h3 { margin: 0 0 4px; font-size: 16px; }
+.mistake p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+/* case track */
+.track-scroll { overflow-x: auto; }
+.track { display: grid; grid-template-columns: repeat(2, 1fr) 36px repeat(2, 1fr) 36px repeat(4, 1fr); gap: 4px; min-width: 760px; }
+.tk { min-height: 40px; padding: 6px 4px; border-radius: 6px; background: var(--surface-2); color: var(--muted); font-size: 12px; line-height: 1.25; display: flex; align-items: center; justify-content: center; text-align: center; }
+.tk.done { background: var(--good-soft); color: var(--good); }
+.tk.now { background: var(--gate); color: #14233a; font-weight: 700; }
+.gd { display: flex; align-items: center; justify-content: center; }
+.gd i { width: 16px; height: 16px; transform: rotate(45deg); border: 2px solid var(--gate); border-radius: 2px; }
+.gd.pass i { background: var(--gate); }
+.gd.stop i { background: var(--bad); border-color: var(--bad); }
+.case-hero { display: flex; flex-direction: column; gap: 12px; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+.tab { border: 0; background: none; color: var(--ink-2); padding: 10px 12px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gate); font-weight: 700; }
+.tab .n { background: var(--gate); color: #14233a; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 0 7px; line-height: 18px; }
+.todo { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.todo:first-of-type { border-top: 0; }
+.todo .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--gate); }
+.todo.done .dot { background: var(--good); }
+.todo div { flex: 1; min-width: 0; }
+.todo b { display: block; font-weight: 500; }
+.todo span { color: var(--muted); font-size: 13px; }
+.gate-row { display: grid; grid-template-columns: 56px 1fr; gap: 6px 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.gate-row:first-of-type { border-top: 0; }
+.gate-code { font-weight: 700; color: var(--accent); }
+.gate-inputs { grid-column: 2; display: grid; grid-template-columns: 150px 1fr; gap: 8px; }
+@media (max-width: 640px) { .gate-row { grid-template-columns: 1fr; } .gate-inputs { grid-column: 1; grid-template-columns: 1fr; } }
+.verdict { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; background: var(--surface-2); border-radius: 10px; padding: 14px; }
+.q { padding: 12px 0; border-top: 1px solid var(--line); }
+.q:first-of-type { border-top: 0; }
+.q p { margin: 0 0 8px; font-weight: 500; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 14px; background: var(--surface); }
+.opt input { accent-color: var(--gate); }
+.opt:has(input:checked) { border-color: var(--gate); background: var(--gate-soft); }
+.meter { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--gate); border-radius: 0 5px 5px 0; }
+.meter.over i { background: var(--bad); }
+.result { border-radius: 12px; padding: 16px 18px; border: 2px solid var(--line); background: var(--surface); }
+.result.good { border-color: var(--good); } .result.warn { border-color: var(--warn); } .result.bad { border-color: var(--bad); }
+.result h3 { margin: 0 0 6px; }
+.scn { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; background: var(--surface); }
+.scn h3 { margin: 0; font-size: 15px; }
+.scn p { margin: 0; font-size: 13px; color: var(--ink-2); }
+dl.memo { display: grid; grid-template-columns: 170px 1fr; gap: 8px 20px; margin: 0; }
+dl.memo dt { color: var(--muted); font-size: 13px; font-weight: 500; }
+dl.memo dd { margin: 0; white-space: pre-wrap; }
+@media (max-width: 600px) { dl.memo { grid-template-columns: 1fr; gap: 2px; } dl.memo dd { margin-bottom: 8px; } }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; }
+.check input { margin-top: 6px; accent-color: var(--gate); width: 16px; height: 16px; flex: none; }
+.entry { display: grid; grid-template-columns: 100px 1fr; gap: 2px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.entry:first-of-type { border-top: 0; }
+.entry time { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.entry h3 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.entry p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; white-space: pre-wrap; }
+@media (max-width: 600px) { .entry { grid-template-columns: 1fr; } }
+/* intel */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tag { background: var(--surface-2); border-radius: 6px; padding: 2px 8px; font-size: 13px; }
+.kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.kpi b { display: block; font-size: 26px; line-height: 1.2; }
+.kpi span { font-size: 13px; color: var(--muted); }
+.bars { display: grid; grid-template-columns: 72px 1fr 44px; gap: 6px 10px; align-items: center; font-size: 13px; }
+.bars .b { height: 12px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
+.bars .b i { display: block; height: 100%; background: var(--bar); border-radius: 0 4px 4px 0; }
+.bars .v { text-align: right; font-variant-numeric: tabular-nums; }
+.lv3 { color: var(--good); } .lv2 { color: var(--warn); } .lv1 { color: var(--bad); }
+.pkg { display: flex; flex-direction: column; gap: 6px; }
+.pkg.start { background: var(--navy); color: var(--navy-ink); border-color: var(--navy); }
+.pkg.start .sub, .pkg.start p { color: var(--navy-ink-2); }
+.pkg h3 { margin: 0; font-size: 19px; }
+.pkg p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.pkg .price { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); font-weight: 700; }
+.pkg.start .price { border-color: rgba(255,255,255,.2); color: var(--navy-ink); }
+dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); width: min(720px, calc(100vw - 32px)); padding: 20px; }
+dialog::backdrop { background: rgba(10,14,20,.5); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 50; max-width: calc(100vw - 32px); }
+footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <button class="brand" id="brand" type="button"><small>ISTI｜閘門式 GTM</small><b>Gate-to-Market</b></button>
+    <nav class="nav" id="nav" aria-label="主要功能"></nav>
+    <div class="role" id="role"></div>
+  </div>
+</header>
+<div class="modebar" id="modebar"><div class="wrap" id="modetext">正在連線…</div></div>
+<main><div class="wrap"><div class="view" id="view"></div></div></main>
+<footer><div class="wrap">依據《ISTI GTM 策略顧問方法論 v0.98》。品牌名稱暫定；產業情報數值與範例案件為示意資料。價格為待首案校正的假設。</div></footer>
+<dialog id="dlg"><form id="dlgForm" method="dialog"></form></dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= utilities ================= */
+  var $ = function (s) { return document.querySelector(s); };
+  function h(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      var v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === "text") n.textContent = v;
+      else if (k === "class") n.className = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v);
+      else if (k === "value" || k === "checked" || k === "disabled" || k === "selected") n[k] = v;
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    (kids || []).forEach(function (c) { if (c != null && c !== false) n.appendChild(typeof c === "string" || typeof c === "number" ? document.createTextNode(String(c)) : c); });
+    return n;
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function nt(n) { return "NT$" + Math.round(n).toLocaleString("zh-TW"); }
+  function wan(n) { return "NT$" + (Math.round(n / 1000) / 10).toLocaleString("zh-TW") + " 萬"; }
+  var LS = {
+    get: function (k, d) { try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  function toast(msg) {
+    var t = h("div", { class: "toast", role: "status", text: msg });
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 3200);
+  }
+  function isObj(o) { return o && typeof o === "object" && !Array.isArray(o); }
+  function merge(a, b) { for (var k in b) { if (isObj(b[k]) && isObj(a[k])) merge(a[k], b[k]); else a[k] = b[k]; } return a; }
+
+  /* ================= methodology (ISTI GTM v0.98) ================= */
+  var STAGES = ["段 0 目標確定", "段 1 技術—情境探索", "段 2 深入洞察", "段 3 機會收斂", "段 4 價值定義", "段 5 方案與通路", "段 6 商模與成交", "段 7 驗證與擴張"];
+  var STATUS = ["申請中", "進行中", "暫緩", "結案"];
+  var G1 = [
+    ["G-1", "成長問題與決策急迫性", "有具體決策時點與內部責任人"],
+    ["G-2", "技術／產品成熟度", "概念之外已有原型、驗證或可交付內容"],
+    ["G-3", "差異化與護城河", "至少一項具證據的技術、成本、流程或資料優勢"],
+    ["G-4", "企業投入意願", "指定窗口、資料與訪談承諾"],
+    ["G-5", "成效可定義", "至少有可觀察的 Validation KPI"],
+    ["G-6", "ISTI 加值", "加值角色可具體說明"],
+    ["G-7", "ISTI 資源承諾", "主管書面同意之季投入時數，且已完成一次實際動作"]
+  ];
+  var G2 = [
+    ["D-1", "需求／痛點", "痛點真實、迫切、有行動與預算可能"],
+    ["D-2", "ICP／購買角色", "能辨識使用者、Economic Buyer、Champion 與流程"],
+    ["D-3", "產品相對優勢", "相對競品與 status quo 有具證據的勝出理由"],
+    ["D-4", "技術與交付", "MVP、整合、測試、法規、服務與責任可管理"],
+    ["D-5", "通路／可及性", "能列出具體目標客戶與可行進入路徑"],
+    ["D-6", "企業投入", "決策人、窗口、人力、資料與預算承諾清楚"],
+    ["D-7", "證據強度", "關鍵結論不只依賴 C 級假設"],
+    ["D-8", "可驗證性", "90 天內有可觀察的 Validation KPI"],
+    ["D-9", "ISTI 投入", "分析師人時、資深同仁網絡與主管書面同意已到位"]
+  ];
+  var MET = ["", "符合", "部分", "未符合"];
+  var SELF = [
+    ["G-1", "貴公司是否需要在一定期限內做出市場或產品決策？", ["有明確期限與負責人", "有方向但沒有期限", "還在探索"]],
+    ["G-2", "產品目前的成熟度？", ["已有可交付產品或 PoC", "有原型，尚未驗證", "仍在概念階段"]],
+    ["G-3", "相對競品或現行做法，有沒有可被證明的優勢？", ["有數據或客戶回饋支持", "有，但還沒驗證", "不確定"]],
+    ["G-4", "能否指定窗口，並提供資料與客戶接觸？", ["可以，且有決策人參與", "可以提供部分", "暫時無法"]],
+    ["G-5", "能否定義 90 天內看得到的驗證指標？", ["可以", "需要協助定義", "很難"]],
+    ["G-6", "希望 ISTI 在哪方面加值？", ["市場與技術都需要", "只需要市場研究", "還不確定"]]
+  ];
+  var MATERIALS = [["spec", "技術規格與限制說明"], ["poc", "既有 PoC 或試用報告"], ["customers", "現有與潛在客戶名單"], ["winloss", "過去成交與失敗案例"], ["roadmap", "產品路線圖"]];
+  var SETUP_FIELDS = [["decisionQ", "決策問題：誰在何時要做出什麼決定"], ["boundary", "產品／技術邊界（範圍內與範圍外）"], ["rights", "Decision Rights：企業、ISTI、技術專家各自負責什麼"], ["kill", "殺案條件（進場前寫定）"]];
+  var SETUP_CHECKS = ["決策問題寫的是我們真正要做的決定", "範圍內與範圍外的劃分正確", "各方責任分工可以接受", "我們理解並同意殺案條件"];
+  var GRADES = ["", "A 一手行為", "B 可靠公開", "C 專家假設"];
+  var DEFAULT_PRICING = { rate: 3500, buffer: 0.15, discount: 0.5, gpHours: 24, activation: 236,
+    est: { "段 0 目標確定": 24, "段 1 技術—情境探索": 62, "段 2 深入洞察": 226, "段 3 機會收斂": 22, "決策關卡": 12, "治理與紀錄": 20 } };
+  var HOUR_STAGES = Object.keys(DEFAULT_PRICING.est).concat(["段 4 價值定義", "段 5 方案與通路", "段 6 商模與成交", "段 7 驗證與擴張"]);
+
+  var SUB = {
+    cells: [["product", "候選情境／產品", "text", 1], ["region", "國家／區域", "text", 1], ["icp", "ICP／Persona", "text", 1], ["jtbd", "JTBD／觸發情境", "textarea"],
+      ["advantage", "技術依據／相對優勢", "textarea"], ["competition", "競爭與替代", "textarea"], ["gaps", "法規／技術／專利缺口", "textarea"],
+      ["grade", "證據等級", "select", 1, GRADES], ["attract", "市場吸引力 1–5", "number", 1], ["rtw", "Right-to-Win 1–5", "number", 1], ["next", "下一個最便宜驗證", "text", 1]],
+    baseline: [["item", "項目", "text", 1], ["value", "我們的理解", "textarea", 1]],
+    hyps: [["text", "假設／判斷", "textarea", 1], ["importance", "重要性", "select", 1, ["", "高", "中", "低"]], ["conf", "來源信心", "select", 1, ["", "✓ 已查證", "◐ 核對中", "○ 未驗證"]],
+      ["grade", "證據等級", "select", 1, GRADES], ["status", "狀態", "select", 1, ["", "待驗證", "部分支持", "支持", "否定"]], ["next", "下一個驗證", "text", 1], ["owner", "負責人", "text"]],
+    decisions: [["date", "日期", "date", 1], ["question", "決策問題", "text", 1], ["decision", "決定", "text", 1], ["evidence", "當時證據", "textarea"], ["who", "決策權人", "text", 1], ["revisit", "回退／重審條件", "text", 1]],
+    updates: [["date", "日期", "date", 1], ["title", "標題", "text", 1], ["body", "內容", "textarea", 1]],
+    hours: [["date", "日期", "date", 1], ["stage", "段", "select", 1, [""].concat(HOUR_STAGES)], ["tool", "工具／工作", "text", 1], ["hours", "小時", "number", 1], ["who", "分析師", "text", 1]],
+    interviews: [["org", "機構", "text", 1], ["role", "受訪者角色", "text", 1], ["type", "類型", "select", 1, ["現有客戶", "潛在客戶", "通路夥伴"]], ["status", "聯繫狀態", "select", 1, ["已同意受訪", "已聯繫，等待回覆", "尚未聯繫"]]]
+  };
+  var SUBCOLS = Object.keys(SUB);
+
+  /* ================= SParta+ intelligence (illustrative) ================= */
+  var INTEL = {
+    total: 76898, theme: 2406,
+    domains: [
+      { id: "uav", name: "多旋翼與固定翼無人機技術", short: "無人機", startups: 1124, fundingB: 14.8, growth: 38,
+        summary: "數量最多、資本最集中。國防採購帶動可量產、低成本、具自主飛控的無人機需求。",
+        techs: ["自主飛控與群飛", "GNSS 拒止視覺導航", "垂直起降固定翼", "長航時動力", "邊緣 AI 辨識", "抗干擾資料鏈"],
+        countries: [["美國", 412], ["中國", 168], ["英國", 74], ["德國", 61], ["以色列", 55], ["烏克蘭", 52]],
+        examples: [["Shield AI", "美國", "自主飛行 AI、垂直起降無人機"], ["Skydio", "美國", "自主避障無人機"], ["Quantum-Systems", "德國", "eVTOL 偵察無人機"], ["Tekever", "葡萄牙", "長航時固定翼 ISR"]],
+        taiwan: [["整機／系統整合", "雷虎科技、中光電、經緯航太、漢翔", 2], ["馬達與動力系統", "東元、台達電、大銀微系統", 3], ["電池與能源", "順達、新普、加百裕", 3], ["光學／影像感測", "亞光、大立光、晶睿", 3], ["飛控／通訊模組", "啟碁、正文、神準", 2]],
+        scenarios: [["電網與電塔自主巡檢", "電力公司巡檢部門", "人力不足、颱風後需快速盤點", "自主飛控、邊緣 AI 辨識", "訪談 2 家電力公司巡檢主管"],
+          ["非紅供應鏈無人機零組件套件", "歐美無人機整機新創", "國防採購排除特定來源零件", "馬達、電池、飛控模組", "向 3 家整機新創詢價與送樣"],
+          ["港口與海岸長航時監視", "海巡與港務單位", "監視範圍擴大、人力成本上升", "VTOL、長航時動力", "取得一次場域試飛"]] },
+      { id: "ew", name: "電子戰與彈道防禦自主化技術", short: "電子戰／防禦", startups: 318, fundingB: 9.6, growth: 54,
+        summary: "家數少但單筆金額大、成長最快。反無人機、高功率微波與 AI 感測融合成為焦點。",
+        techs: ["反無人機 C-UAS", "高功率微波", "被動射頻偵測", "AI 感測融合", "軟體定義無線電"],
+        countries: [["美國", 141], ["以色列", 46], ["英國", 28], ["德國", 22], ["烏克蘭", 19], ["法國", 14]],
+        examples: [["Anduril", "美國", "指管平台、反無人機與自主攔截"], ["Epirus", "美國", "固態高功率微波反無人機"], ["Helsing", "德國", "國防 AI 感測融合"], ["CHAOS Industries", "美國", "新世代雷達與感測網路"]],
+        taiwan: [["化合物半導體 (GaN/GaAs)", "穩懋、宏捷科、全訊", 3], ["射頻前端與天線", "昇達科、耀登、台揚", 3], ["高可靠度 PCB／載板", "華通、欣興、臻鼎", 3], ["雷達／電子戰系統", "中科院、雷虎", 2], ["指管軟體與資料融合", "研究機構為主", 1]],
+        scenarios: [["機場與關鍵設施反無人機偵測", "機場管理單位、科學園區保全", "無人機闖入造成停飛或停工", "被動射頻偵測、感測融合", "訪談 2 個機場的安全主管"],
+          ["GaN 射頻前端供應電子戰新創", "美國、以色列電子戰新創", "高功率與小型化需求", "GaN／GaAs 射頻元件", "向 3 家新創提供規格並詢問評估流程"],
+          ["軟體定義無線電模組", "國防系統整合商", "多頻段、快速改版需求", "SDR、射頻前端", "與 1 家整合商做需求訪談"]] },
+      { id: "ocean", name: "深海自主探測與聲學成像設備", short: "深海探測", startups: 207, fundingB: 2.9, growth: 31,
+        summary: "海纜防護、離岸風電維運與水下國防需求推升關注，仍以早期輪次為主。",
+        techs: ["自主水下載具 AUV", "無人水面艇 USV", "合成孔徑聲納", "水下聲學通訊", "海纜巡檢"],
+        countries: [["美國", 64], ["英國", 27], ["挪威", 21], ["法國", 15], ["澳洲", 13], ["中國", 12]],
+        examples: [["Saildrone", "美國", "風帆動力無人水面艇"], ["HavocAI", "美國", "自主無人水面艇群"], ["Terradepth", "美國", "自主海底測繪"], ["Ocean Infinity", "英國", "機器人船隊與深海探測"]],
+        taiwan: [["電力電子與電池", "台達電、新普", 3], ["船體與載具製造", "台船、龍德造船", 2], ["水密連接器與線纜", "貿聯、嘉澤", 2], ["海洋科研能量", "國家海洋研究院、中山大學", 2], ["聲學／壓電元件", "研究機構與中小企業", 1]],
+        scenarios: [["海底電纜巡檢 AUV 服務", "電信與海纜營運商", "海纜斷線事件頻傳", "AUV、合成孔徑聲納", "訪談海纜維運負責人"],
+          ["離岸風電基礎聲學檢測", "離岸風場營運商", "定期維運檢查要求", "聲學成像、USV", "取得檢測規範與現行報價"],
+          ["水下載具電池與水密連接器", "AUV／USV 新創", "長航時與可靠度需求", "電池、水密連接器", "向 2 家新創送樣測試"]] },
+      { id: "space", name: "軌道通信與中小型火箭發射技術", short: "軌道通信／發射", startups: 486, fundingB: 18.2, growth: 27,
+        summary: "總募資金額最高。低軌衛星直連手機與小型發射吸引大額後期輪，美中雙極明顯。",
+        techs: ["衛星直連手機 D2D", "相位陣列天線", "衛星光通訊", "可重複使用小型火箭", "3D 列印引擎"],
+        countries: [["美國", 171], ["中國", 72], ["英國", 38], ["印度", 31], ["德國", 27], ["法國", 22]],
+        examples: [["Stoke Space", "美國", "全可重複使用火箭"], ["Isar Aerospace", "德國", "小型運載火箭"], ["Lynk Global", "美國", "衛星直連一般手機"], ["Astranis", "美國", "小型地球同步通訊衛星"]],
+        taiwan: [["衛星地面設備／天線", "昇達科、耀登、啟碁、台揚", 3], ["衛星用 PCB 與零組件", "華通、同欣電、穩懋", 3], ["衛星本體與酬載", "國家太空中心", 2], ["精密機構與材料", "晟田、拓凱", 2], ["火箭發射", "晉陞太空、國家太空中心", 1]],
+        scenarios: [["低軌衛星地面終端天線", "低軌衛星營運商", "星座擴張帶動終端需求", "相位陣列天線、射頻模組", "確認 1 家營運商的供應商資格流程"],
+          ["衛星級 PCB 與射頻零組件", "衛星製造新創", "量產與成本壓力", "高可靠度 PCB、化合物半導體", "詢問 3 家新創的認證門檻"],
+          ["手機直連衛星測試服務", "電信業者", "D2D 商轉前驗證需求", "射頻量測、天線", "訪談電信業者網路規劃部門"]] },
+      { id: "gnss", name: "高精度衛星定位與導航技術", short: "定位導航", startups: 271, fundingB: 3.4, growth: 46,
+        summary: "GNSS 干擾與欺騙頻傳，抗干擾與替代導航成為新熱點。",
+        techs: ["RTK／PPP 高精度定位", "低軌導航星座", "抗干擾／抗欺騙", "視覺慣性導航", "量子慣性感測"],
+        countries: [["美國", 96], ["中國", 33], ["英國", 24], ["法國", 17], ["德國", 16], ["以色列", 14]],
+        examples: [["Xona Space Systems", "美國", "低軌高精度導航星座"], ["Swift Navigation", "美國", "精密定位服務"], ["Point One Navigation", "美國", "公分級定位平台"], ["TrustPoint", "美國", "抗干擾 LEO 導航訊號"]],
+        taiwan: [["GNSS 晶片", "聯發科、瑞昱", 3], ["定位模組與終端", "環天、佳世達、台灣國際航電", 3], ["高精度天線", "耀登、佳邦", 2], ["慣性感測 (IMU/MEMS)", "研究機構與中小企業", 1], ["定位演算法與服務", "工研院、新創團隊", 1]],
+        scenarios: [["抗干擾定位模組", "無人機與自駕車業者", "GNSS 干擾與欺騙事件", "多頻 GNSS、抗干擾天線", "訪談 3 家無人機業者的導航負責人"],
+          ["公分級定位與 RTK 服務", "農業機械、測繪業者", "自動化作業需要高精度", "RTK／PPP、定位模組", "取得 1 家農機業者試用"],
+          ["港區替代導航", "港務與自動化碼頭", "GNSS 遮蔽與干擾", "視覺慣性導航、地面信標", "訪談自動化碼頭營運方"]] }
+    ]
+  };
+  function domainById(id) { return INTEL.domains.find(function (d) { return d.id === id; }) || INTEL.domains[0]; }
+  function scenarioCells(d) {
+    return d.scenarios.map(function (s) { return { product: s[0], region: d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "SParta+｜" + d.short, attract: "", rtw: "" }; });
+  }
+
+  /* ================= store: shared db when available, else this browser ================= */
+  var Store = (function () {
+    var db = null, mode = "connecting", KEY = "gtm-app-store-v1", mem = LS.get(KEY, {}) || {}, ls = {};
+    function rows(col) { var m = mem[col] || {}; return Object.keys(m).map(function (id) { return Object.assign({ id: id }, m[id]); }); }
+    function emit(col) { (ls[col] || []).forEach(function (fn) { fn(rows(col)); }); }
+    function save() { LS.set(KEY, mem); }
+    window.addEventListener("storage", function (e) { if (e.key === KEY && mode === "local") { mem = LS.get(KEY, {}) || {}; Object.keys(ls).forEach(emit); } });
+    function init() {
+      return new Promise(function (resolve) {
+        var done = false;
+        function finish(m) { if (done) return; done = true; mode = m; resolve(m); }
+        if (!(window.claude && window.claude.use)) return finish("local");
+        window.claude.use("db").then(function (d) { db = d; finish(d ? "db" : "local"); }, function () { finish("local"); });
+        setTimeout(function () { finish("local"); }, 12000);
+      });
+    }
+    return {
+      init: init, mode: function () { return mode; },
+      watch: function (col, cb, onErr) {
+        if (mode === "db") {
+          return db.collection(col).onSnapshot(function (s) { cb(s.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })); }, function (e) { if (onErr) onErr(e); });
+        }
+        (ls[col] = ls[col] || []).push(cb);
+        setTimeout(function () { cb(rows(col)); }, 0);
+        return function () { ls[col] = (ls[col] || []).filter(function (f) { return f !== cb; }); };
+      },
+      put: function (col, id, data) {
+        if (mode === "db") return db.doc(col + "/" + id).set(data);
+        (mem[col] = mem[col] || {})[id] = JSON.parse(JSON.stringify(data)); save(); emit(col); return Promise.resolve();
+      },
+      patch: function (col, id, data) {
+        if (mode === "db") return db.doc(col + "/" + id).update(data);
+        mem[col] = mem[col] || {}; mem[col][id] = merge(mem[col][id] || {}, JSON.parse(JSON.stringify(data))); save(); emit(col); return Promise.resolve();
+      },
+      remove: function (col, id) {
+        if (mode === "db") return db.doc(col + "/" + id).delete();
+        if (mem[col]) delete mem[col][id]; save(); emit(col); return Promise.resolve();
+      },
+      get: function (col, id) {
+        if (mode === "db") return db.doc(col + "/" + id).get().then(function (s) { return s.exists ? Object.assign({ id: id }, s.data()) : null; });
+        return Promise.resolve(mem[col] && mem[col][id] ? Object.assign({ id: id }, mem[col][id]) : null);
+      },
+      reset: function () { if (mode === "local") { mem = {}; save(); Object.keys(ls).forEach(emit); } }
+    };
+  })();
+  function fail(e) { toast(e && e.code === "quota_exceeded" ? "資料已達上限，請刪除不需要的紀錄後再試。" : "儲存失敗，請再試一次。"); }
+
+  /* ================= app state, subscriptions, rendering ================= */
+  var S = { role: LS.get("gtm-role", "visitor"), clientCase: LS.get("gtm-client-case", ""), route: { name: "home", p: {} } };
+  var cache = {}, subs = {};
+  function need(col) {
+    if (!subs[col]) subs[col] = Store.watch(col, function (rows) { cache[col] = rows; schedule(); }, fail);
+    return cache[col];
+  }
+  function dropSubs(keep) { Object.keys(subs).forEach(function (c) { if (keep.indexOf(c) < 0) { subs[c](); delete subs[c]; } }); }
+  var pending = false, timer = null;
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var a = document.activeElement;
+      if (a && $("#view").contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName) && a.type !== "radio" && a.type !== "checkbox") { pending = true; return; }
+      render();
+    }, 30);
+  }
+  document.addEventListener("focusout", function () { if (pending) setTimeout(function () { var a = document.activeElement; if (!(a && $("#view").contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName))) { pending = false; render(); } }, 0); });
+
+  function go(name, p) {
+    S.route = { name: name, p: p || {} };
+    dropSubs(["cases", "settings"]);
+    render(); window.scrollTo({ top: 0 });
+  }
+  function setRole(r) {
+    S.role = r; LS.set("gtm-role", r);
+    if (r === "analyst") go("cases");
+    else if (r === "client") { var cs = need("cases") || []; if (S.clientCase && cs.some(function (c) { return c.id === S.clientCase; })) go("case", { id: S.clientCase }); else go("mycase"); }
+    else go("home");
+  }
+  function pricing() { var s = (need("settings") || []).find(function (x) { return x.id === "pricing"; }); return merge(JSON.parse(JSON.stringify(DEFAULT_PRICING)), s || {}); }
+  function calc(p) {
+    var dh = 0; for (var k in p.est) dh += +p.est[k] || 0;
+    var dhb = dh * (1 + (+p.buffer || 0)), list = dhb * p.rate;
+    return { dh: dh, dhb: dhb, list: list, pilot: list * (1 - (+p.discount || 0)), act: p.activation * (1 + (+p.buffer || 0)) * p.rate, gp: p.gpHours * p.rate };
+  }
+
+  /* ================= shell ================= */
+  var NAV = {
+    visitor: [["home", "首頁"], ["intel", "產業情報"], ["pricing", "方案"], ["apply", "申請評估"]],
+    client: [["mycase", "我的案件"], ["intel", "產業情報"], ["pricing", "方案"]],
+    analyst: [["cases", "案件總覽"], ["intel", "產業情報"], ["pricing", "定價試算"], ["home", "公開首頁"]]
+  };
+  function renderShell() {
+    var nav = $("#nav"); nav.innerHTML = "";
+    NAV[S.role].forEach(function (n) {
+      var cur = S.route.name === n[0] || (n[0] === "mycase" && S.route.name === "case" && S.role === "client") || (n[0] === "cases" && S.route.name === "case" && S.role === "analyst");
+      nav.appendChild(h("button", { type: "button", "aria-current": cur ? "page" : null, onclick: function () { n[0] === "mycase" && S.clientCase ? go("case", { id: S.clientCase }) : go(n[0]); }, text: n[1] }));
+    });
+    var role = $("#role"); role.innerHTML = "";
+    var seg = h("div", { class: "seg", role: "group", "aria-label": "以哪個角色檢視" });
+    [["visitor", "訪客"], ["client", "客戶"], ["analyst", "分析師"]].forEach(function (r) {
+      seg.appendChild(h("button", { type: "button", "aria-pressed": String(S.role === r[0]), text: r[1], onclick: function () { setRole(r[0]); } }));
+    });
+    role.appendChild(h("span", { text: "示範角色" })); role.appendChild(seg);
+    if (S.role === "client") {
+      var cs = (need("cases") || []).filter(function (c) { return c.status !== "結案"; });
+      if (cs.length) {
+        var sel = h("select", { "aria-label": "以哪家企業身分檢視" }, [h("option", { value: "", text: "選擇企業" })].concat(cs.map(function (c) { return h("option", { value: c.id, text: c.company || c.name, selected: c.id === S.clientCase }); })));
+        sel.addEventListener("change", function () { S.clientCase = sel.value; LS.set("gtm-client-case", sel.value); sel.value ? go("case", { id: sel.value }) : go("mycase"); });
+        role.appendChild(sel);
+      }
+    }
+    var m = Store.mode(), mb = $("#modebar");
+    mb.className = "modebar" + (m === "db" ? " shared" : "");
+    $("#modetext").textContent = m === "db" ? "共用資料：所有能開啟此頁的同仁看到同一份案件資料。角色切換僅為示範，不是權限控管。" :
+      m === "local" ? "示範模式：資料只存在這個瀏覽器。開兩個分頁，一個當客戶、一個當分析師，就能看到整個流程。" : "正在連線…";
+  }
+  function render() {
+    pending = false;
+    renderShell();
+    var v = $("#view"); v.innerHTML = "";
+    if (Store.mode() === "connecting") { v.appendChild(h("p", { class: "note", text: "正在讀取資料…" })); return; }
+    var fn = VIEWS[S.route.name] || VIEWS.home;
+    fn(v, S.route.p);
+  }
+
+  /* ================= shared widgets ================= */
+  function pageHead(eyebrow, title, lead, right) {
+    return h("div", { class: "page-head" }, [h("div", null, [eyebrow ? h("p", { class: "eyebrow", text: eyebrow }) : null, h("h1", { text: title }), lead ? h("p", { class: "lead", text: lead, style: "margin-top:6px" }) : null]), right || null]);
+  }
+  function field(type, opts, val, id) {
+    var el;
+    if (type === "select") { el = h("select", { id: id }); opts.forEach(function (o) { el.appendChild(h("option", { value: o, text: o || "請選擇" })); }); el.value = val == null ? "" : val; }
+    else if (type === "textarea") { el = h("textarea", { id: id }); el.value = val || ""; }
+    else { el = h("input", { id: id, type: type === "number" ? "number" : type === "date" ? "date" : type === "email" ? "email" : "text", step: type === "number" ? "any" : null }); el.value = val == null ? "" : val; }
+    return el;
+  }
+  function gradePill(v) {
+    if (!v) return h("span", { class: "muted", text: "—" });
+    var cls = /^A|^✓|^支持$/.test(v) ? "good" : /^C|^○|否定/.test(v) ? "bad" : v === "待驗證" ? "" : "warn";
+    return h("span", { class: "pill " + cls, text: v });
+  }
+  function track(c) {
+    var t = h("div", { class: "track", role: "img", "aria-label": "案件進度：" + STAGES[c.stage || 0] });
+    var idx = c.stage || 0;
+    function seg(i) { return h("div", { class: "tk" + (i < idx ? " done" : i === idx ? " now" : "") }, [STAGES[i]]); }
+    function gate(res, okSet) { var cls = res ? (okSet.indexOf(res) >= 0 ? " pass" : " stop") : ""; return h("div", { class: "gd" + cls, title: res || "尚未裁決" }, [h("i")]); }
+    [seg(0), seg(1), gate(c.gate1Result, ["Pass", "Conditional Pass"]), seg(2), seg(3), gate(c.gate2Result, ["Go"]), seg(4), seg(5), seg(6), seg(7)].forEach(function (x) { t.appendChild(x); });
+    return h("div", { class: "track-scroll" }, [t]);
+  }
+
+  var dlg = $("#dlg"), dform = $("#dlgForm"), onSave = null;
+  dform.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = {};
+    Array.prototype.forEach.call(dform.elements, function (el) { if (el.name) v[el.name] = el.value; });
+    dlg.close(); if (onSave) onSave(v);
+  });
+  function openForm(title, fields, values, cb, submitText) {
+    dform.innerHTML = ""; onSave = cb;
+    dform.appendChild(h("h2", { text: title, style: "margin:0 0 12px;font-size:18px" }));
+    var g = h("div", { class: "form" });
+    fields.forEach(function (f) {
+      var el = field(f[2], f[4], values[f[0]], "dlg-" + f[0]); el.name = f[0]; if (f[3]) el.required = true;
+      g.appendChild(h("label", { class: "f" + (f[2] === "textarea" ? " wide" : ""), for: "dlg-" + f[0] }, [f[1], el]));
+    });
+    dform.appendChild(g);
+    dform.appendChild(h("div", { class: "actions", style: "margin-top:16px" }, [h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }), h("button", { class: "btn primary", type: "submit", text: submitText || "儲存" })]));
+    dlg.showModal();
+  }
+  function confirmBox(msg, cb, okText) {
+    dform.innerHTML = ""; onSave = function () { cb(); };
+    dform.appendChild(h("p", { text: msg, style: "margin-top:0" }));
+    dform.appendChild(h("div", { class: "actions" }, [h("button", { class: "btn ghost", type: "button", text: "取消", onclick: function () { dlg.close(); } }), h("button", { class: "btn primary", type: "submit", text: okText || "確定" })]));
+    dlg.showModal();
+  }
+
+  /* subcollection table */
+  function subTable(caseId, key, opts) {
+    opts = opts || {};
+    var col = "cases/" + caseId + "/" + key, rows = need(col);
+    var fields = SUB[key], cols = fields.filter(function (f) { return f[3]; });
+    if (rows === undefined) return h("p", { class: "note", text: "讀取中…" });
+    rows = rows.slice();
+    if (opts.sort) rows.sort(opts.sort);
+    if (!rows.length) return h("p", { class: "note", text: opts.empty || "尚無資料。" });
+    var head = h("tr", null, cols.map(function (f) { return h("th", { class: f[2] === "number" ? "num" : null, text: f[1] }); }).concat((opts.extra || []).map(function (x) { return h("th", { text: x[0] }); })).concat(opts.editable ? [h("th", { text: "" })] : []));
+    var tb = h("tbody");
+    rows.forEach(function (r) {
+      var tr = h("tr");
+      cols.forEach(function (f) {
+        var v = r[f[0]];
+        tr.appendChild(h("td", { class: f[2] === "number" ? "num" : null }, [/grade|conf|status/.test(f[0]) ? gradePill(v) : (v == null || v === "" ? "—" : String(v))]));
+      });
+      (opts.extra || []).forEach(function (x) { tr.appendChild(h("td", null, [x[1](r)])); });
+      if (opts.editable) tr.appendChild(h("td", null, [h("div", { class: "actions" }, [
+        h("button", { class: "btn small ghost", type: "button", text: "編輯", onclick: function () { editSub(caseId, key, r); } }),
+        h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () { confirmBox("刪除這一筆？", function () { Store.remove(col, r.id).catch(fail); }, "刪除"); } })])]));
+      tb.appendChild(tr);
+    });
+    return h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [head]), tb])]);
+  }
+  function editSub(caseId, key, r) {
+    var defaults = /decisions|updates|hours/.test(key) ? { date: today() } : {};
+    openForm((r ? "編輯" : "新增") + "一筆", SUB[key], r || defaults, function (v) {
+      SUB[key].forEach(function (f) { if (f[2] === "number" && v[f[0]] !== "") v[f[0]] = Number(v[f[0]]); });
+      var col = "cases/" + caseId + "/" + key;
+      (r ? Store.patch(col, r.id, v) : Store.put(col, uid(), v)).catch(fail);
+    });
+  }
+
+  /* ================= case logic ================= */
+  function caseById(id) { return (need("cases") || []).find(function (c) { return c.id === id; }); }
+  function sub(caseId, key) { return need("cases/" + caseId + "/" + key) || []; }
+  function suggestion(which, g) {
+    var items = which === 1 ? G1 : G2, vals = items.map(function (it) { return ((g || {})[it[0]] || {}).s || ""; });
+    if (vals.some(function (v) { return !v; })) return ["尚有構面未評估", ""];
+    var bad = vals.filter(function (v) { return v === "未符合"; }).length, part = vals.filter(function (v) { return v === "部分"; }).length;
+    if (which === 1) {
+      if ((g["G-4"] || {}).s === "未符合" || (g["G-7"] || {}).s === "未符合" || bad >= 2) return ["建議 Defer", "bad"];
+      return bad || part ? ["建議 Conditional Pass", "warn"] : ["建議 Pass", "good"];
+    }
+    if (bad >= 3) return ["建議 No-Go 或 Pivot", "bad"];
+    if ((g["D-7"] || {}).s === "未符合") return ["證據不足，建議 Hold", "warn"];
+    return bad || part > 2 ? ["建議 Pivot 或 Hold", "warn"] : ["建議 Go", "good"];
+  }
+  function clientTodos(c) {
+    var cells = sub(c.id, "cells"), base = sub(c.id, "baseline"), iv = sub(c.id, "interviews"), mat = c.materials || {}, ct = c.contact || {};
+    var pend = MATERIALS.filter(function (m) { return mat[m[0]] !== "provided"; }).length;
+    var cal = cells.filter(function (x) { return (x.calib || {}).v; }).length, bc = base.filter(function (x) { return x.check; }).length;
+    return [
+      { tab: "setup", t: "確認段 0 專案設定", d: c.setupDone ? "已確認" : SETUP_FIELDS.every(function (f) { return c[f[0]]; }) ? "分析師已完成備忘錄，等待貴公司確認" : "分析師撰寫中", done: !!c.setupDone, ready: SETUP_FIELDS.every(function (f) { return c[f[0]]; }) },
+      { tab: "commit", t: "指定窗口與決策人", d: "案件閘門 G-4", done: !!(ct.name && ct.email && ct.decider), ready: true },
+      { tab: "commit", t: "提供 3 位以上客戶訪談對象", d: "已提供 " + iv.length + " 位", done: iv.length >= 3, ready: true },
+      { tab: "commit", t: "提供資料", d: pend ? "尚有 " + pend + " 項" : "全部完成", done: !pend, ready: true },
+      { tab: "scenarios", t: "確認技術基準", d: base.length ? "已確認 " + bc + " / " + base.length : "分析師建立中", done: base.length > 0 && bc === base.length, ready: base.length > 0 },
+      { tab: "scenarios", t: "技術方校準候選情境", d: cells.length ? "已完成 " + cal + " / " + cells.length : "分析師建立中", done: cells.length > 0 && cal === cells.length, ready: cells.length > 0 }
+    ];
+  }
+  function analystTodos(c) {
+    var cells = sub(c.id, "cells"), base = sub(c.id, "baseline"), ups = sub(c.id, "updates");
+    var last = ups.map(function (u) { return u.date || ""; }).sort().pop() || "";
+    var stale = !last || (Date.now() - Date.parse(last)) / 864e5 > 7;
+    var st = c.stage || 0;
+    return [
+      { tab: "setup", t: "完成段 0 專案設定備忘錄", d: "決策問題、範圍、權責、殺案條件", done: SETUP_FIELDS.every(function (f) { return c[f[0]]; }) },
+      { tab: "scenarios", t: "建立技術基準（至少 3 項）", d: "已建立 " + base.length + " 項", done: base.length >= 3 },
+      { tab: "scenarios", t: "建立候選情境池（3–5 個）", d: "已建立 " + cells.length + " 個，可從產業情報帶入", done: cells.length >= 3 },
+      { tab: "gates", t: "案件閘門裁決", d: c.gate1Result ? c.gate1Result : "段 1 結束前", done: !!c.gate1Result },
+      { tab: "updates", t: "每週更新週報", d: last ? "最近一次 " + last : "尚未發布", done: !stale },
+      st >= 3 ? { tab: "gates", t: "決策關卡裁決", d: c.gate2Result || "段 3 結束時", done: !!c.gate2Result } : null
+    ].filter(Boolean);
+  }
+  function canAdvance(c) {
+    var st = c.stage || 0;
+    if (st >= 7) return "已在最後一段";
+    if (st === 1 && ["Pass", "Conditional Pass"].indexOf(c.gate1Result) < 0) return "要進入段 2，案件閘門須為 Pass 或 Conditional Pass";
+    if (st === 3 && c.gate2Result !== "Go") return "要進入段 4，決策關卡須為 Go（第二階段在 Go 之前不定稿）";
+    return "";
+  }
+  function createCase(data, scenarios) {
+    var id = uid();
+    var base = { name: "", company: "", product: "", status: "申請中", stage: 0, createdAt: new Date().toISOString(), contact: {}, materials: {}, gate1: {}, gate2: {}, selfCheck: {}, setupChecks: [false, false, false, false] };
+    return Store.put("cases", id, merge(base, data)).then(function () {
+      return Promise.all((scenarios || []).map(function (s) { return Store.put("cases/" + id + "/cells", uid(), s); }));
+    }).then(function () { return id; });
+  }
+  function seedExample() {
+    var d = domainById("uav");
+    return createCase({ example: true, name: "【範例】電塔巡檢無人機 市場決策衝刺", company: "範例無人機公司（示意）", product: "長航時巡檢無人機", status: "進行中", stage: 1, domain: "uav",
+      decisionQ: "（示意）公司負責人須在本季董事會前決定：第一個應用型 MVP 要投入哪一個情境。", boundary: "（示意）範圍內：整機與巡檢軟體、候選情境的市場驗證。範圍外：認證代辦、長期代銷。",
+      rights: "（示意）企業：產品、預算與最終決定｜ISTI：研究與證據整合｜技術專家：技術邊界確認", kill: "（示意）簽約 30 日內未完成窗口指定與 3 位訪談承諾則縮小範圍；60 日內仍未達成即終止。",
+      gate1: { "G-1": { s: "符合", e: "（示意）董事會決策時點已排定" }, "G-2": { s: "符合", e: "（示意）已有 2 場試飛" }, "G-3": { s: "部分", e: "（示意）續航優勢待第三方驗證" }, "G-4": { s: "部分", e: "（示意）窗口已指定，訪談名單未到" }, "G-5": { s: "符合", e: "（示意）KPI 草案已確認" }, "G-6": { s: "符合", e: "（示意）可鏈結 ITRI 測試單位" }, "G-7": { s: "符合", e: "（示意）主管已書面同意季投入時數" } },
+      gate1Result: "Conditional Pass", gate1Note: "（示意）10/15 前補齊客戶訪談名單與 PoC 報告。", gate1Date: today(),
+      selfCheck: { "G-1": 0, "G-2": 0, "G-3": 1, "G-4": 1, "G-5": 0, "G-6": 0 }, materials: { spec: "provided" } }, scenarioCells(d)).then(function (id) {
+      var col = "cases/" + id + "/";
+      return Promise.all([
+        Store.put(col + "baseline", uid(), { item: "續航時間", value: "（示意）約 90 分鐘，酬載 2 公斤" }),
+        Store.put(col + "baseline", uid(), { item: "抗風能力", value: "（示意）可於 6 級風下穩定作業" }),
+        Store.put(col + "baseline", uid(), { item: "既有證據", value: "（示意）2 場電塔試飛，皆於台灣" }),
+        Store.put(col + "hyps", uid(), { text: "（示意）電力公司願意以服務合約採購自主巡檢", importance: "高", conf: "○ 未驗證", grade: "C 專家假設", status: "待驗證", next: "對 2 家電力公司做報價測試", owner: "[分析師]" }),
+        Store.put(col + "updates", uid(), { date: today(), title: "第 1 週週報（示意）", body: "完成技術基準 V1 與 3 個候選情境，請貴公司技術方完成校準。", read: false }),
+        Store.put(col + "hours", uid(), { date: today(), stage: "段 0 目標確定", tool: "專案設定訪談", hours: 6, who: "[分析師]" })
+      ]).then(function () { return id; });
+    });
+  }
+
+  /* ================= views ================= */
+  var VIEWS = {};
+
+  VIEWS.home = function (v) {
+    v.appendChild(h("section", { class: "hero" }, [
+      h("p", { class: "eyebrow", text: "工研院產業科技國際策略發展所｜首案共創招募中" }),
+      h("h1", { text: "在投入市場預算之前，用證據決定先打哪裡。" }),
+      h("p", { text: "從產業情報找出候選市場，從貴公司的技術推出值得驗證的情境，在兩道閘門前誠實回答：值不值得做、先做哪一個，或是不做。" }),
+      h("div", { class: "actions", style: "justify-content:flex-start" }, [
+        h("button", { class: "btn primary", type: "button", text: "看產業情報", onclick: function () { go("intel"); } }),
+        h("button", { class: "btn", type: "button", text: "申請前自評（2 分鐘）", onclick: function () { go("apply"); } })])]));
+    v.appendChild(h("div", { class: "grid3" }, [
+      ["從市場規模出發", "市場大只代表可能有需求，不證明有適合你的客戶，也不證明你能贏。"],
+      ["先選國家，再研究客戶", "買方、競爭與產品競爭力，必須在選市場之前一起分析。"],
+      ["把技術先進當成市場成立", "技術可行、應用可行、商業可行，需要三種不同的證據。"]
+    ].map(function (m) { return h("div", { class: "mistake" }, [h("h3", { text: m[0] }), h("p", { text: m[1] })]); })));
+    v.appendChild(h("div", { class: "card" }, [h("h2", { text: "八段流程，中間有兩道可以喊停的閘門" }),
+      h("p", { class: "sub", text: "◆ 是閘門。決策關卡做出 Go 之前，不定稿定價、通路與推廣計畫。" }), track({ stage: -1 })]));
+    v.appendChild(h("div", { class: "grid" }, [
+      h("div", { class: "card" }, [h("h2", { text: "整套服務如何串起來" }), h("ol", { style: "margin:8px 0 0;padding-left:20px;color:var(--ink-2)" }, [
+        "產業情報：SParta+ 掃描 76,898 家新創，產出候選情境（C 級假設）",
+        "申請前自評：6 題判斷是否適合現在開始",
+        "客戶專區：確認專案設定、提供資料與訪談對象、技術方校準情境",
+        "分析師工作台：證據登錄、閘門裁決、週報與工時",
+        "決策關卡：Go、Pivot、Hold 或 No-Go，並交付決策備忘錄"].map(function (x) { return h("li", { text: x }); }))]),
+      h("div", { class: "card" }, [h("h2", { text: "結論就算是 No-Go，你也拿得到能用的東西" }), h("ul", { style: "margin:8px 0 0;padding-left:20px;color:var(--ink-2)" }, [
+        "決策備忘錄：理由、證據等級、重啟條件", "已校準的技術基準", "3–5 個候選市場機會的比較", "假設、證據與決策紀錄"].map(function (x) { return h("li", { text: x }); }))])]));
+  };
+
+  VIEWS.intel = function (v, p) {
+    var d = domainById(p.domain || LS.get("gtm-intel", "uav"));
+    v.appendChild(pageHead("SPARTA+ 產業情報", "無人化科技：五個次領域的資本熱點", "SParta+ 解構全球 " + INTEL.total.toLocaleString("zh-TW") + " 家新創的描述，篩出 " + INTEL.theme.toLocaleString("zh-TW") + " 家無人化科技相關企業。以下數值為示意資料，候選情境一律是 C 級假設。"));
+    var chips = h("div", { class: "chips", role: "group", "aria-label": "選擇次領域" });
+    INTEL.domains.forEach(function (x) { chips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(x.id === d.id), text: x.short, onclick: function () { LS.set("gtm-intel", x.id); go("intel", { domain: x.id }); } })); });
+    v.appendChild(chips);
+    v.appendChild(h("div", { class: "kpis" }, [[d.startups.toLocaleString("zh-TW"), "新創家數（示意）"], ["US$" + d.fundingB + "B", "累計募資（示意）"], ["+" + d.growth + "%", "年成長率（示意）"]].map(function (k) { return h("div", { class: "kpi" }, [h("b", { text: k[0] }), h("span", { text: k[1] })]); })));
+    var max = d.countries[0][1], bars = h("div", { class: "bars" });
+    d.countries.forEach(function (c) { bars.appendChild(h("span", { text: c[0] })); bars.appendChild(h("div", { class: "b" }, [h("i", { style: "width:" + Math.round(c[1] / max * 100) + "%" })])); bars.appendChild(h("span", { class: "v", text: String(c[1]) })); });
+    v.appendChild(h("div", { class: "grid" }, [
+      h("div", { class: "card" }, [h("h2", { text: d.name }), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
+      h("div", { class: "card" }, [h("h2", { text: "主要國家新創家數" }), h("p", { class: "sub", text: "前六大，示意" }), bars])]));
+    var tb = h("tbody");
+    d.scenarios.forEach(function (s) { tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: s[0] })]), h("td", { text: s[1] }), h("td", { text: s[2] }), h("td", { text: s[3] }), h("td", null, [h("span", { class: "pill bad", text: "C 級假設" })]), h("td", { text: s[4] })])); });
+    var act;
+    if (S.role === "analyst") {
+      var cs = (need("cases") || []).filter(function (c) { return c.status !== "結案"; });
+      var sel = h("select", { id: "intel-case", "aria-label": "帶入哪個案件" }, [h("option", { value: "", text: cs.length ? "選擇案件" : "目前沒有案件" })].concat(cs.map(function (c) { return h("option", { value: c.id, text: c.name || c.company }); })));
+      act = h("div", { class: "actions" }, [sel, h("button", { class: "btn primary", type: "button", text: "帶入案件的候選情境池", onclick: function () {
+        if (!sel.value) { sel.focus(); toast("請先選擇案件"); return; }
+        Promise.all(scenarioCells(d).map(function (s) { return Store.put("cases/" + sel.value + "/cells", uid(), s); })).then(function () { toast("已帶入 " + d.scenarios.length + " 個候選情境（C 級）"); go("case", { id: sel.value, tab: "scenarios" }); }, fail);
+      } })]);
+    } else {
+      act = h("div", { class: "actions" }, [h("button", { class: "btn primary", type: "button", text: "用這個領域申請評估", onclick: function () { go("apply", { domain: d.id }); } })]);
+    }
+    v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。" })]), act]),
+      h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["候選情境", "ICP", "觸發情境", "技術依據", "證據", "下一個最便宜驗證"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
+    v.appendChild(h("div", { class: "grid" }, [
+      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性新創；段 2 會再補上 status quo、自建與人工等替代方案" }),
+        h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
+      h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
+        h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
+  };
+
+  VIEWS.apply = function (v, p) {
+    v.appendChild(pageHead("申請評估", "我們適合現在開始嗎？", "回答 6 題並留下聯絡方式。結果只供參考，正式判斷會在案件閘門由雙方一起確認。"));
+    var st = LS.get("gtm-apply", { ans: {}, domain: p.domain || "" });
+    if (p.domain) st.domain = p.domain;
+    function keep() { LS.set("gtm-apply", st); }
+    var qs = h("div", { class: "card" }, [h("h2", { text: "申請前自評" }), h("p", { class: "sub", text: "對應案件閘門 G-1 至 G-6" })]);
+    SELF.forEach(function (q, qi) {
+      var opts = h("div", { class: "opts", role: "radiogroup", "aria-label": q[1] });
+      q[2].forEach(function (o, i) {
+        var id = "ap-" + qi + "-" + i;
+        opts.appendChild(h("label", { class: "opt", for: id }, [h("input", { type: "radio", name: "ap-" + qi, id: id, checked: st.ans[q[0]] === i, onchange: function () { st.ans[q[0]] = i; keep(); result(); } }), o]));
+      });
+      qs.appendChild(h("div", { class: "q" }, [h("p", { text: (qi + 1) + ". " + q[1] }), opts]));
+    });
+    v.appendChild(qs);
+    var res = h("div"); v.appendChild(res);
+    var form = h("form", { class: "card" });
+    var fs = [["company", "企業名稱", "text"], ["product", "要優先推動的產品或技術", "text"], ["name", "聯絡人", "text"], ["email", "Email", "email"]];
+    var g = h("div", { class: "form" });
+    fs.forEach(function (f) { var el = field(f[2], null, st[f[0]], "ap-" + f[0]); el.required = true; el.addEventListener("change", function () { st[f[0]] = el.value.trim(); keep(); }); g.appendChild(h("label", { class: "f", for: "ap-" + f[0] }, [f[1], el])); });
+    var dsel = field("select", [""].concat(INTEL.domains.map(function (d) { return d.short; })), st.domain ? domainById(st.domain).short : "", "ap-domain");
+    dsel.addEventListener("change", function () { var d = INTEL.domains.find(function (x) { return x.short === dsel.value; }); st.domain = d ? d.id : ""; keep(); });
+    g.appendChild(h("label", { class: "f", for: "ap-domain" }, ["相關產業情報領域（選填，會帶入候選情境）", dsel]));
+    form.appendChild(h("h2", { text: "聯絡資料" })); form.appendChild(h("p", { class: "sub", text: "送出後會建立一個「申請中」案件，ISTI 分析師會聯絡你安排段 0 訪談。" })); form.appendChild(g);
+    var submit = h("button", { class: "btn primary", type: "submit", text: "送出申請" });
+    form.appendChild(h("div", { class: "actions", style: "margin-top:14px" }, [submit]));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (SELF.some(function (q) { return st.ans[q[0]] == null; })) { toast("請先回答 6 題自評"); return; }
+      submit.disabled = true;
+      var d = st.domain ? domainById(st.domain) : null;
+      createCase({ name: st.company + "｜" + st.product, company: st.company, product: st.product, contact: { name: st.name, email: st.email }, selfCheck: st.ans, domain: st.domain || "" }, d ? scenarioCells(d) : []).then(function (id) {
+        LS.set("gtm-apply", { ans: {}, domain: "" }); S.clientCase = id; LS.set("gtm-client-case", id);
+        go("submitted", { id: id, domain: st.domain || "" });
+      }, function (e2) { submit.disabled = false; fail(e2); });
+    });
+    v.appendChild(form);
+    function result() {
+      res.innerHTML = "";
+      var ans = SELF.map(function (q) { return st.ans[q[0]]; }), n = ans.filter(function (a) { return a != null; }).length;
+      if (n < SELF.length) { res.appendChild(h("p", { class: "note", text: "已回答 " + n + " / 6 題。" })); return; }
+      var score = ans.reduce(function (s, a) { return s + (2 - a); }, 0);
+      var r = ans[1] === 2 || ans[3] === 2 ? ["bad", "建議先暫緩", ans[1] === 2 ? "產品仍在概念階段，市場驗證缺少可測試的對象。建議先完成原型再申請。" : "沒有窗口與資料，研究只能依賴推測。建議先在內部確認負責人與可提供的資料。"]
+        : score >= 10 ? ["good", "適合開始 Decision Package", "已具備決策急迫性、可測試的產品與投入意願。"] : ["warn", "可以開始，但需先補強幾項", "可能以 Conditional Pass 開始，並約定補件期限。"];
+      res.appendChild(h("div", { class: "result " + r[0] }, [h("h3", { text: r[1] }), h("div", { class: "meter", role: "img", "aria-label": "準備度 " + score + " / 12" }, [h("i", { style: "width:" + Math.round(score / 12 * 100) + "%" })]), h("p", { class: "note", text: "準備度 " + score + " / 12" }), h("p", { style: "margin:6px 0 0", text: r[2] })]));
+    }
+    result();
+  };
+
+  VIEWS.submitted = function (v, p) {
+    var d = p.domain ? domainById(p.domain) : null;
+    v.appendChild(h("div", { class: "result good" }, [h("h3", { text: "申請已送出" }),
+      h("p", { text: "我們建立了你的案件。接下來 ISTI 分析師會安排段 0 訪談；你可以先到客戶專區看看接下來要準備什麼。" + (d ? "我們已依「" + d.short + "」帶入 " + d.scenarios.length + " 個候選情境，等待技術方校準。" : "") }),
+      h("div", { class: "actions", style: "justify-content:flex-start" }, [h("button", { class: "btn primary", type: "button", text: "以客戶身分進入專區", onclick: function () { S.role = "client"; LS.set("gtm-role", "client"); go("case", { id: p.id }); } })])]));
+  };
+
+  VIEWS.pricing = function (v) {
+    var pr = pricing(), c = calc(pr), analyst = S.role === "analyst";
+    v.appendChild(pageHead(analyst ? "內部" : "方案", analyst ? "定價試算" : "先買決策，再買執行", analyst ? "改動藍色假設，所有價格即時重算並存成共用設定。數字為待首案校正的假設，不是本所正式費率。" : "從 Decision Package 開始。只有在決策關卡做出 Go 之後，才進入執行與陪跑。"));
+    var pkgs = [
+      ["從這裡開始", "Decision Package", "段 0–3 與決策關卡。降低產品、市場與 Beachhead 選擇風險。", analyst ? "牌價 " + wan(c.list) + "｜首案共創價 " + wan(c.pilot) : "固定費｜首案共創價另議", true],
+      ["Go 之後", "Activation Package", "段 4–6 與初期段 7。把方向轉成可執行的 GTM 與 PoC。", analyst ? "約 " + wan(c.act) + "（固定費＋里程碑費）" : "固定費＋里程碑費", false],
+      ["長期陪跑", "Growth Partnership", "段 7、Win/Loss 與擴張，共同追蹤轉換與成交。", analyst ? "每月約 " + nt(c.gp) + "＋成效分潤" : "每月固定費＋成效分潤（成果可衡量、可歸因時才啟用）", false]
+    ];
+    v.appendChild(h("div", { class: "grid3" }, pkgs.map(function (k) { return h("div", { class: "card pkg" + (k[4] ? " start" : "") }, [h("span", { class: "eyebrow", text: k[0] }), h("h3", { text: k[1] }), h("p", { text: k[2] }), h("p", { class: "price", text: k[3] })]); })));
+    if (!analyst) {
+      v.appendChild(h("div", { class: "actions", style: "justify-content:flex-start" }, [h("button", { class: "btn primary", type: "button", text: "申請前自評", onclick: function () { go("apply"); } })]));
+      return;
+    }
+    function saveP(patch) { Store.put("settings", "pricing", merge(pricing(), patch)).catch(fail); }
+    var g = h("div", { class: "form" });
+    [["rate", "混合費率（NT$／小時）", 1], ["buffer", "工時緩衝（例 0.15）", 1], ["discount", "首案共創折扣（例 0.5）", 1], ["gpHours", "Growth 每月工時", 1], ["activation", "Activation 預估工時", 1]].forEach(function (f) {
+      var el = field("number", null, pr[f[0]], "pr-" + f[0]); el.style.color = "var(--bar)";
+      el.addEventListener("change", function () { var o = {}; o[f[0]] = Number(el.value) || 0; saveP(o); });
+      g.appendChild(h("label", { class: "f", for: "pr-" + f[0] }, [f[1], el]));
+    });
+    v.appendChild(h("div", { class: "card" }, [h("h2", { text: "假設" }), h("p", { class: "sub", text: "改動後自動儲存，所有分析師共用。" }), g]));
+    var tb = h("tbody");
+    Object.keys(pr.est).forEach(function (k) {
+      var el = field("number", null, pr.est[k], "pe-" + k.replace(/\s/g, "")); el.style.maxWidth = "110px"; el.style.color = "var(--bar)"; el.setAttribute("aria-label", k + " 預估工時");
+      el.addEventListener("change", function () { var o = { est: {} }; o.est[k] = Number(el.value) || 0; saveP(o); });
+      tb.appendChild(h("tr", null, [h("td", { text: k }), h("td", { class: "num" }, [el]), h("td", { class: "num", text: nt((+pr.est[k] || 0) * (1 + pr.buffer) * pr.rate) })]));
+    });
+    tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: "合計（含緩衝 " + (c.dhb).toFixed(1) + " 小時）" })]), h("td", { class: "num" }, [h("b", { text: String(c.dh) })]), h("td", { class: "num" }, [h("b", { text: nt(c.list) })])]));
+    v.appendChild(h("div", { class: "card" }, [h("h2", { text: "Decision Package 工時與成本" }), h("p", { class: "sub", text: "首案請在案件的「工時」分頁逐項記錄，用實際值回頭修正這張表。" }),
+      h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, [h("th", { text: "段" }), h("th", { class: "num", text: "預估工時" }), h("th", { class: "num", text: "含緩衝成本" })])]), tb])])]));
+  };
+
+  VIEWS.mycase = function (v) {
+    var cs = need("cases");
+    if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
+    v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "還沒有選定你的案件" }),
+      h("p", { text: cs.length ? "請在右上角選擇以哪家企業身分檢視，或先送出一份申請。" : "目前沒有任何案件。先送出申請，或切換到分析師載入範例案件。" }),
+      h("div", { class: "actions", style: "justify-content:center" }, [h("button", { class: "btn primary", type: "button", text: "申請評估", onclick: function () { go("apply"); } })])]));
+  };
+
+  VIEWS.cases = function (v) {
+    var cs = need("cases");
+    var right = h("div", { class: "actions" }, [
+      h("button", { class: "btn", type: "button", text: "載入範例案件", onclick: function () { seedExample().then(function (id) { toast("已建立範例案件"); go("case", { id: id }); }, fail); } }),
+      h("button", { class: "btn primary", type: "button", text: "＋ 新增案件", onclick: function () {
+        openForm("新增案件", [["company", "企業名稱", "text", 1], ["product", "優先產品／MVP", "text", 1]], {}, function (x) {
+          createCase({ name: x.company + "｜" + x.product, company: x.company, product: x.product, status: "進行中" }).then(function (id) { go("case", { id: id }); }, fail);
+        }, "建立");
+      } })]);
+    v.appendChild(pageHead("分析師", "案件總覽", "申請中的案件來自客戶的線上申請；點任一列進入案件工作台。", right));
+    if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
+    var counts = {}; cs.forEach(function (c) { counts[c.status || "申請中"] = (counts[c.status || "申請中"] || 0) + 1; });
+    v.appendChild(h("div", { class: "kpis" }, STATUS.map(function (s) { return h("div", { class: "kpi" }, [h("b", { text: String(counts[s] || 0) }), h("span", { text: s })]); })));
+    if (!cs.length) { v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "還沒有案件" }), h("p", { text: "客戶在「申請評估」送出後會出現在這裡。也可以按「載入範例案件」看完整流程。" })])); return; }
+    var rows = cs.slice().sort(function (a, b) { return String(b.createdAt || "").localeCompare(String(a.createdAt || "")); });
+    var tb = h("tbody");
+    rows.forEach(function (c) {
+      var g1 = c.gate1Result ? h("span", { class: "pill " + (c.gate1Result === "Pass" ? "good" : c.gate1Result === "Defer" ? "bad" : "warn"), text: c.gate1Result }) : h("span", { class: "muted", text: "—" });
+      var g2 = c.gate2Result ? h("span", { class: "pill " + (c.gate2Result === "Go" ? "good" : c.gate2Result === "No-Go" ? "bad" : "warn"), text: c.gate2Result }) : h("span", { class: "muted", text: "—" });
+      var tr = h("tr", { class: "clickable", tabindex: "0", onclick: function () { go("case", { id: c.id }); }, onkeydown: function (e) { if (e.key === "Enter") go("case", { id: c.id }); } }, [
+        h("td", null, [h("b", { text: c.company || "—" }), h("div", { class: "muted", text: (c.product || "") + (c.example ? "｜範例" : "") })]),
+        h("td", null, [h("span", { class: "pill " + (c.status === "申請中" ? "accent" : c.status === "暫緩" ? "warn" : c.status === "結案" ? "" : "good"), text: c.status || "申請中" })]),
+        h("td", { text: STAGES[c.stage || 0] }), h("td", null, [g1]), h("td", null, [g2]), h("td", { class: "muted", text: String(c.createdAt || "").slice(0, 10) })]);
+      tb.appendChild(tr);
+    });
+    v.appendChild(h("div", { class: "card" }, [h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["企業／產品", "狀態", "目前段", "案件閘門", "決策關卡", "建立日"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
+  };
+
+  /* ---------- case ---------- */
+  var CASE_TABS = [["overview", "總覽"], ["setup", "段 0 設定"], ["commit", "客戶承諾"], ["scenarios", "技術—情境"], ["evidence", "假設與證據"], ["gates", "閘門"], ["decisions", "決策紀錄"], ["updates", "週報"], ["hours", "工時", "analyst"]];
+  VIEWS["case"] = function (v, p) {
+    var cs = need("cases");
+    if (cs === undefined) { v.appendChild(h("p", { class: "note", text: "讀取中…" })); return; }
+    var c = caseById(p.id);
+    if (!c) { v.appendChild(h("div", { class: "card empty" }, [h("h2", { text: "找不到這個案件" }), h("p", { text: "它可能已被刪除。" })])); return; }
+    var analyst = S.role === "analyst";
+    if (S.role === "client" && S.clientCase !== c.id) { S.clientCase = c.id; LS.set("gtm-client-case", c.id); }
+    SUBCOLS.forEach(function (k) { need("cases/" + c.id + "/" + k); });
+    var tab = p.tab || "overview";
+    if (!analyst && tab === "hours") tab = "overview";
+    var todos = analyst ? analystTodos(c) : clientTodos(c);
+    var unread = sub(c.id, "updates").filter(function (u) { return !u.read; }).length;
+    v.appendChild(h("div", { class: "case-hero" }, [
+      pageHead(analyst ? "分析師工作台" : "客戶專區", c.name || c.company, (c.company || "") + "｜優先產品：" + (c.product || "—") + (c.example ? "｜範例案件（示意）" : ""),
+        h("div", { class: "actions" }, [h("span", { class: "pill " + (c.status === "暫緩" ? "warn" : c.status === "申請中" ? "accent" : "good"), text: c.status || "申請中" }), h("span", { class: "pill", text: STAGES[c.stage || 0] })])),
+      track(c)]));
+    var tabs = h("div", { class: "tabs", role: "tablist" });
+    CASE_TABS.forEach(function (t) {
+      if (t[2] === "analyst" && !analyst) return;
+      var n = t[0] === "overview" ? todos.filter(function (x) { return !x.done && x.ready !== false; }).length : t[0] === "updates" && !analyst ? unread : todos.filter(function (x) { return x.tab === t[0] && !x.done && x.ready !== false; }).length;
+      tabs.appendChild(h("button", { class: "tab", role: "tab", type: "button", "aria-selected": String(t[0] === tab), onclick: function () { S.route.p.tab = t[0]; render(); } }, [t[1], n ? h("span", { class: "n", text: String(n) }) : null]));
+    });
+    v.appendChild(tabs);
+    var body = h("div", { class: "view" }); v.appendChild(body);
+    TABS[tab](body, c, analyst, todos);
+  };
+
+  var TABS = {};
+  function patchCase(c, o) { return Store.patch("cases", c.id, o).catch(fail); }
+
+  TABS.overview = function (b, c, analyst, todos) {
+    var open = todos.filter(function (x) { return !x.done && x.ready !== false; });
+    var card = h("div", { class: "card" }, [h("h2", { text: open.length ? (analyst ? "分析師待辦：" : "還有 ") + open.length + (analyst ? " 項" : " 件事需要貴公司處理") : "目前沒有待辦事項" }), h("p", { class: "sub", text: analyst ? "這些項目決定案件能不能如期通過下一道閘門。" : "這些項目會影響案件能不能如期通過下一道閘門。" })]);
+    todos.forEach(function (x) {
+      card.appendChild(h("div", { class: "todo" + (x.done ? " done" : "") }, [h("span", { class: "dot", "aria-hidden": "true" }), h("div", null, [h("b", { text: x.t }), h("span", { text: x.d })]),
+        x.done ? h("span", { class: "pill good", text: "完成" }) : x.ready === false ? h("span", { class: "pill", text: "等待分析師" }) : h("button", { class: "btn small", type: "button", text: "前往", onclick: function () { S.route.p.tab = x.tab; render(); } })]));
+    });
+    b.appendChild(card);
+    if (analyst) {
+      var ct = clientTodos(c), cdone = ct.filter(function (x) { return x.done; }).length;
+      var stSel = field("select", STATUS, c.status || "申請中", "case-status");
+      stSel.addEventListener("change", function () { patchCase(c, { status: stSel.value }); });
+      var why = canAdvance(c);
+      b.appendChild(h("div", { class: "grid" }, [
+        h("div", { class: "card" }, [h("h2", { text: "推進案件" }), h("p", { class: "sub", text: "閘門未通過時無法跨段，這是方法論的硬規則。" }),
+          h("label", { class: "f", for: "case-status" }, ["案件狀態", stSel]),
+          h("div", { class: "actions", style: "margin-top:12px" }, [
+            h("button", { class: "btn", type: "button", text: "← 退回上一段", disabled: !(c.stage > 0), onclick: function () { patchCase(c, { stage: (c.stage || 0) - 1 }); } }),
+            h("button", { class: "btn primary", type: "button", text: "推進到下一段 →", disabled: !!why, onclick: function () { patchCase(c, { stage: (c.stage || 0) + 1, status: c.status === "申請中" ? "進行中" : c.status }); } })]),
+          why ? h("p", { class: "note", style: "margin-top:8px", text: why }) : null]),
+        h("div", { class: "card" }, [h("h2", { text: "客戶進度" }), h("p", { class: "sub", text: "客戶在專區完成 " + cdone + " / " + ct.length + " 項" }),
+          h("div", { class: "meter" }, [h("i", { style: "width:" + Math.round(cdone / ct.length * 100) + "%" })]),
+          h("ul", { style: "margin:10px 0 0;padding-left:18px;font-size:14px;color:var(--ink-2)" }, ct.map(function (x) { return h("li", null, [x.t + "：", h("span", { class: x.done ? "lv3" : "muted", text: x.done ? "完成" : x.d })]); }))])]));
+      b.appendChild(h("div", { class: "actions" }, [h("button", { class: "btn small danger", type: "button", text: "刪除此案件", onclick: function () {
+        confirmBox("刪除「" + (c.name || c.company) + "」與它的所有紀錄？此動作無法復原。", function () {
+          Promise.all(SUBCOLS.map(function (k) { return Promise.all(sub(c.id, k).map(function (r) { return Store.remove("cases/" + c.id + "/" + k, r.id); })); })).then(function () { return Store.remove("cases", c.id); }).then(function () { go("cases"); }, fail);
+        }, "刪除");
+      } })]));
+    } else {
+      b.appendChild(h("div", { class: "grid" }, [
+        h("div", { class: "card" }, [h("h2", { text: "現在在哪裡" }), h("p", { class: "sub", text: STAGES[c.stage || 0] }), h("p", { style: "margin:0", text: c.stage <= 1 ? "我們正根據貴公司的技術資料，整理出可能放大技術優勢的使用情境。技術方確認哪些情境可行後，才會進入市場驗證。" : c.stage <= 3 ? "我們正用訪談、報價與 PoC 驗證候選情境，並在段 3 結束時做出決策關卡結論。" : "已通過決策關卡，正在把方向轉成可執行的 GTM。" })]),
+        h("div", { class: "card" }, [h("h2", { text: "下一道閘門" }), h("p", { class: "sub", text: (c.stage || 0) <= 1 ? "案件閘門｜段 1 結束" : "決策關卡｜段 3 結束" }), h("p", { style: "margin:0", text: "每道閘門都可能做出「不繼續」的結論，條件在開始前就寫好。即使是 No-Go，也會交付決策備忘錄與已校準的技術基準。" })])]));
+    }
+  };
+
+  TABS.setup = function (b, c, analyst) {
+    if (analyst) {
+      var g = h("div", { class: "form" });
+      [["name", "案件名稱", "text"], ["company", "企業", "text"], ["product", "優先產品／MVP", "text"]].concat(SETUP_FIELDS.map(function (f) { return [f[0], f[1], "textarea"]; })).forEach(function (f) {
+        var el = field(f[2], null, c[f[0]], "su-" + f[0]);
+        el.addEventListener("change", function () { var o = {}; o[f[0]] = el.value; if (SETUP_FIELDS.some(function (x) { return x[0] === f[0]; }) && c.setupDone) { o.setupDone = false; o.setupChecks = [false, false, false, false]; } patchCase(c, o); });
+        g.appendChild(h("label", { class: "f" + (f[2] === "textarea" ? " wide" : ""), for: "su-" + f[0] }, [f[1], el]));
+      });
+      b.appendChild(h("div", { class: "card" }, [h("h2", { text: "專案設定備忘錄（段 0）" }), h("p", { class: "sub", text: "離開欄位即自動儲存。修改已確認的內容，會請客戶重新確認。" }), g]));
+      b.appendChild(h("div", { class: "card" }, [h("h2", { text: "客戶確認狀態" }), h("p", { style: "margin:0" }, [c.setupDone ? h("span", { class: "pill good", text: "客戶已確認" }) : h("span", { class: "pill warn", text: "尚未確認" })]),
+        c.setupComment ? h("p", { class: "callout", style: "margin-top:10px", text: "客戶意見：" + c.setupComment }) : null]));
+      return;
+    }
+    var ready = SETUP_FIELDS.every(function (f) { return c[f[0]]; });
+    var dl = h("dl", { class: "memo" });
+    SETUP_FIELDS.forEach(function (f) { dl.appendChild(h("dt", { text: f[1] })); dl.appendChild(h("dd", { text: c[f[0]] || "（分析師撰寫中）" })); });
+    b.appendChild(h("div", { class: "card" }, [h("h2", { text: "專案設定備忘錄（段 0）" }), h("p", { class: "sub", text: "由 ISTI 依段 0 訪談整理。請逐項確認；有不同意見請寫在下方。" }), dl]));
+    if (!ready) { b.appendChild(h("p", { class: "callout", text: "分析師完成備忘錄後，你就可以在這裡確認。" })); return; }
+    var checks = (c.setupChecks || []).slice(); while (checks.length < 4) checks.push(false);
+    var card = h("div", { class: "card" }, [h("h2", { text: "貴公司確認" })]);
+    var btn;
+    SETUP_CHECKS.forEach(function (t, i) {
+      var id = "sc-" + i;
+      card.appendChild(h("label", { class: "check", for: id }, [h("input", { type: "checkbox", id: id, checked: !!checks[i], disabled: !!c.setupDone, onchange: function (e) { checks[i] = e.target.checked; btn.disabled = !checks.every(Boolean); patchCase(c, { setupChecks: checks }); } }), h("span", { text: t })]));
+    });
+    var ta = field("textarea", null, c.setupComment, "su-comment"); ta.disabled = !!c.setupDone; ta.placeholder = "有任何要修改的地方，請寫在這裡";
+    ta.addEventListener("change", function () { patchCase(c, { setupComment: ta.value }); });
+    card.appendChild(h("label", { class: "f", for: "su-comment", style: "margin-top:8px" }, ["意見或修改", ta]));
+    btn = h("button", { class: "btn primary", type: "button", text: c.setupDone ? "已確認" : "確認專案設定", disabled: !!c.setupDone || !checks.every(Boolean), onclick: function () { patchCase(c, { setupDone: true, setupDate: today() }); } });
+    card.appendChild(h("div", { class: "actions", style: "margin-top:10px" }, [c.setupDone ? h("button", { class: "btn", type: "button", text: "撤回確認", onclick: function () { patchCase(c, { setupDone: false }); } }) : null, btn]));
+    if (c.setupDone) card.appendChild(h("p", { class: "callout", style: "margin-top:10px", text: "已於 " + (c.setupDate || "") + " 確認。殺案條件自確認起生效，之後要調整須雙方重新確認並留下紀錄。" }));
+    b.appendChild(card);
+  };
+
+  TABS.commit = function (b, c, analyst) {
+    if (c.gate1Result === "Conditional Pass") b.appendChild(h("p", { class: "callout", text: "案件閘門為 Conditional Pass：" + (c.gate1Note || "請補齊下列項目。") }));
+    var ct = c.contact || {}, g = h("div", { class: "form" });
+    [["name", "專案窗口姓名", "text"], ["title", "職稱", "text"], ["email", "Email", "email"], ["decider", "能拍板的決策人（姓名／職稱）", "text"], ["deadline", "內部決策時點", "date"]].forEach(function (f) {
+      var el = field(f[2], null, ct[f[0]], "ct-" + f[0]);
+      el.addEventListener("change", function () { var o = { contact: {} }; o.contact[f[0]] = el.value.trim(); patchCase(c, o); });
+      g.appendChild(h("label", { class: "f", for: "ct-" + f[0] }, [f[1], el]));
+    });
+    b.appendChild(h("div", { class: "card" }, [h("h2", { text: "窗口與決策人" }), h("p", { class: "sub", text: "對應 G-1 決策急迫性與 G-4 企業投入意願。離開欄位即自動儲存。" }), g]));
+    var iv = sub(c.id, "interviews");
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "客戶訪談對象（" + iv.length + " / 至少 3 位）" }), h("p", { class: "sub", text: "願意受訪 30–45 分鐘的現有或潛在客戶，最好包含使用者與出預算的人。" })]),
+      h("button", { class: "btn primary", type: "button", text: "＋ 新增對象", onclick: function () { editSub(c.id, "interviews", null); } })]),
+      subTable(c.id, "interviews", { editable: true, empty: "尚未提供。" })]));
+    var mat = c.materials || {}, tb = h("tbody");
+    MATERIALS.forEach(function (m) {
+      var sel = h("select", { id: "mt-" + m[0] }, [["pending", "尚未提供"], ["partial", "部分提供"], ["provided", "已提供"]].map(function (o) { return h("option", { value: o[0], text: o[1] }); }));
+      sel.value = mat[m[0]] || "pending"; sel.setAttribute("aria-label", m[1] + " 狀態");
+      sel.addEventListener("change", function () { var o = { materials: {} }; o.materials[m[0]] = sel.value; patchCase(c, o); });
+      var note = field("text", null, (c.materialNotes || {})[m[0]], "mn-" + m[0]); note.placeholder = "檔名、存放位置或說明"; note.setAttribute("aria-label", m[1] + " 說明");
+      note.addEventListener("change", function () { var o = { materialNotes: {} }; o.materialNotes[m[0]] = note.value; patchCase(c, o); });
+      tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: m[1] })]), h("td", { style: "min-width:130px" }, [sel]), h("td", { style: "min-width:220px" }, [note])]));
+    });
+    b.appendChild(h("div", { class: "card" }, [h("h2", { text: "待提供資料" }), h("p", { class: "sub", text: "檔案請透過雙方約定的雲端資料夾提供，這裡更新狀態並註明檔名。" }),
+      h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["資料", "狀態", "說明"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
+  };
+
+  TABS.scenarios = function (b, c, analyst) {
+    var base = sub(c.id, "baseline"), cells = sub(c.id, "cells");
+    var bcard = h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "技術基準" }), h("p", { class: "sub", text: "技術邊界由技術方確認。客戶標示「需修正」時，分析師更新內容並重新檢查情境池。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 新增項目", onclick: function () { editSub(c.id, "baseline", null); } }) : null])]);
+    if (!base.length) bcard.appendChild(h("p", { class: "note", text: analyst ? "尚無項目。至少列出能力、限制、成熟度與既有證據。" : "分析師建立中。" }));
+    else {
+      var tb = h("tbody");
+      base.forEach(function (r) {
+        var cells2;
+        if (analyst) cells2 = [h("td", null, [r.check ? h("span", { class: "pill " + (r.check === "正確" ? "good" : "warn"), text: r.check }) : h("span", { class: "muted", text: "客戶未確認" }), r.note ? h("div", { class: "muted", text: "客戶：" + r.note }) : null]),
+          h("td", null, [h("div", { class: "actions" }, [h("button", { class: "btn small ghost", type: "button", text: "編輯", onclick: function () { editSub(c.id, "baseline", r); } }), h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () { confirmBox("刪除這個項目？", function () { Store.remove("cases/" + c.id + "/baseline", r.id).catch(fail); }, "刪除"); } })])])];
+        else {
+          var sel = field("select", ["", "正確", "需要修正"], r.check, "bl-" + r.id); sel.setAttribute("aria-label", r.item + " 是否正確");
+          sel.addEventListener("change", function () { Store.patch("cases/" + c.id + "/baseline", r.id, { check: sel.value }).catch(fail); });
+          var nt2 = field("text", null, r.note, "bln-" + r.id); nt2.placeholder = "正確內容或補充的限制"; nt2.setAttribute("aria-label", r.item + " 修正");
+          nt2.addEventListener("change", function () { Store.patch("cases/" + c.id + "/baseline", r.id, { note: nt2.value }).catch(fail); });
+          cells2 = [h("td", { style: "min-width:120px" }, [sel]), h("td", { style: "min-width:200px" }, [nt2])];
+        }
+        tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: r.item })]), h("td", { text: r.value })].concat(cells2)));
+      });
+      bcard.appendChild(h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["項目", "我們的理解"].concat(analyst ? ["客戶確認", ""] : ["確認", "修正"]).map(function (x) { return h("th", { text: x }); }))]), tb])]));
+    }
+    b.appendChild(bcard);
+
+    var cal = cells.filter(function (x) { return (x.calib || {}).v; }).length;
+    var head = h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "候選情境池（技術方校準 " + cal + " / " + cells.length + "）" }),
+      h("p", { class: "sub", text: analyst ? "可從產業情報帶入。排序依市場吸引力＋Right-to-Win。" : "只請判斷技術上能不能做到；市場是否成立，會在段 2 用外部證據驗證。" })]),
+      analyst ? h("div", { class: "actions" }, [h("button", { class: "btn", type: "button", text: "從產業情報帶入", onclick: function () { go("intel", { domain: c.domain || LS.get("gtm-intel", "uav") }); } }), h("button", { class: "btn primary", type: "button", text: "＋ 新增情境", onclick: function () { editSub(c.id, "cells", null); } })]) : null]);
+    var wrap = h("div", { class: "card" }, [head]);
+    if (!cells.length) { wrap.appendChild(h("p", { class: "note", text: analyst ? "尚無情境。建議 3–5 個。" : "分析師建立中。" })); b.appendChild(wrap); return; }
+    var sorted = cells.slice().sort(function (a, b2) { return ((+b2.attract || 0) + (+b2.rtw || 0)) - ((+a.attract || 0) + (+a.rtw || 0)); });
+    var g = h("div", { class: "grid" });
+    sorted.forEach(function (r) {
+      var cv = (r.calib || {}).v, badge = cv === "yes" ? ["good", "技術可行"] : cv === "cond" ? ["warn", "有條件可行"] : cv === "no" ? ["bad", "技術不可行"] : ["", "待技術方校準"];
+      var box = h("div", { class: "scn" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h3", { text: r.product }), h("span", { class: "pill " + badge[0], text: badge[1] })]),
+        h("p", { text: [r.icp, r.region].filter(Boolean).join("｜") }), r.jtbd ? h("p", { text: "觸發：" + r.jtbd }) : null, r.advantage ? h("p", { text: "技術依據：" + r.advantage }) : null,
+        h("div", { class: "chips" }, [gradePill(r.grade), r.source ? h("span", { class: "tag", text: r.source }) : null, (r.attract || r.rtw) ? h("span", { class: "tag", text: "吸引力 " + (r.attract || "—") + "｜RTW " + (r.rtw || "—") }) : null])]);
+      if (analyst) {
+        if ((r.calib || {}).n) box.appendChild(h("p", { class: "callout", text: "技術方：" + r.calib.n }));
+        box.appendChild(h("div", { class: "actions" }, [h("button", { class: "btn small ghost", type: "button", text: "編輯", onclick: function () { editSub(c.id, "cells", r); } }), h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () { confirmBox("刪除「" + r.product + "」？", function () { Store.remove("cases/" + c.id + "/cells", r.id).catch(fail); }, "刪除"); } })]));
+      } else {
+        var opts = h("div", { class: "opts", role: "radiogroup", "aria-label": r.product + " 技術可行性" });
+        [["yes", "可行"], ["cond", "有條件可行"], ["no", "不可行"]].forEach(function (o) {
+          var id = "cal-" + r.id + "-" + o[0];
+          opts.appendChild(h("label", { class: "opt", for: id }, [h("input", { type: "radio", name: "cal-" + r.id, id: id, checked: cv === o[0], onchange: function () { Store.patch("cases/" + c.id + "/cells", r.id, { calib: { v: o[0] } }).catch(fail); } }), o[1]]));
+        });
+        var note = field("textarea", null, (r.calib || {}).n, "caln-" + r.id); note.placeholder = cv === "cond" ? "需要什麼條件？" : "限制或補充（選填）"; note.setAttribute("aria-label", r.product + " 補充說明");
+        note.addEventListener("change", function () { Store.patch("cases/" + c.id + "/cells", r.id, { calib: { n: note.value } }).catch(fail); });
+        box.appendChild(opts); box.appendChild(note);
+      }
+      g.appendChild(box);
+    });
+    wrap.appendChild(g);
+    if (cal === cells.length) {
+      var keep = cells.filter(function (x) { return x.calib.v !== "no"; });
+      wrap.appendChild(h("p", { class: "callout", style: "margin-top:12px", text: "校準完成：" + keep.length + " 個情境進入段 2 市場驗證（" + (keep.map(function (x) { return x.product; }).join("、") || "無") + "）。" }));
+    }
+    b.appendChild(wrap);
+  };
+
+  TABS.evidence = function (b, c, analyst) {
+    var hy = sub(c.id, "hyps");
+    var weak = hy.filter(function (r) { return r.importance === "高" && /^C/.test(r.grade || "") && r.status !== "支持"; }).length;
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "假設與證據登錄" }), h("p", { class: "sub", text: "「來源信心」是資料本身可不可信；「證據等級」是夠不夠支撐決策。兩者分開標示。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 新增假設", onclick: function () { editSub(c.id, "hyps", null); } }) : null]),
+      subTable(c.id, "hyps", { editable: analyst, empty: "尚無假設。" }),
+      hy.length ? h("p", { class: "note", style: "margin-top:10px", text: "高重要性且仍為 C 級的假設：" + weak + " 項。決策關卡 D-7 要求關鍵結論不只依賴 C 級假設。" }) : null]));
+  };
+
+  function gateCard(c, which, analyst) {
+    var key = "gate" + which, items = which === 1 ? G1 : G2, results = which === 1 ? ["Pass", "Conditional Pass", "Defer"] : ["Go", "Pivot", "Hold", "No-Go"];
+    var g = c[key] || {}, res = c[key + "Result"], title = which === 1 ? "案件閘門｜段 1 結束" : "決策關卡｜段 3 結束";
+    var sub2 = which === 1 ? "評的是「案子」：值不值得雙方投入。" : "評的是「投入」：研究成立後，值不值得投入正式 GTM。";
+    var card = h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: title }), h("p", { class: "sub", text: sub2 })]),
+      res ? h("span", { class: "pill " + (/Pass$|^Go$/.test(res) && res !== "Conditional Pass" ? "good" : /Defer|No-Go/.test(res) ? "bad" : "warn"), text: res }) : h("span", { class: "pill", text: "尚未裁決" })])]);
+    if (!analyst) {
+      card.appendChild(h("p", { style: "margin:0", text: res ? (c[key + "Note"] || "") + (c[key + "Date"] ? "（" + c[key + "Date"] + "）" : "") : which === 1 ? "段 1 結束時裁決。" : "段 3 結束時裁決。可能的結論：Go、Pivot、Hold、No-Go；任何結論都會交付決策備忘錄。" }));
+      return card;
+    }
+    items.forEach(function (it) {
+      var cur = g[it[0]] || {}, sel = field("select", MET, cur.s, key + "-" + it[0]), ev = field("text", null, cur.e, key + "-e-" + it[0]);
+      sel.setAttribute("aria-label", it[0] + " 評估"); ev.setAttribute("aria-label", it[0] + " 證據"); ev.placeholder = "證據：不可自我宣稱，寫出具體事實與來源";
+      function commit() { var o = {}; o[key] = {}; o[key][it[0]] = { s: sel.value, e: ev.value }; patchCase(c, o); }
+      sel.addEventListener("change", commit); ev.addEventListener("change", commit);
+      var hint = which === 1 && c.selfCheck && c.selfCheck[it[0]] != null ? h("div", { class: "muted", text: "客戶自評：" + SELF.find(function (q) { return q[0] === it[0]; })[2][c.selfCheck[it[0]]] }) : null;
+      card.appendChild(h("div", { class: "gate-row" }, [h("div", { class: "gate-code", text: it[0] }), h("div", null, [h("b", { text: it[1], style: "font-weight:500" }), h("div", { class: "muted", text: "最低要求：" + it[2] }), hint]), h("div", { class: "gate-inputs" }, [sel, ev])]));
+    });
+    var sg = suggestion(which, g), rs = field("select", [""].concat(results), res, key + "-result"), note = field("text", null, c[key + "Note"], key + "-note");
+    note.placeholder = "裁決理由、補件條件與回退條件";
+    rs.addEventListener("change", function () { var o = {}; o[key + "Result"] = rs.value; o[key + "Date"] = today(); if (which === 1 && rs.value === "Defer") o.status = "暫緩"; if (which === 1 && /Pass/.test(rs.value) && c.status === "申請中") o.status = "進行中"; patchCase(c, o); });
+    note.addEventListener("change", function () { var o = {}; o[key + "Note"] = note.value; patchCase(c, o); });
+    card.appendChild(h("div", { class: "verdict" }, [h("span", { class: "pill " + sg[1], text: sg[0] }), h("label", { class: "f", for: key + "-result", style: "min-width:180px" }, ["正式裁決（由人決定）", rs]), h("label", { class: "f", for: key + "-note", style: "flex:1;min-width:220px" }, ["理由（客戶看得到）", note])]));
+    return card;
+  }
+  TABS.gates = function (b, c, analyst) {
+    b.appendChild(gateCard(c, 1, analyst));
+    if (analyst || c.gate2Result || (c.stage || 0) >= 2) b.appendChild(gateCard(c, 2, analyst));
+  };
+
+  TABS.decisions = function (b, c, analyst) {
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "決策紀錄" }), h("p", { class: "sub", text: "每個決策當下的證據與回退條件，事後不改寫。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 新增決策", onclick: function () { editSub(c.id, "decisions", null); } }) : null]),
+      subTable(c.id, "decisions", { editable: analyst, empty: "尚無決策紀錄。", sort: function (a, b2) { return String(b2.date).localeCompare(String(a.date)); } })]));
+  };
+
+  TABS.updates = function (b, c, analyst) {
+    var ups = sub(c.id, "updates").slice().sort(function (a, b2) { return String(b2.date).localeCompare(String(a.date)); });
+    var card = h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "週報" }), h("p", { class: "sub", text: analyst ? "每週一則，客戶會在專區看到並標為已讀。" : "ISTI 每週更新一次假設、證據與決策重點。" })]),
+      analyst ? h("button", { class: "btn primary", type: "button", text: "＋ 發布週報", onclick: function () { openForm("發布週報", SUB.updates, { date: today() }, function (x) { x.read = false; Store.put("cases/" + c.id + "/updates", uid(), x).catch(fail); }, "發布"); } }) : null])]);
+    if (!ups.length) card.appendChild(h("p", { class: "note", text: "尚無週報。" }));
+    ups.forEach(function (u) {
+      card.appendChild(h("article", { class: "entry" }, [h("time", { datetime: u.date, text: u.date }), h("div", null, [
+        h("h3", null, [u.title, u.read ? (analyst ? h("span", { class: "pill good", text: "客戶已讀" }) : null) : h("span", { class: "pill warn", text: analyst ? "客戶未讀" : "未讀" })]), h("p", { text: u.body }),
+        !analyst && !u.read ? h("button", { class: "btn small", type: "button", style: "margin-top:6px", text: "標為已讀", onclick: function () { Store.patch("cases/" + c.id + "/updates", u.id, { read: true }).catch(fail); } }) : null,
+        analyst ? h("div", { class: "actions", style: "justify-content:flex-start;margin-top:6px" }, [h("button", { class: "btn small ghost", type: "button", text: "編輯", onclick: function () { editSub(c.id, "updates", u); } }), h("button", { class: "btn small ghost danger", type: "button", text: "刪除", onclick: function () { confirmBox("刪除這則週報？", function () { Store.remove("cases/" + c.id + "/updates", u.id).catch(fail); }, "刪除"); } })]) : null])]));
+    });
+    b.appendChild(card);
+  };
+
+  TABS.hours = function (b, c) {
+    var hs = sub(c.id, "hours"), pr = pricing(), by = {};
+    hs.forEach(function (r) { by[r.stage] = (by[r.stage] || 0) + (+r.hours || 0); });
+    var tb = h("tbody"), te = 0, ta = 0;
+    Object.keys(pr.est).forEach(function (k) {
+      var e = +pr.est[k] || 0, a = by[k] || 0; te += e; ta += a;
+      tb.appendChild(h("tr", null, [h("td", { text: k }), h("td", { class: "num", text: String(e) }), h("td", { class: "num", text: a ? a.toFixed(1) : "—" }),
+        h("td", { style: "min-width:140px" }, [h("div", { class: "meter" + (a > e ? " over" : "") }, [h("i", { style: "width:" + Math.min(100, e ? Math.round(a / e * 100) : 0) + "%" })]), a > e ? h("span", { class: "muted", text: "超出 " + (a - e).toFixed(1) + " 小時" }) : null])]));
+    });
+    tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: "合計" })]), h("td", { class: "num" }, [h("b", { text: String(te) })]), h("td", { class: "num" }, [h("b", { text: ta ? ta.toFixed(1) : "—" })]), h("td", { class: "muted", text: ta ? "以目前費率約 " + nt(ta * pr.rate) : "" })]));
+    b.appendChild(h("div", { class: "card" }, [h("h2", { text: "實際工時 vs 定價預估" }), h("p", { class: "sub", text: "預估值來自「定價試算」，首案結束後用實際值回頭修正價格。" }),
+      h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, [h("th", { text: "段" }), h("th", { class: "num", text: "預估" }), h("th", { class: "num", text: "實際" }), h("th", { text: "進度" })])]), tb])])]));
+    b.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("h2", { text: "工時紀錄" }), h("button", { class: "btn primary", type: "button", text: "＋ 記一筆", onclick: function () { editSub(c.id, "hours", null); } })]),
+      subTable(c.id, "hours", { editable: true, empty: "每項工具做完就記一筆。", sort: function (a, b2) { return String(b2.date).localeCompare(String(a.date)); } })]));
+  };
+
+  /* ================= boot ================= */
+  $("#brand").addEventListener("click", function () { go(S.role === "analyst" ? "cases" : S.role === "client" ? "mycase" : "home"); });
+  render();
+  Store.init().then(function () {
+    need("cases"); need("settings");
+    if (S.role === "analyst") S.route = { name: "cases", p: {} };
+    else if (S.role === "client") S.route = S.clientCase ? { name: "case", p: { id: S.clientCase } } : { name: "mycase", p: {} };
+    render();
+  });
+})();
+</script>
+
+</body>
+</html>
