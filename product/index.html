@@ -300,8 +300,60 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   var SUBCOLS = Object.keys(SUB);
 
   /* ================= SParta+ intelligence (illustrative) ================= */
-  var INTEL = {
-    total: 76898, theme: 2406,
+  var COLD = {
+    id: "coldchain", name: "冷鏈科技", tag: "AC1 首案主題", theme: 1291,
+    lead: "冷鏈是 AC1 首案正在試作的主題。以下次領域、家數與候選情境為示意，請以 SParta+ 冷鏈掃描與 AC1 的技術資料替換。",
+    domains: [
+      { id: "cc-monitor", name: "溫度監測與追蹤", short: "溫度監測", startups: 412, fundingB: 3.1, growth: 29,
+        summary: "醫藥與生鮮稽核要求推動逐箱、即時的溫度紀錄；低功耗 IoT 標籤與一次性記錄器是主要賽道。",
+        techs: ["低功耗廣域網路標籤", "一次性溫度記錄器", "無電池環境 IoT", "RFID 溫度感測", "即時位置與溫度追蹤"],
+        countries: [["美國", 138], ["中國", 41], ["以色列", 31], ["德國", 29], ["印度", 27], ["英國", 24]],
+        examples: [["Tive", "美國", "即時貨物位置與溫度追蹤器"], ["Roambee", "美國", "貨物可視化感測與平台"], ["Wiliot", "以色列", "無電池環境 IoT 標籤"], ["Paxafe", "美國", "貨物風險與溫度監測"]],
+        taiwan: [["感測與 MCU", "新唐、盛群", 3], ["低功耗通訊模組", "啟碁、正文", 3], ["IoT 平台與系統整合", "研華、中華電信", 2], ["RFID 標籤", "標籤與包材業者", 2], ["一次性記錄器量產", "電子代工業者（待確認）", 2]],
+        scenarios: [["疫苗運輸逐箱溫度紀錄", "疫苗與醫藥物流業者", "稽核要求逐箱可追溯", "[AC1 技術特性：待技術方確認]", "訪談 3 家醫藥物流品保主管"],
+          ["生鮮電商最後一哩溫度保證", "生鮮電商與宅配業者", "客訴與退貨成本上升", "[AC1 技術特性：待技術方確認]", "對 2 家業者做標籤單價報價測試"],
+          ["醫院藥庫連續溫度監測", "醫院藥劑部", "評鑑與藥品報廢風險", "[AC1 技術特性：待技術方確認]", "訪談 2 家醫院藥劑部主任"]] },
+      { id: "cc-pack", name: "冷鏈包裝與保溫容器", short: "冷鏈包裝", startups: 186, fundingB: 1.2, growth: 24,
+        summary: "可重複使用保溫箱與相變材料取代一次性保麗龍；醫療檢體運輸帶動主動溫控箱需求。",
+        techs: ["相變材料", "真空隔熱板", "可重複使用保溫箱", "主動溫控運輸箱", "保溫箱循環租賃"],
+        countries: [["美國", 61], ["英國", 22], ["德國", 18], ["中國", 17], ["荷蘭", 12], ["日本", 10]],
+        examples: [["Ember Technologies", "美國", "主動溫控運輸箱"], ["Artyc", "美國", "醫療檢體溫控運輸箱"], ["Tower Cold Chain", "英國", "可重複使用溫控貨櫃"], ["Coldchain Solutions（示意）", "—", "請以 SParta+ 產出替換"]],
+        taiwan: [["隔熱與高分子材料", "南亞塑膠、化工材料業者", 3], ["紙包材與循環包裝", "永豐餘", 2], ["相變材料", "研究機構與中小企業", 1]],
+        scenarios: [["生鮮電商保溫箱循環租賃", "生鮮電商與宅配業者", "減塑法規與包材成本", "可重複使用保溫箱", "試算 1 家業者的回收率與單次成本"],
+          ["細胞治療檢體超低溫運輸箱", "生技公司與檢驗所", "超低溫、長時間運輸需求", "相變材料、真空隔熱", "訪談 2 家檢驗所物流負責人"],
+          ["外送餐飲保溫袋", "外送平台與連鎖餐飲", "餐點溫度客訴", "相變材料保溫袋", "與 1 家連鎖品牌做小量試用"]] },
+      { id: "cc-equip", name: "冷凍冷藏設備與節能", short: "冷凍設備", startups: 241, fundingB: 2.6, growth: 21,
+        summary: "冷媒法規與電價推動變頻、天然冷媒與冷庫能源管理；新興市場則需要離網太陽能冷庫。",
+        techs: ["變頻壓縮機", "天然冷媒 CO₂", "固態製冷", "太陽能冷庫", "冷庫 AI 能源管理"],
+        countries: [["美國", 72], ["印度", 34], ["中國", 30], ["德國", 22], ["奈及利亞", 11], ["英國", 14]],
+        examples: [["Phononic", "美國", "固態製冷晶片"], ["Ecozen", "印度", "太陽能冷藏與農業設備"], ["ColdHubs", "奈及利亞", "太陽能步入式冷庫"], ["Axiom Cloud", "美國", "冷庫 AI 節能"]],
+        taiwan: [["壓縮機與馬達", "東元", 3], ["電力電子與變頻", "台達電", 3], ["冷凍空調設備整合", "冷凍空調設備業者", 2], ["熱交換器與零組件", "中小企業", 2]],
+        scenarios: [["超商冷櫃節能改裝", "連鎖超商", "電價上漲與減碳目標", "變頻、能源管理", "取得 1 家超商的門市耗電資料"],
+          ["東南亞產地太陽能預冷站", "東南亞農產合作社", "採收後損耗高", "太陽能冷庫", "透過海外網絡訪談 2 個合作社"],
+          ["冷庫 AI 能源管理", "冷鏈倉儲業者", "冷庫電費占營運成本高", "感測與控制軟體", "訪談 2 家冷庫營運主管"]] },
+      { id: "cc-platform", name: "冷鏈物流平台與可視化軟體", short: "物流平台", startups: 298, fundingB: 4.4, growth: 26,
+        summary: "貨主要求從出貨到簽收的溫度可視化；平台、路徑最佳化與合規報表整合成主要賽道。",
+        techs: ["溫控可視化平台", "路徑與溫度最佳化", "異常預警 AI", "合規稽核報表", "區塊鏈履歷"],
+        countries: [["美國", 104], ["印度", 38], ["英國", 27], ["中國", 25], ["德國", 21], ["新加坡", 14]],
+        examples: [["project44", "美國", "供應鏈可視化平台"], ["FourKites", "美國", "即時貨運可視化"], ["Locus", "印度", "配送路徑最佳化"], ["Controlant", "冰島", "醫藥冷鏈即時監控平台"]],
+        taiwan: [["冷鏈物流業者", "嘉里大榮、統一速達、新竹物流", 2], ["軟體與系統整合", "資訊服務業者", 2], ["電信與雲端", "中華電信", 2]],
+        scenarios: [["中小生鮮業者溫控報表 SaaS", "中小型生鮮批發商", "通路要求提供溫度紀錄", "標籤＋報表平台", "訪談 3 家批發商"],
+          ["跨境冷鏈出口日本履歷", "農產與水產出口商", "日本通路要求全程履歷", "可視化平台", "取得 1 家出口商的通路要求清單"],
+          ["外送平台溫度保證", "外送平台", "生鮮外送品質爭議", "標籤與平台整合", "與平台營運主管做需求訪談"]] },
+      { id: "cc-pharma", name: "醫藥與生技冷鏈合規", short: "醫藥冷鏈", startups: 154, fundingB: 2.2, growth: 33,
+        summary: "GDP 法規、疫苗與細胞治療推動超低溫運輸與全程合規紀錄，單價高、驗證門檻也高。",
+        techs: ["GDP 合規", "−80°C 超低溫運輸", "細胞與基因治療物流", "檢體運輸", "溫度偏差調查"],
+        countries: [["美國", 58], ["英國", 19], ["德國", 16], ["瑞士", 11], ["印度", 10], ["新加坡", 8]],
+        examples: [["Controlant", "冰島", "醫藥冷鏈即時監控"], ["Artyc", "美國", "醫療檢體溫控運輸"], ["Cryoport", "美國", "細胞治療冷鏈（上市公司）"], ["Biocair", "英國", "生技與臨床試驗物流"]],
+        taiwan: [["醫藥物流", "醫藥物流業者（如裕利）", 2], ["冷鏈監測模組", "同「溫度監測」供應鏈", 2], ["超低溫設備", "研究機構與中小企業", 1]],
+        scenarios: [["疫苗配送最後一哩逐箱監測", "衛生單位與醫藥物流", "疫苗報廢與稽核", "[AC1 技術特性：待技術方確認]", "訪談疾管或衛生局冷鏈負責人"],
+          ["細胞治療檢體超低溫運輸", "生技公司與醫學中心", "治療時效與檢體完整性", "超低溫容器與監測", "訪談 2 家醫學中心"],
+          ["藥廠出貨溫度偏差調查服務", "國內藥廠品保部門", "GDP 稽核要求", "溫度紀錄與分析", "訪談 2 家藥廠品保主管"]] }
+    ]
+  };
+  var UAV = {
+    id: "unmanned", name: "無人化科技", tag: "", theme: 2406,
+    lead: "SParta+ 解構無人化科技新創的描述，歸入五個次領域。數值為示意。",
     domains: [
       { id: "uav", name: "多旋翼與固定翼無人機技術", short: "無人機", startups: 1124, fundingB: 14.8, growth: 38,
         summary: "數量最多、資本最集中。國防採購帶動可量產、低成本、具自主飛控的無人機需求。",
@@ -350,7 +402,10 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
           ["港區替代導航", "港務與自動化碼頭", "GNSS 遮蔽與干擾", "視覺慣性導航、地面信標", "訪談自動化碼頭營運方"]] }
     ]
   };
-  function domainById(id) { return INTEL.domains.find(function (d) { return d.id === id; }) || INTEL.domains[0]; }
+  var THEMES = [COLD, UAV], TOTAL = 76898;
+  var ALL = [];
+  THEMES.forEach(function (t) { t.domains.forEach(function (d) { d.theme = t; ALL.push(d); }); });
+  function domainById(id) { return ALL.find(function (d) { return d.id === id; }) || ALL[0]; }
   function scenarioCells(d) {
     return d.scenarios.map(function (s) { return { product: s[0], region: d.countries[0][0], icp: s[1], jtbd: s[2], advantage: s[3], grade: "C 專家假設", next: s[4], source: "SParta+｜" + d.short, attract: "", rtw: "" }; });
   }
@@ -621,19 +676,19 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     }).then(function () { return id; });
   }
   function seedExample() {
-    var d = domainById("uav");
-    return createCase({ example: true, name: "【範例】電塔巡檢無人機 市場決策衝刺", company: "範例無人機公司（示意）", product: "長航時巡檢無人機", status: "進行中", stage: 1, domain: "uav",
-      decisionQ: "（示意）公司負責人須在本季董事會前決定：第一個應用型 MVP 要投入哪一個情境。", boundary: "（示意）範圍內：整機與巡檢軟體、候選情境的市場驗證。範圍外：認證代辦、長期代銷。",
+    var d = domainById("cc-monitor");
+    return createCase({ example: true, name: "【範例】冷鏈溫度監測模組 市場決策衝刺（AC1 示意）", company: "範例冷鏈科技公司（示意）", product: "[AC1 產品名稱]", status: "進行中", stage: 1, domain: "cc-monitor",
+      decisionQ: "（示意）公司負責人須在本季董事會前決定：第一個應用型 MVP 要投入哪一個冷鏈情境。", boundary: "（示意）範圍內：溫度監測產品、資料平台、候選情境的市場驗證。範圍外：冷鏈車隊設備整合、認證代辦、長期代銷。",
       rights: "（示意）企業：產品、預算與最終決定｜ISTI：研究與證據整合｜技術專家：技術邊界確認", kill: "（示意）簽約 30 日內未完成窗口指定與 3 位訪談承諾則縮小範圍；60 日內仍未達成即終止。",
-      gate1: { "G-1": { s: "符合", e: "（示意）董事會決策時點已排定" }, "G-2": { s: "符合", e: "（示意）已有 2 場試飛" }, "G-3": { s: "部分", e: "（示意）續航優勢待第三方驗證" }, "G-4": { s: "部分", e: "（示意）窗口已指定，訪談名單未到" }, "G-5": { s: "符合", e: "（示意）KPI 草案已確認" }, "G-6": { s: "符合", e: "（示意）可鏈結 ITRI 測試單位" }, "G-7": { s: "符合", e: "（示意）主管已書面同意季投入時數" } },
-      gate1Result: "Conditional Pass", gate1Note: "（示意）10/15 前補齊客戶訪談名單與 PoC 報告。", gate1Date: today(),
+      gate1: { "G-1": { s: "符合", e: "（示意）董事會決策時點已排定" }, "G-2": { s: "符合", e: "（示意）已有 2 場 PoC" }, "G-3": { s: "部分", e: "（示意）功耗優勢待第三方驗證" }, "G-4": { s: "部分", e: "（示意）窗口已指定，訪談名單未到" }, "G-5": { s: "符合", e: "（示意）KPI 草案已確認" }, "G-6": { s: "符合", e: "（示意）可鏈結 ITRI 測試單位" }, "G-7": { s: "符合", e: "（示意）主管已書面同意季投入時數" } },
+      gate1Result: "Conditional Pass", gate1Note: "（示意）兩週內補齊客戶訪談名單與 PoC 報告。", gate1Date: today(),
       selfCheck: { "G-1": 0, "G-2": 0, "G-3": 1, "G-4": 1, "G-5": 0, "G-6": 0 }, materials: { spec: "provided" } }, scenarioCells(d)).then(function (id) {
       var col = "cases/" + id + "/";
       return Promise.all([
-        Store.put(col + "baseline", uid(), { item: "續航時間", value: "（示意）約 90 分鐘，酬載 2 公斤" }),
-        Store.put(col + "baseline", uid(), { item: "抗風能力", value: "（示意）可於 6 級風下穩定作業" }),
-        Store.put(col + "baseline", uid(), { item: "既有證據", value: "（示意）2 場電塔試飛，皆於台灣" }),
-        Store.put(col + "hyps", uid(), { text: "（示意）電力公司願意以服務合約採購自主巡檢", importance: "高", conf: "○ 未驗證", grade: "C 專家假設", status: "待驗證", next: "對 2 家電力公司做報價測試", owner: "[分析師]" }),
+        Store.put(col + "baseline", uid(), { item: "量測範圍與精度", value: "[AC1 技術資料：待技術方確認]" }),
+        Store.put(col + "baseline", uid(), { item: "電池壽命與上傳頻率", value: "[AC1 技術資料：待技術方確認]" }),
+        Store.put(col + "baseline", uid(), { item: "既有證據", value: "（示意）2 場冷藏倉儲 PoC" }),
+        Store.put(col + "hyps", uid(), { text: "（示意）醫藥物流業者願意為逐箱溫度紀錄多付費", importance: "高", conf: "○ 未驗證", grade: "C 專家假設", status: "待驗證", next: "對 3 家業者做報價測試", owner: "[分析師]" }),
         Store.put(col + "updates", uid(), { date: today(), title: "第 1 週週報（示意）", body: "完成技術基準 V1 與 3 個候選情境，請貴公司技術方完成校準。", read: false }),
         Store.put(col + "hours", uid(), { date: today(), stage: "段 0 目標確定", tool: "專案設定訪談", hours: 6, who: "[分析師]" })
       ]).then(function () { return id; });
@@ -660,7 +715,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       h("p", { class: "sub", text: "◆ 是閘門。決策關卡做出 Go 之前，不定稿定價、通路與推廣計畫。" }), track({ stage: -1 })]));
     v.appendChild(h("div", { class: "grid" }, [
       h("div", { class: "card" }, [h("h2", { text: "整套服務如何串起來" }), h("ol", { style: "margin:8px 0 0;padding-left:20px;color:var(--ink-2)" }, [
-        "產業情報：SParta+ 掃描 76,898 家新創，產出候選情境（C 級假設）",
+        "產業情報：SParta+ 掃描 76,898 家新創，依主題（如冷鏈、無人化科技）產出候選情境（C 級假設）",
         "申請前自評：6 題判斷是否適合現在開始",
         "客戶專區：確認專案設定、提供資料與訪談對象、技術方校準情境",
         "分析師工作台：證據登錄、閘門裁決、週報與工時",
@@ -670,10 +725,14 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
   };
 
   VIEWS.intel = function (v, p) {
-    var d = domainById(p.domain || LS.get("gtm-intel", "uav"));
-    v.appendChild(pageHead("SPARTA+ 產業情報", "無人化科技：五個次領域的資本熱點", "SParta+ 解構全球 " + INTEL.total.toLocaleString("zh-TW") + " 家新創的描述，篩出 " + INTEL.theme.toLocaleString("zh-TW") + " 家無人化科技相關企業。以下數值為示意資料，候選情境一律是 C 級假設。"));
-    var chips = h("div", { class: "chips", role: "group", "aria-label": "選擇次領域" });
-    INTEL.domains.forEach(function (x) { chips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(x.id === d.id), text: x.short, onclick: function () { LS.set("gtm-intel", x.id); go("intel", { domain: x.id }); } })); });
+    var d = domainById(p.domain || LS.get("gtm-intel", ALL[0].id)), th = d.theme;
+    v.appendChild(pageHead("SPARTA+ 產業情報", th.name + "：" + th.domains.length + " 個次領域的資本熱點與候選情境", "SParta+ 解構全球 " + TOTAL.toLocaleString("zh-TW") + " 家新創的描述，此主題篩出約 " + th.theme.toLocaleString("zh-TW") + " 家（示意）。" + th.lead + "候選情境一律是 C 級假設。"));
+    var tchips = h("div", { class: "chips", role: "group", "aria-label": "選擇主題" }, [h("span", { class: "muted", text: "主題" })]);
+    THEMES.forEach(function (t) { tchips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(t === th), onclick: function () { LS.set("gtm-intel", t.domains[0].id); go("intel", { domain: t.domains[0].id }); } }, [t.name, t.tag ? h("span", { class: "pill accent", text: t.tag }) : null])); });
+    tchips.appendChild(h("span", { class: "muted", text: "｜其他主題可依同樣格式加入" }));
+    v.appendChild(tchips);
+    var chips = h("div", { class: "chips", role: "group", "aria-label": "選擇次領域" }, [h("span", { class: "muted", text: "次領域" })]);
+    th.domains.forEach(function (x) { chips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(x.id === d.id), text: x.short, onclick: function () { LS.set("gtm-intel", x.id); go("intel", { domain: x.id }); } })); });
     v.appendChild(chips);
     v.appendChild(h("div", { class: "kpis" }, [[d.startups.toLocaleString("zh-TW"), "新創家數（示意）"], ["US$" + d.fundingB + "B", "累計募資（示意）"], ["+" + d.growth + "%", "年成長率（示意）"]].map(function (k) { return h("div", { class: "kpi" }, [h("b", { text: k[0] }), h("span", { text: k[1] })]); })));
     var max = d.countries[0][1], bars = h("div", { class: "bars" });
@@ -697,7 +756,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     v.appendChild(h("div", { class: "card" }, [h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "段 1｜候選情境池草稿" }), h("p", { class: "sub", text: "情報只能提出假設：先交技術方校準，再用段 2 的訪談、報價與 PoC 驗證。" })]), act]),
       h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["候選情境", "ICP", "觸發情境", "技術依據", "證據", "下一個最便宜驗證"].map(function (x) { return h("th", { text: x }); }))]), tb])])]));
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性新創；段 2 會再補上 status quo、自建與人工等替代方案" }),
+      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: "代表性企業（公開資訊，待 SParta+ 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
         h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
       h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
         h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
@@ -723,8 +782,9 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var fs = [["company", "企業名稱", "text"], ["product", "要優先推動的產品或技術", "text"], ["name", "聯絡人", "text"], ["email", "Email", "email"]];
     var g = h("div", { class: "form" });
     fs.forEach(function (f) { var el = field(f[2], null, st[f[0]], "ap-" + f[0]); el.required = true; el.addEventListener("change", function () { st[f[0]] = el.value.trim(); keep(); }); g.appendChild(h("label", { class: "f", for: "ap-" + f[0] }, [f[1], el])); });
-    var dsel = field("select", [""].concat(INTEL.domains.map(function (d) { return d.short; })), st.domain ? domainById(st.domain).short : "", "ap-domain");
-    dsel.addEventListener("change", function () { var d = INTEL.domains.find(function (x) { return x.short === dsel.value; }); st.domain = d ? d.id : ""; keep(); });
+    var dsel = h("select", { id: "ap-domain" }, [h("option", { value: "", text: "不選" })].concat(THEMES.map(function (t) { return h("optgroup", { label: t.name }, t.domains.map(function (d) { return h("option", { value: d.id, text: t.name + "｜" + d.short }); })); })));
+    dsel.value = st.domain || "";
+    dsel.addEventListener("change", function () { st.domain = dsel.value; keep(); });
     g.appendChild(h("label", { class: "f", for: "ap-domain" }, ["相關產業情報領域（選填，會帶入候選情境）", dsel]));
     form.appendChild(h("h2", { text: "聯絡資料" })); form.appendChild(h("p", { class: "sub", text: "送出後會建立一個「申請中」案件，ISTI 分析師會聯絡你安排段 0 訪談。" })); form.appendChild(g);
     var submit = h("button", { class: "btn primary", type: "submit", text: "送出申請" });
@@ -981,7 +1041,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     var cal = cells.filter(function (x) { return (x.calib || {}).v; }).length;
     var head = h("div", { class: "card-head" }, [h("div", null, [h("h2", { text: "候選情境池（技術方校準 " + cal + " / " + cells.length + "）" }),
       h("p", { class: "sub", text: analyst ? "可從產業情報帶入。排序依市場吸引力＋Right-to-Win。" : "只請判斷技術上能不能做到；市場是否成立，會在段 2 用外部證據驗證。" })]),
-      analyst ? h("div", { class: "actions" }, [h("button", { class: "btn", type: "button", text: "從產業情報帶入", onclick: function () { go("intel", { domain: c.domain || LS.get("gtm-intel", "uav") }); } }), h("button", { class: "btn primary", type: "button", text: "＋ 新增情境", onclick: function () { editSub(c.id, "cells", null); } })]) : null]);
+      analyst ? h("div", { class: "actions" }, [h("button", { class: "btn", type: "button", text: "從產業情報帶入", onclick: function () { go("intel", { domain: c.domain || LS.get("gtm-intel", ALL[0].id) }); } }), h("button", { class: "btn primary", type: "button", text: "＋ 新增情境", onclick: function () { editSub(c.id, "cells", null); } })]) : null]);
     var wrap = h("div", { class: "card" }, [head]);
     if (!cells.length) { wrap.appendChild(h("p", { class: "note", text: analyst ? "尚無情境。建議 3–5 個。" : "分析師建立中。" })); b.appendChild(wrap); return; }
     var sorted = cells.slice().sort(function (a, b2) { return ((+b2.attract || 0) + (+b2.rtw || 0)) - ((+a.attract || 0) + (+a.rtw || 0)); });
