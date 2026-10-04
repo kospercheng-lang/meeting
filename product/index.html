@@ -368,58 +368,58 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
           ["藥廠出貨溫度偏差調查服務", "國內藥廠品保部門", "GDP 稽核要求", "溫度紀錄與分析", "訪談 2 家藥廠品保主管"]] }
     ]
   };
-  var UAV = {
-    id: "unmanned", name: "無人化科技", tag: "", theme: 2406,
-    lead: "Signal Atlas 解構無人化科技新創的描述，歸入五個次領域。數值為示意。",
+  var EDGE = {
+    id: "edgeai", name: "邊緣 AI 與智慧設施", tag: "AC1 延伸主題", theme: 1847,
+    lead: "AC1 負責把設備狀態接回平台，邊緣 AI 在平台上做預警、節能與自動化，是它的下一層。家數與資金為示意，代表性企業依公開資訊列出，待 Signal Atlas 正式產出確認。",
     domains: [
-      { id: "uav", name: "多旋翼與固定翼無人機技術", short: "無人機", startups: 1124, fundingB: 14.8, growth: 38,
-        summary: "數量最多、資本最集中。國防採購帶動可量產、低成本、具自主飛控的無人機需求。",
-        techs: ["自主飛控與群飛", "GNSS 拒止視覺導航", "垂直起降固定翼", "長航時動力", "邊緣 AI 辨識", "抗干擾資料鏈"],
-        countries: [["美國", 412], ["中國", 168], ["英國", 74], ["德國", 61], ["以色列", 55], ["烏克蘭", 52]],
-        examples: [["Shield AI", "美國", "自主飛行 AI、垂直起降無人機"], ["Skydio", "美國", "自主避障無人機"], ["Quantum-Systems", "德國", "eVTOL 偵察無人機"], ["Tekever", "葡萄牙", "長航時固定翼 ISR"]],
-        taiwan: [["整機／系統整合", "雷虎科技、中光電、經緯航太、漢翔", 2], ["馬達與動力系統", "東元、台達電、大銀微系統", 3], ["電池與能源", "順達、新普、加百裕", 3], ["光學／影像感測", "亞光、大立光、晶睿", 3], ["飛控／通訊模組", "啟碁、正文、神準", 2]],
-        scenarios: [["電網與電塔自主巡檢", "電力公司巡檢部門", "人力不足、颱風後需快速盤點", "自主飛控、邊緣 AI 辨識", "訪談 2 家電力公司巡檢主管"],
-          ["非紅供應鏈無人機零組件套件", "歐美無人機整機新創", "國防採購排除特定來源零件", "馬達、電池、飛控模組", "向 3 家整機新創詢價與送樣"],
-          ["港口與海岸長航時監視", "海巡與港務單位", "監視範圍擴大、人力成本上升", "VTOL、長航時動力", "取得一次場域試飛"]] },
-      { id: "ew", name: "電子戰與彈道防禦自主化技術", short: "電子戰／防禦", startups: 318, fundingB: 9.6, growth: 54,
-        summary: "家數少但單筆金額大、成長最快。反無人機、高功率微波與 AI 感測融合成為焦點。",
-        techs: ["反無人機 C-UAS", "高功率微波", "被動射頻偵測", "AI 感測融合", "軟體定義無線電"],
-        countries: [["美國", 141], ["以色列", 46], ["英國", 28], ["德國", 22], ["烏克蘭", 19], ["法國", 14]],
-        examples: [["Anduril", "美國", "指管平台、反無人機與自主攔截"], ["Epirus", "美國", "固態高功率微波反無人機"], ["Helsing", "德國", "國防 AI 感測融合"], ["CHAOS Industries", "美國", "新世代雷達與感測網路"]],
-        taiwan: [["化合物半導體 (GaN/GaAs)", "穩懋、宏捷科、全訊", 3], ["射頻前端與天線", "昇達科、耀登、台揚", 3], ["高可靠度 PCB／載板", "華通、欣興、臻鼎", 3], ["雷達／電子戰系統", "中科院、雷虎", 2], ["指管軟體與資料融合", "研究機構為主", 1]],
-        scenarios: [["機場與關鍵設施反無人機偵測", "機場管理單位、科學園區保全", "無人機闖入造成停飛或停工", "被動射頻偵測、感測融合", "訪談 2 個機場的安全主管"],
-          ["GaN 射頻前端供應電子戰新創", "美國、以色列電子戰新創", "高功率與小型化需求", "GaN／GaAs 射頻元件", "向 3 家新創提供規格並詢問評估流程"],
-          ["軟體定義無線電模組", "國防系統整合商", "多頻段、快速改版需求", "SDR、射頻前端", "與 1 家整合商做需求訪談"]] },
-      { id: "ocean", name: "深海自主探測與聲學成像設備", short: "深海探測", startups: 207, fundingB: 2.9, growth: 31,
-        summary: "海纜防護、離岸風電維運與水下國防需求推升關注，仍以早期輪次為主。",
-        techs: ["自主水下載具 AUV", "無人水面艇 USV", "合成孔徑聲納", "水下聲學通訊", "海纜巡檢"],
-        countries: [["美國", 64], ["英國", 27], ["挪威", 21], ["法國", 15], ["澳洲", 13], ["中國", 12]],
-        examples: [["Saildrone", "美國", "風帆動力無人水面艇"], ["HavocAI", "美國", "自主無人水面艇群"], ["Terradepth", "美國", "自主海底測繪"], ["Ocean Infinity", "英國", "機器人船隊與深海探測"]],
-        taiwan: [["電力電子與電池", "台達電、新普", 3], ["船體與載具製造", "台船、龍德造船", 2], ["水密連接器與線纜", "貿聯、嘉澤", 2], ["海洋科研能量", "國家海洋研究院、中山大學", 2], ["聲學／壓電元件", "研究機構與中小企業", 1]],
-        scenarios: [["海底電纜巡檢 AUV 服務", "電信與海纜營運商", "海纜斷線事件頻傳", "AUV、合成孔徑聲納", "訪談海纜維運負責人"],
-          ["離岸風電基礎聲學檢測", "離岸風場營運商", "定期維運檢查要求", "聲學成像、USV", "取得檢測規範與現行報價"],
-          ["水下載具電池與水密連接器", "AUV／USV 新創", "長航時與可靠度需求", "電池、水密連接器", "向 2 家新創送樣測試"]] },
-      { id: "space", name: "軌道通信與中小型火箭發射技術", short: "軌道通信／發射", startups: 486, fundingB: 18.2, growth: 27,
-        summary: "總募資金額最高。低軌衛星直連手機與小型發射吸引大額後期輪，美中雙極明顯。",
-        techs: ["衛星直連手機 D2D", "相位陣列天線", "衛星光通訊", "可重複使用小型火箭", "3D 列印引擎"],
-        countries: [["美國", 171], ["中國", 72], ["英國", 38], ["印度", 31], ["德國", 27], ["法國", 22]],
-        examples: [["Stoke Space", "美國", "全可重複使用火箭"], ["Isar Aerospace", "德國", "小型運載火箭"], ["Lynk Global", "美國", "衛星直連一般手機"], ["Astranis", "美國", "小型地球同步通訊衛星"]],
-        taiwan: [["衛星地面設備／天線", "昇達科、耀登、啟碁、台揚", 3], ["衛星用 PCB 與零組件", "華通、同欣電、穩懋", 3], ["衛星本體與酬載", "國家太空中心", 2], ["精密機構與材料", "晟田、拓凱", 2], ["火箭發射", "晉陞太空、國家太空中心", 1]],
-        scenarios: [["低軌衛星地面終端天線", "低軌衛星營運商", "星座擴張帶動終端需求", "相位陣列天線、射頻模組", "確認 1 家營運商的供應商資格流程"],
-          ["衛星級 PCB 與射頻零組件", "衛星製造新創", "量產與成本壓力", "高可靠度 PCB、化合物半導體", "詢問 3 家新創的認證門檻"],
-          ["手機直連衛星測試服務", "電信業者", "D2D 商轉前驗證需求", "射頻量測、天線", "訪談電信業者網路規劃部門"]] },
-      { id: "gnss", name: "高精度衛星定位與導航技術", short: "定位導航", startups: 271, fundingB: 3.4, growth: 46,
-        summary: "GNSS 干擾與欺騙頻傳，抗干擾與替代導航成為新熱點。",
-        techs: ["RTK／PPP 高精度定位", "低軌導航星座", "抗干擾／抗欺騙", "視覺慣性導航", "量子慣性感測"],
-        countries: [["美國", 96], ["中國", 33], ["英國", 24], ["法國", 17], ["德國", 16], ["以色列", 14]],
-        examples: [["Xona Space Systems", "美國", "低軌高精度導航星座"], ["Swift Navigation", "美國", "精密定位服務"], ["Point One Navigation", "美國", "公分級定位平台"], ["TrustPoint", "美國", "抗干擾 LEO 導航訊號"]],
-        taiwan: [["GNSS 晶片", "聯發科、瑞昱", 3], ["定位模組與終端", "環天、佳世達、台灣國際航電", 3], ["高精度天線", "耀登、佳邦", 2], ["慣性感測 (IMU/MEMS)", "研究機構與中小企業", 1], ["定位演算法與服務", "工研院、新創團隊", 1]],
-        scenarios: [["抗干擾定位模組", "無人機與自駕車業者", "GNSS 干擾與欺騙事件", "多頻 GNSS、抗干擾天線", "訪談 3 家無人機業者的導航負責人"],
-          ["公分級定位與 RTK 服務", "農業機械、測繪業者", "自動化作業需要高精度", "RTK／PPP、定位模組", "取得 1 家農機業者試用"],
-          ["港區替代導航", "港務與自動化碼頭", "GNSS 遮蔽與干擾", "視覺慣性導航、地面信標", "訪談自動化碼頭營運方"]] }
+      { id: "ea-pdm", name: "設備預測維護", short: "預測維護", startups: 412, fundingB: 4.6, growth: 31,
+        summary: "用振動、電流與運轉狀態預測設備故障，把「壞了才修」改成「壞之前修」。前提是設備資料要先接得回來。",
+        techs: ["振動與電流特徵分析", "運轉狀態異常偵測", "剩餘壽命預估", "邊緣推論", "維護工單整合"],
+        countries: [["美國", 138], ["德國", 41], ["以色列", 29], ["英國", 27], ["中國", 34], ["印度", 25]],
+        examples: [["Augury", "美國／以色列", "機器健康感測與 AI 診斷"], ["Tractian", "巴西／美國", "預測維護感測器與平台"], ["Senseye", "英國", "預測維護軟體（已被 Siemens 收購）"], ["Samotics", "荷蘭", "馬達電流特徵分析"]],
+        taiwan: [["邊緣運算與 IoT 平台", "研華、凌華", 3], ["馬達與驅動", "東元、台達電", 3], ["設備資料接入", "AC1（主流電子）", 2], ["振動與感測元件", "中小企業", 2]],
+        scenarios: [["冷庫冷風機與壓縮機異常預警", "冷鏈倉儲業者", "異常後才到場逐台查修", "AC1 接回運轉／故障／除霜狀態，邊緣 AI 判讀異常", "用 AC1 冷庫情境的狀態點試算可提前多久預警", "台灣"],
+          ["商場空調箱與冰水主機健康監測", "量販與商場（如家樂福）", "空調故障客訴與能耗", "設備狀態接入＋異常偵測", "盤點家樂福北投店空調設備與現行維護方式", "台灣"],
+          ["工廠空壓機與泵浦預測維護", "中型製造廠", "非計畫停機損失", "振動與電流感測＋邊緣模型", "訪談 2 家工廠設備課長", "台灣"]] },
+      { id: "ea-energy", name: "建築與設施能源管理", short: "能源管理", startups: 386, fundingB: 5.2, growth: 28,
+        summary: "電價上漲與減碳揭露推動 AI 節能：先把照明、空調、冷凍設備的狀態與耗電接回，再做排程與自動調控。",
+        techs: ["AI 空調調控", "照明與設備排程", "需量反應", "能耗基準線與節能驗證", "碳排揭露"],
+        countries: [["美國", 129], ["英國", 36], ["德國", 33], ["加拿大", 21], ["中國", 30], ["新加坡", 15]],
+        examples: [["BrainBox AI", "加拿大", "HVAC 自主 AI 調控"], ["75F", "美國", "建築自動化與 AI 節能"], ["Turntide", "美國", "智慧馬達與建築能源"], ["Axiom Cloud", "美國", "冷庫 AI 節能"]],
+        taiwan: [["樓宇自動化與能源管理", "台達電", 3], ["邊緣運算與平台", "研華", 2], ["照明與設備接入", "AC1（主流電子）", 2], ["電力與智慧電表", "電力設備業者", 2]],
+        scenarios: [["量販店照明、冷櫃、空調整合節能", "量販與超市", "電價上漲、減碳揭露要求", "AC1 已接入照明 226 節點，可延伸到冷櫃與空調", "用家樂福北投店智慧電表資料建立耗電基準線", "台灣"],
+          ["冷庫除霜與壓縮機排程最佳化", "冷鏈倉儲業者", "冷庫電費占營運成本高", "設備狀態資料＋排程最佳化", "取得 1 家冷庫 3 個月耗電與運轉資料", "台灣"],
+          ["中小辦公大樓空調 AI 調控", "物業管理公司", "能源法規與租戶舒適度", "既有空調控制接入＋AI 調控", "訪談 2 家物業管理公司", "台灣"]] },
+      { id: "ea-edge", name: "邊緣 AI 閘道與運算硬體", short: "邊緣運算", startups: 297, fundingB: 6.8, growth: 35,
+        summary: "現場網路不穩、資料量大或要即時反應時，推論移到設備旁的閘道。台灣在工業電腦與 SoC 有完整供應鏈。",
+        techs: ["邊緣 AI 加速晶片", "工業閘道", "模型壓縮與部署", "OT／IT 整合", "遠端更新與管理"],
+        countries: [["美國", 102], ["中國", 46], ["以色列", 24], ["台灣", 18], ["荷蘭", 12], ["英國", 16]],
+        examples: [["Hailo", "以色列", "邊緣 AI 加速晶片"], ["Axelera AI", "荷蘭", "邊緣 AI 加速器"], ["SiMa.ai", "美國", "邊緣機器學習 SoC"], ["Edge Impulse", "美國", "邊緣 ML 開發平台（已被 Qualcomm 收購）"]],
+        taiwan: [["工業電腦與邊緣平台", "研華、凌華、樺漢", 3], ["SoC 與晶片", "聯發科、瑞昱", 3], ["邊緣 AI 晶片", "耐能", 2], ["現場設備接入", "AC1（主流電子）", 2]],
+        scenarios: [["冷庫與溫室現場 AI 閘道", "冷鏈與農業系統整合商", "雲端連線不穩、需要現場即時判斷", "AC1 gateway 加上邊緣推論模組", "評估 AC1 gateway 加入邊緣運算的 BOM 與工程負擔", "台灣"],
+          ["工控機台邊緣 AI 套件", "工具機與設備廠", "設備智慧化需求", "工業電腦＋AI 加速器", "訪談 2 家設備廠研發主管", "台灣"],
+          ["連鎖零售邊緣影像分析盒", "連鎖零售業者", "人流分析與防損", "邊緣 AI 盒＋既有攝影機", "與 1 家連鎖業者談 PoC", "台灣"]] },
+      { id: "ea-vision", name: "AI 視覺巡檢與安全", short: "視覺巡檢", startups: 341, fundingB: 4.1, growth: 26,
+        summary: "用攝影機與熱像取代人工巡檢：產線瑕疵、設施安全、電氣過熱。關鍵在現場環境與誤報率。",
+        techs: ["工業瑕疵檢測", "熱影像異常偵測", "人員安全辨識", "機器人巡檢", "少樣本學習"],
+        countries: [["美國", 118], ["中國", 52], ["以色列", 23], ["德國", 22], ["日本", 19], ["英國", 17]],
+        examples: [["Landing AI", "美國", "工業視覺 AI"], ["Instrumental", "美國", "製造缺陷偵測"], ["Gecko Robotics", "美國", "機器人設施巡檢"], ["Spot AI", "美國", "影像 AI 與安全"]],
+        taiwan: [["網路攝影機", "晶睿", 3], ["光學鏡頭", "大立光、亞光", 3], ["邊緣運算", "研華", 2], ["AI 視覺系統整合", "AI 視覺新創與 SI", 2]],
+        scenarios: [["配電盤與變電箱熱影像巡檢", "設施管理與機電維護商", "電氣火災風險", "熱像＋異常偵測", "訪談 2 家機電維護商", "台灣"],
+          ["冷庫結霜與堆疊安全影像監測", "冷鏈倉儲業者", "結霜影響運轉、人員安全", "低溫環境攝影＋邊緣推論", "確認攝影機在 −25°C 的可靠度", "台灣"],
+          ["產線外觀瑕疵檢測", "電子與金屬加工廠", "人工目檢成本與漏檢", "工業相機＋視覺模型", "收集 1 家工廠的瑕疵樣本", "台灣"]] },
+      { id: "ea-greenhouse", name: "智慧農業與溫室控制", short: "智慧溫室", startups: 411, fundingB: 3.3, growth: 22, ac1: "AC1 下一個情境",
+        summary: "設施型溫室與植物工廠需要把環境感測、灌溉、遮陰、風扇等設備狀態接回控制系統，再用 AI 做環控決策。AC1 冷庫研究已把溫室列為下一個情境。",
+        techs: ["溫室環境控制", "設備狀態聯網", "AI 環控決策", "植物工廠光照與能源", "作物影像辨識"],
+        countries: [["美國", 121], ["荷蘭", 48], ["以色列", 37], ["中國", 44], ["日本", 22], ["印度", 26]],
+        examples: [["Priva", "荷蘭", "溫室環境控制（既有大廠）"], ["Ridder", "荷蘭", "溫室控制與自動化（既有大廠）"], ["Source.ag", "荷蘭", "溫室 AI 決策"], ["iUNU", "美國", "溫室視覺 AI"]],
+        taiwan: [["溫室工程與系統整合", "溫室工程業者", 2], ["設備狀態接入", "AC1（主流電子）", 2], ["邊緣運算", "研華", 2], ["農業感測", "中小企業與研究機構", 2]],
+        scenarios: [["溫室設備狀態補建聯網", "設施型溫室業者", "設備分散，異常後需逐台巡查", "沿配電路徑新增 D 線接回設備狀態（沿用冷庫方法）", "先固定一個具體設備／資料任務，再做五階段競爭分析", "台灣"],
+          ["溫室環控 AI 決策", "高價作物溫室", "產量與能耗取捨", "環境感測＋AI 控制", "訪談 2 家溫室業者", "台灣"],
+          ["植物工廠光照與能源最佳化", "植物工廠業者", "電費占營運成本高", "LED 調光＋能源管理", "取得 1 家植物工廠的耗電資料", "台灣"]] }
     ]
   };
-  var THEMES = [COLD, UAV], TOTAL = 76898;
+  var THEMES = [COLD, EDGE], TOTAL = 76898;
   var ALL = [];
   THEMES.forEach(function (t) { t.domains.forEach(function (d) { d.theme = t; ALL.push(d); }); });
   function domainById(id) { return ALL.find(function (d) { return d.id === id; }) || ALL[0]; }
@@ -764,7 +764,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
       h("p", { class: "sub", text: "◆ 是閘門。決策關卡做出 Go 之前，不定稿定價、通路與推廣計畫。" }), track({ stage: -1 })]));
     v.appendChild(h("div", { class: "grid" }, [
       h("div", { class: "card" }, [h("h2", { text: "整套服務如何串起來" }), h("ol", { style: "margin:8px 0 0;padding-left:20px;color:var(--ink-2)" }, [
-        "產業情報：Signal Atlas 訊號圖譜掃描 76,898 家新創，依主題（如冷鏈、無人化科技）產出候選情境（C 級假設）",
+        "產業情報：Signal Atlas 訊號圖譜掃描 76,898 家新創，依主題（如冷鏈、邊緣 AI 與智慧設施）產出候選情境（C 級假設）",
         "申請前自評：6 題判斷是否適合現在開始",
         "客戶專區：確認專案設定、提供資料與訪談對象、技術方校準情境",
         "分析師工作台：證據登錄、閘門裁決、週報與工時",
@@ -784,10 +784,10 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
     th.domains.forEach(function (x) { chips.appendChild(h("button", { class: "chip", type: "button", "aria-pressed": String(x.id === d.id), text: x.short, onclick: function () { LS.set("gtm-intel", x.id); go("intel", { domain: x.id }); } })); });
     v.appendChild(chips);
     v.appendChild(h("div", { class: "kpis" }, [[d.startups.toLocaleString("zh-TW"), "新創家數（示意）"], ["US$" + d.fundingB + "B", "累計募資（示意）"], ["+" + d.growth + "%", "年成長率（示意）"]].map(function (k) { return h("div", { class: "kpi" }, [h("b", { text: k[0] }), h("span", { text: k[1] })]); })));
-    var max = d.countries[0][1], bars = h("div", { class: "bars" });
-    d.countries.forEach(function (c) { bars.appendChild(h("span", { text: c[0] })); bars.appendChild(h("div", { class: "b" }, [h("i", { style: "width:" + Math.round(c[1] / max * 100) + "%" })])); bars.appendChild(h("span", { class: "v", text: String(c[1]) })); });
+    var ctry = d.countries.slice().sort(function (x, y) { return y[1] - x[1]; }), max = ctry[0][1], bars = h("div", { class: "bars" });
+    ctry.forEach(function (c) { bars.appendChild(h("span", { text: c[0] })); bars.appendChild(h("div", { class: "b" }, [h("i", { style: "width:" + Math.round(c[1] / max * 100) + "%" })])); bars.appendChild(h("span", { class: "v", text: String(c[1]) })); });
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h2", { text: d.name }), d.ac1 ? h("span", { class: "pill accent", text: "AC1 主戰場" }) : null]), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
+      h("div", { class: "card" }, [h("div", { class: "card-head", style: "margin:0" }, [h("h2", { text: d.name }), d.ac1 ? h("span", { class: "pill accent", text: typeof d.ac1 === "string" ? d.ac1 : "AC1 主戰場" }) : null]), h("p", { class: "sub", text: d.summary }), h("div", { class: "chips" }, d.techs.map(function (t) { return h("span", { class: "tag", text: t }); }))]),
       h("div", { class: "card" }, [h("h2", { text: "主要國家新創家數" }), h("p", { class: "sub", text: "前六大，示意" }), bars])]));
     var tb = h("tbody");
     d.scenarios.forEach(function (s) { tb.appendChild(h("tr", null, [h("td", null, [h("b", { text: s[0] })]), h("td", { text: s[1] }), h("td", { text: s[2] }), h("td", { text: s[3] }), h("td", null, [h("span", { class: "pill bad", text: "C 級假設" })]), h("td", { text: s[4] })])); });
@@ -811,7 +811,7 @@ footer { color: var(--muted); font-size: 12px; padding-block: 0 40px; }
         h("div", { class: "table-wrap" }, [h("table", null, [h("thead", null, [h("tr", null, ["案例", "事實", "可以支持", "不能推導"].map(function (x) { return h("th", { text: x }); }))]), ctb])])]));
     }
     v.appendChild(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: d.ac1 ? "依 AC1 冷庫研究（2026.10.04）的具名競爭集合；先按通訊類別分，再落到可報價型號" : "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
+      h("div", { class: "card" }, [h("h2", { text: "段 2｜競爭集合種子" }), h("p", { class: "sub", text: d.ac1 === true ? "依 AC1 冷庫研究（2026.10.04）的具名競爭集合；先按通訊類別分，再落到可報價型號" : "代表性企業（公開資訊，待 Signal Atlas 正式產出確認）；段 2 會再補上 status quo、自建與人工等替代方案" }),
         h("ul", { style: "margin:0;padding-left:18px" }, d.examples.map(function (e) { return h("li", { style: "margin:6px 0" }, [h("b", { text: e[0] }), "（" + e[1] + "）", h("div", { class: "muted", text: e[2] })]); }))]),
       h("div", { class: "card" }, [h("h2", { text: "段 5｜台灣供應鏈對標" }), h("p", { class: "sub", text: "公開資訊推導，接觸前需確認合作意願" }),
         h("ul", { style: "margin:0;padding-left:0;list-style:none" }, d.taiwan.map(function (t) { var L = { 3: ["▲ 優勢", "lv3"], 2: ["● 具基礎", "lv2"], 1: ["▽ 待補強", "lv1"] }[t[2]]; return h("li", { style: "margin:6px 0" }, [h("span", { class: L[1], style: "font-size:13px;font-weight:700;margin-right:8px", text: L[0] }), h("b", { text: t[0] }), h("div", { class: "muted", text: t[1] })]); }))])]));
