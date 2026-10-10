@@ -1,7 +1,7 @@
 <title>Landfall 登岸</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: one app, three roles. Sticky top bar (brand, role-aware nav, role switch); one reading column below. The case track with its two gate diamonds is the recurring signature. */
 :root {
@@ -10,8 +10,8 @@
   --good: #1f7a3a; --good-soft: #dcefe1; --warn: #8a5a00; --warn-soft: #f8ebcc; --bad: #b3261e; --bad-soft: #f7dcd9;
   --bar: #2a78d6;
   --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --topbar-h: 64px;
-  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
-  --display: "Noto Serif TC", Georgia, serif;
+  --font: "IBM Plex Sans", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --display: "IBM Plex Sans", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -32,7 +32,9 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.7; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, h3, .sec-title, .tab-title, .brand b { font-weight: 700; letter-spacing: -0.01em; }
+.kpi b, .pilot b, td.num, .bars .v { font-variant-numeric: tabular-nums; }
 .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
 @media (min-width: 760px) { .wrap { padding-inline: 32px; } }
 h1, h2, h3 { text-wrap: balance; }
@@ -43,8 +45,8 @@ button { font: inherit; }
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--navy); color: var(--navy-ink); }
 .topbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-block: 10px; }
 .brand { background: none; border: 0; color: var(--navy-ink); cursor: pointer; padding: 0; text-align: left; }
-.brand b { font-family: var(--display); font-size: 19px; display: block; line-height: 1.2; }
-.brand small { font-size: 11px; letter-spacing: .12em; color: #e9a35a; }
+.brand b { font-family: var(--display); font-size: 20px; letter-spacing: -0.02em; display: block; line-height: 1.2; }
+.brand small { font-size: 11px; letter-spacing: .04em; color: #e9a35a; }
 .nav { display: flex; gap: 2px; overflow-x: auto; flex: 1 1 auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav button { background: none; border: 0; color: var(--navy-ink-2); padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 14px; }
@@ -62,8 +64,8 @@ button { font: inherit; }
 main { padding-block: 28px 72px; }
 .view { display: flex; flex-direction: column; gap: 20px; }
 .page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
-.page-head h1 { font-family: var(--display); font-size: clamp(24px, 3.6vw, 32px); line-height: 1.3; margin: 0; }
-.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--accent); font-weight: 700; margin: 0 0 4px; }
+.page-head h1 { font-family: var(--display); font-size: clamp(26px, 3.6vw, 34px); line-height: 1.25; margin: 0; }
+.eyebrow { font-size: 13px; letter-spacing: .04em; color: var(--accent); font-weight: 700; margin: 0 0 4px; }
 .lead { color: var(--ink-2); max-width: 66ch; margin: 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; min-width: 0; }
 .card > h2, .card > .card-head h2 { font-size: 17px; margin: 0; }
@@ -103,7 +105,7 @@ tr.clickable:hover td { background: var(--surface-2); }
 
 /* hero */
 .hero { background: var(--navy); color: var(--navy-ink); border-radius: 16px; padding: 36px 28px; }
-.hero h1 { font-family: var(--display); font-size: clamp(28px, 5vw, 46px); line-height: 1.25; margin: 6px 0 14px; }
+.hero h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 48px); line-height: 1.2; letter-spacing: -0.02em; margin: 6px 0 14px; }
 .hero p { color: var(--navy-ink-2); max-width: 60ch; margin: 0 0 20px; font-size: 16px; }
 .hero .eyebrow { color: #e9a35a; }
 .mistake { border-top: 3px solid var(--gate); padding-top: 12px; }
@@ -207,7 +209,7 @@ svg.chart { display: block; width: 100%; height: auto; }
 .subnav button:hover { color: var(--ink); border-color: var(--ink-2); }
 .layers { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .layers li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
-.layers .n { font-size: 11px; letter-spacing: .1em; color: var(--accent); font-weight: 700; }
+.layers .n { font-size: 11px; letter-spacing: .06em; color: var(--accent); font-weight: 700; }
 .layers p { margin: 4px 0 6px; font-size: 13px; color: var(--ink-2); }
 .layers .pill { align-self: flex-start; }
 .seq-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 10px; }
@@ -246,7 +248,7 @@ svg.chart { display: block; width: 100%; height: auto; }
 ul.plain { margin: 8px 0 0; padding-left: 20px; color: var(--ink-2); }
 .pilot { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .pilot div { border-top: 3px solid var(--gate); padding-top: 10px; }
-.pilot b { display: block; font-family: var(--display); font-size: 30px; line-height: 1.2; }
+.pilot b { display: block; font-family: var(--display); font-weight: 700; font-size: 32px; line-height: 1.2; }
 .pilot span { color: var(--ink-2); font-size: 14px; }
 .hero.join h2 { font-family: var(--display); font-size: 24px; margin: 4px 0 8px; color: var(--navy-ink); }
 .hero.join ul { color: var(--navy-ink-2); padding-left: 20px; margin: 0; }
@@ -257,11 +259,11 @@ ul.plain { margin: 8px 0 0; padding-left: 20px; color: var(--ink-2); }
 .crumbs button { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-weight: 500; }
 .nextbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; background: var(--navy); color: var(--navy-ink); border-radius: 12px; padding: 12px 16px; }
 .nextbar > div { display: flex; flex-direction: column; min-width: 0; }
-.nb-k { font-size: 11px; letter-spacing: .12em; color: #e9a35a; font-weight: 700; }
+.nb-k { font-size: 12px; letter-spacing: .04em; color: #e9a35a; font-weight: 700; }
 .nb-d { font-size: 13px; color: var(--navy-ink-2); }
 .case-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px; align-items: start; }
 .side { position: sticky; top: calc(var(--topbar-h) + 16px); display: flex; flex-direction: column; gap: 14px; }
-.side h4 { font-size: 11px; letter-spacing: .08em; color: var(--muted); margin: 0 0 4px; font-weight: 700; }
+.side h4 { font-size: 12px; letter-spacing: .02em; color: var(--muted); margin: 0 0 4px; font-weight: 700; }
 .side button { display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); cursor: pointer; font-size: 14px; }
 .side button:hover { background: var(--surface-2); color: var(--ink); }
 .side button[aria-current="true"] { background: var(--gate-soft); color: var(--ink); font-weight: 700; }
